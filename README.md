@@ -2,4 +2,4 @@
 
 ## Before run, pls create databse in SQL Server
 
-`create databse petfoster_2.0`
+`create database petfoster_2.0`
