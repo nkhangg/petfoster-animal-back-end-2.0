@@ -30,14 +30,20 @@ public class ShippingInfo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    @JsonIgnore
-    private User user;
+    // @ManyToOne
+    // @JoinColumn(name = "user_id")
+    // @JsonIgnore
+    // private User user;
 
     private String fullName;
 
     private String address;
+
+    private String province;
+
+    private String district;
+
+    private String ward;
 
     private String phone;
 
@@ -45,5 +51,11 @@ public class ShippingInfo {
 
     @OneToMany(mappedBy = "shippingInfo", cascade = CascadeType.ALL)
     @JsonIgnore
-    private List<Orders> orders = new ArrayList<>();
+    private List<Orders> orders;
+
+    @ManyToOne
+    @JoinColumn(name = "delivery_company_id")
+    @JsonIgnore
+    private DeliveryCompany deliveryCompany;
+    
 }

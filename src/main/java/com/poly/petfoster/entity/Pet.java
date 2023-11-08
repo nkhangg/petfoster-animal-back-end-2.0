@@ -51,9 +51,10 @@ public class Pet {
 
     @OneToMany(mappedBy = "pet", cascade = CascadeType.ALL)
     @JsonIgnore
-    private List<Imgs> imgs = new ArrayList<>();
+    private List<Imgs> imgs;
 
     @OneToMany(mappedBy = "pet", cascade = CascadeType.ALL)
     @JsonIgnore
-    private List<Favorite> favorites = new ArrayList<>();
+    private List<Favorite> favorites;
+    
 }

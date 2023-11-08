@@ -31,4 +31,5 @@ public class PetType {
     @OneToMany(mappedBy = "petType", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<PetBreed> breeds = new ArrayList<>();
+    
 }

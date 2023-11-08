@@ -29,10 +29,15 @@ public class CartItem {
     @JsonIgnore
     private Carts cart;
 
+    // @OneToOne
+    // @JoinColumn(name = "product_id")
+    // @JsonIgnore
+    // private Product product;
+
     @OneToOne
-    @JoinColumn(name = "product_id")
+    @JoinColumn(name = "product_repo_id")
     @JsonIgnore
-    private Product product;
+    private ProductRepo productRepo;
 
     private Integer quantity;
 

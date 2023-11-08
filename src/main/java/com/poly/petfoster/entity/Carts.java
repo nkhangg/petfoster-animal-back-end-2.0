@@ -34,5 +34,5 @@ public class Carts {
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL)
     @JsonIgnore
-    private List<CartItem> cartItems = new ArrayList<>();
+    private List<CartItem> cartItems;
 }
