@@ -9,6 +9,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import org.hibernate.annotations.Nationalized;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
@@ -20,11 +22,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 public class DeliveryCompany {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
+    @Nationalized
     private String company;
 
     @OneToMany(mappedBy = "deliveryCompany", cascade = CascadeType.ALL)
@@ -32,4 +34,3 @@ public class DeliveryCompany {
     private List<ShippingInfo> shippingInfos;
 
 }
-

@@ -9,6 +9,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import org.hibernate.annotations.Nationalized;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
@@ -26,7 +28,7 @@ public class SearchHistory {
     private Integer id;
 
     private Date searchAt;
-
+    @Nationalized
     private String keyword;
 
     @ManyToOne

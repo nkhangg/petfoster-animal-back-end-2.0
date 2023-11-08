@@ -11,6 +11,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+import org.hibernate.annotations.Nationalized;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
@@ -34,9 +36,9 @@ public class Pet {
     private PetBreed petBreed;
 
     private Boolean sex;
-
+    @Nationalized
     private String petColor;
-
+    @Nationalized
     private String age;
 
     private Boolean isSpay;
@@ -44,9 +46,9 @@ public class Pet {
     private Date createAt;
 
     private Date fosterAt;
-
+    @Nationalized
     private String descriptions;
-
+    @Nationalized
     private String adoptStatus;
 
     @OneToMany(mappedBy = "pet", cascade = CascadeType.ALL)

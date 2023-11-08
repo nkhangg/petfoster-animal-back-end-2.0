@@ -13,6 +13,7 @@ import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Nationalized;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -35,7 +36,7 @@ public class User {
 	private String id;
 
 	private String username;
-
+	@Nationalized
 	private String fullname;
 
 	private Date birthday;

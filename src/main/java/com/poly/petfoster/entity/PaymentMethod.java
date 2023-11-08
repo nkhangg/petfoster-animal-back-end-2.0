@@ -9,6 +9,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import org.hibernate.annotations.Nationalized;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
@@ -20,13 +22,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 public class PaymentMethod {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    
+    @Nationalized
     private String method;
-    
     @OneToMany(mappedBy = "paymentMethod", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Payment> payments;

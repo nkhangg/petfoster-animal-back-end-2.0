@@ -12,6 +12,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+import org.hibernate.annotations.Nationalized;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
@@ -34,15 +36,15 @@ public class ShippingInfo {
     // @JoinColumn(name = "user_id")
     // @JsonIgnore
     // private User user;
-
+    @Nationalized
     private String fullName;
-
+    @Nationalized
     private String address;
-
+    @Nationalized
     private String province;
-
+    @Nationalized
     private String district;
-
+    @Nationalized
     private String ward;
 
     private String phone;

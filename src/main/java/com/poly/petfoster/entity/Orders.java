@@ -14,6 +14,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Nationalized;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -28,7 +29,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @Entity
 public class Orders {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -40,11 +41,11 @@ public class Orders {
     @JoinColumn(name = "shipping_info_id")
     @JsonIgnore
     private ShippingInfo shippingInfo;
-
+    @Nationalized
     private String descriptions;
 
     private Double total;
-
+    @Nationalized
     private String status;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
@@ -66,4 +67,3 @@ public class Orders {
     private Payment payment;
 
 }
-

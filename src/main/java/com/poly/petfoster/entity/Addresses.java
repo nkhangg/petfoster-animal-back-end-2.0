@@ -10,6 +10,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Nationalized;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -22,7 +23,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 public class Addresses {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -31,11 +32,14 @@ public class Addresses {
 
     private String phone;
 
+    @Nationalized
     private String province;
-
+    @Nationalized
     private String district;
+    @Nationalized
 
     private String ward;
+    @Nationalized
 
     private String address;
 
@@ -50,4 +54,3 @@ public class Addresses {
     private User user;
 
 }
-

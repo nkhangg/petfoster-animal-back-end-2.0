@@ -13,6 +13,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Nationalized;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -27,15 +28,18 @@ import lombok.NoArgsConstructor;
 @Builder
 @Entity
 public class Product {
-    
+
     @Id
     @Column(name = "product_id")
+    @Nationalized
     private String id;
 
     @Column(name = "product_name")
+    @Nationalized
     private String name;
 
     @Column(name = "product_desc")
+    @Nationalized
     private String desc;
 
     @ManyToOne
@@ -78,4 +82,3 @@ public class Product {
     private Brand brand;
 
 }
-
