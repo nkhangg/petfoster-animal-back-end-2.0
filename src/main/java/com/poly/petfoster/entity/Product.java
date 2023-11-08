@@ -13,6 +13,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Nationalized;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -27,15 +28,18 @@ import lombok.NoArgsConstructor;
 @Builder
 @Entity
 public class Product {
-    
+
     @Id
     @Column(name = "product_id")
+    @Nationalized
     private String id;
 
     @Column(name = "product_name")
+    @Nationalized
     private String name;
 
     @Column(name = "product_desc")
+    @Nationalized
     private String desc;
 
     @ManyToOne
@@ -46,7 +50,7 @@ public class Product {
     private Boolean isActive;
 
     // brand of product
-    private String brand;
+    // private String brand;
 
     @CreationTimestamp
     @Column(name = "create_at")
@@ -54,15 +58,27 @@ public class Product {
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     @JsonIgnore
-    private List<ProductRepo> productsRepo = new ArrayList<>();
+    private List<ProductRepo> productsRepo;
+
+    // @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    // @JsonIgnore
+    // private List<OrderDetail> orderDetails = new ArrayList<>();
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     @JsonIgnore
-    private List<OrderDetail> orderDetails = new ArrayList<>();
+    private List<Imgs> imgs;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     @JsonIgnore
-    private List<Imgs> imgs = new ArrayList<>();
+    private List<Review> reviews;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<RecentView> recentViews;
+
+    @ManyToOne
+    @JoinColumn(name = "brand_id")
+    @JsonIgnore
+    private Brand brand;
 
 }
-

@@ -26,6 +26,7 @@ public class Imgs {
     private Integer id;
 
     @ManyToOne
+    @JoinColumn(name = "pet_id")
     @JsonIgnore
     private Pet pet;
 

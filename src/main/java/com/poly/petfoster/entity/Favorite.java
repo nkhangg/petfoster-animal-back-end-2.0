@@ -32,5 +32,4 @@ public class Favorite {
     @JoinColumn(name = "pet_id")
     @JsonIgnore
     private Pet pet;
-
 }

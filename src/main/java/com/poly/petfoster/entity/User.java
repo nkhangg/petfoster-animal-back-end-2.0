@@ -13,6 +13,7 @@ import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Nationalized;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -35,7 +36,7 @@ public class User {
 	private String id;
 
 	private String username;
-
+	@Nationalized
 	private String fullname;
 
 	private Date birthday;
@@ -44,7 +45,7 @@ public class User {
 
 	private String phone;
 
-	private String address;
+	// private String address;
 
 	private String avatar;
 
@@ -53,9 +54,8 @@ public class User {
 	@JsonIgnore
 	private String password;
 
-	private String role;
+	// private String role;
 
-	@Column(name = "create_at")
 	@CreationTimestamp
 	private Date createAt;
 
@@ -74,14 +74,38 @@ public class User {
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	@JsonIgnore
-	private List<Adopt> adopts = new ArrayList<>();
+	private List<Adopt> adopts;
+
+	// @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	// @JsonIgnore
+	// private List<ShippingInfo> shippingInfos;
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	@JsonIgnore
-	private List<ShippingInfo> shippingInfos = new ArrayList<>();
+	private List<Favorite> favorites;
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	@JsonIgnore
-	private List<Favorite> favorites = new ArrayList<>();
+	private List<Addresses> addresses;
+
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	@JsonIgnore
+	private List<Orders> orders;
+
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	@JsonIgnore
+	private List<Authorities> authorities;
+
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	@JsonIgnore
+	private List<Review> reviews;
+
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	@JsonIgnore
+	private List<SearchHistory> searchHistories;
+
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	@JsonIgnore
+	private List<RecentView> recentViews;
 
 }
