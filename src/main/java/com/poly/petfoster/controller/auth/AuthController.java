@@ -1,4 +1,4 @@
-package com.poly.petfoster.controller;
+package com.poly.petfoster.controller.auth;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
