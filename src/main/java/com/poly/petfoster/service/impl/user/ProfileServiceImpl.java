@@ -20,7 +20,7 @@ import com.poly.petfoster.repository.AuthoritiesRepository;
 import com.poly.petfoster.repository.UserRepository;
 import com.poly.petfoster.request.ProfileRepuest;
 import com.poly.petfoster.response.ApiResponse;
-import com.poly.petfoster.response.users.UserProfile;
+import com.poly.petfoster.response.users.UserProfileResponse;
 import com.poly.petfoster.service.user.ProfileService;
 import com.poly.petfoster.ultils.ImageUtils;
 import com.poly.petfoster.ultils.PortUltil;
@@ -67,7 +67,7 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     // build a user profile
-    UserProfile userProfile = UserProfile.builder()
+    UserProfileResponse userProfile = UserProfileResponse.builder()
         .id(user.getId())
         .username(user.getUsername())
         .fullname(user.getFullname())
