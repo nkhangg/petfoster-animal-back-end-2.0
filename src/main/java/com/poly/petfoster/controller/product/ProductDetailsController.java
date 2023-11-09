@@ -1,4 +1,4 @@
-package com.poly.petfoster.controller;
+package com.poly.petfoster.controller.product;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

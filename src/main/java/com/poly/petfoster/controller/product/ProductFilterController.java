@@ -1,4 +1,4 @@
-package com.poly.petfoster.controller;
+package com.poly.petfoster.controller.product;
 
 import java.util.Optional;
 
