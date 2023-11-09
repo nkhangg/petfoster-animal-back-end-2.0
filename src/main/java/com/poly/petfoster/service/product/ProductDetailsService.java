@@ -1,4 +1,4 @@
-package com.poly.petfoster.service;
+package com.poly.petfoster.service.product;
 
 import com.poly.petfoster.response.ApiResponse;
 

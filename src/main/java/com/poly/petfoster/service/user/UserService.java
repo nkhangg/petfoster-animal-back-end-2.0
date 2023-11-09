@@ -1,4 +1,4 @@
-package com.poly.petfoster.service;
+package com.poly.petfoster.service.user;
 
 import java.util.Optional;
 

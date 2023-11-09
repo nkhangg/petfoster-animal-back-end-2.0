@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.poly.petfoster.response.ApiResponse;
-import com.poly.petfoster.service.ProductDetailsService;
+import com.poly.petfoster.service.product.ProductDetailsService;
 
 @RestController
 @RequestMapping("/api/product/")

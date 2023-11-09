@@ -1,4 +1,4 @@
-package com.poly.petfoster.service.impl;
+package com.poly.petfoster.service.impl.product;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,7 +24,8 @@ import com.poly.petfoster.response.product_details.ProductDetail;
 import com.poly.petfoster.response.product_details.SizeAndPrice;
 import com.poly.petfoster.response.product_details.TypeAndBrandResponse;
 import com.poly.petfoster.response.takeaction.ProductItem;
-import com.poly.petfoster.service.ProductDetailsService;
+import com.poly.petfoster.service.impl.TakeActionServiceImpl;
+import com.poly.petfoster.service.product.ProductDetailsService;
 import com.poly.petfoster.ultils.PortUltil;
 
 @Service

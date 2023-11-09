@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.poly.petfoster.response.ApiResponse;
-import com.poly.petfoster.service.ProductFilterService;
+import com.poly.petfoster.service.product.ProductFilterService;
 
 @RestController
 @RequestMapping("/api/filter-product/")
