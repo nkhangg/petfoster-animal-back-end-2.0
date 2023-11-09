@@ -40,8 +40,8 @@ public class ProfileRepuest {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Optional<Date> birthday;
 
-    @NotBlank(message = RespMessage.NOT_EMPTY)
-    private String address;
+    // @NotBlank(message = RespMessage.NOT_EMPTY)
+    // private String address;
 
     private String password;
 

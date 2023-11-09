@@ -19,6 +19,7 @@ import com.poly.petfoster.repository.BrandRepository;
 import com.poly.petfoster.repository.ProductRepository;
 import com.poly.petfoster.repository.ProductTypeRepository;
 import com.poly.petfoster.response.ApiResponse;
+import com.poly.petfoster.response.others.BrandResponse;
 import com.poly.petfoster.response.product_details.ProductDetail;
 import com.poly.petfoster.response.product_details.SizeAndPrice;
 import com.poly.petfoster.response.product_details.TypeAndBrandResponse;
@@ -51,7 +52,7 @@ public class ProductDetailsServiceImpl implements ProductDetailsService {
 
         Product product = productRepository.findById(id).orElse(null);
 
-        if(product == null) {
+        if (product == null) {
             errorMap.put("product id", "product id is not exists!!!");
             return ApiResponse.builder()
                     .message("Failture!!!")
@@ -65,42 +66,40 @@ public class ProductDetailsServiceImpl implements ProductDetailsService {
         Collections.sort(sizeAndPrices, Comparator.comparing(SizeAndPrice::getSize));
 
         return ApiResponse.builder()
-                        .message("Successfully!!!")
-                        .status(200)
-                        .errors(false)
-                        .data(
-                            ProductDetail.builder()
-                                        .id(productItem.getId())
-                                        .name(productItem.getName())
-                                        .brand(productItem.getBrand())
-                                        .discount(productItem.getDiscount())
-                                        .image(productItem.getImage())
-                                        .images(getImgNames(product))
-                                        .rating(productItem.getRating())
-                                        .desciption(product.getDesc())
-                                        .sizeAndPrice(sizeAndPrices)
-                                        .suggestions(getSuggestionProducts(id))
-                                        .build()
-                        )
-                        .build();
+                .message("Successfully!!!")
+                .status(200)
+                .errors(false)
+                .data(
+                        ProductDetail.builder()
+                                .id(productItem.getId())
+                                .name(productItem.getName())
+                                .brand(productItem.getBrand())
+                                .discount(productItem.getDiscount())
+                                .image(productItem.getImage())
+                                .images(getImgNames(product))
+                                .rating(productItem.getRating())
+                                .desciption(product.getDesc())
+                                .sizeAndPrice(sizeAndPrices)
+                                .suggestions(getSuggestionProducts(id))
+                                .build())
+                .build();
     }
-
 
     @Override
     public ApiResponse getProductTypesAndBrands() {
 
         List<ProductType> productTypes = productTypeRepository.findAll();
-        if(productTypes.isEmpty()) {
+        if (productTypes.isEmpty()) {
             return ApiResponse.builder()
-                .message("No types data available")
-                .status(200)
-                .errors(false)
-                .build();
+                    .message("No types data available")
+                    .status(200)
+                    .errors(false)
+                    .build();
         }
 
         List<Brand> brands = brandRepository.findAll();
 
-        if(brands.isEmpty()) {
+        if (brands.isEmpty()) {
             return ApiResponse.builder()
                     .message("No brands data available")
                     .status(200)
@@ -108,20 +107,29 @@ public class ProductDetailsServiceImpl implements ProductDetailsService {
                     .build();
         }
 
+        // fomat brands
+
+        List<BrandResponse> brandRes = new ArrayList<>();
+
+        brands.stream().forEach((brand) -> {
+            brandRes.add(BrandResponse.builder()
+                    .id(brand.getId() + "")
+                    .name(brand.getBrand()).build());
+
+        });
+
         return ApiResponse.builder()
-                    .message("Successfully!!!")
-                    .status(200)
-                    .errors(false)
-                    .data(
-                        TypeAndBrandResponse.builder().types(productTypes).brands(brands).build()
-                    )
-                    .build();
+                .message("Successfully!!!")
+                .status(200)
+                .errors(false)
+                .data(
+                        TypeAndBrandResponse.builder().types(productTypes).brands(brandRes).build())
+                .build();
 
     }
-    
 
     public List<String> getImgNames(Product product) {
-       
+
         List<String> imgs = new ArrayList<>();
 
         for (Imgs img : product.getImgs()) {
@@ -131,31 +139,29 @@ public class ProductDetailsServiceImpl implements ProductDetailsService {
         return imgs;
     }
 
-
     public List<SizeAndPrice> getSizeAndPrices(Product product) {
 
         int discount = 8;
         List<SizeAndPrice> sizeAndprices = new ArrayList<>();
 
-        for(ProductRepo productRepo : product.getProductsRepo()) {
+        for (ProductRepo productRepo : product.getProductsRepo()) {
             sizeAndprices.add(SizeAndPrice.builder()
-                                .size(productRepo.getSize())
-                                .price(productRepo.getOutPrice())
-                                .oldPrice(productRepo.getOutPrice() + (productRepo.getOutPrice() * (discount / 100.0)))
-                                .repo(productRepo.getQuantity())
-                                .build());
+                    .size(productRepo.getSize())
+                    .price(productRepo.getOutPrice())
+                    .oldPrice(productRepo.getOutPrice() + (productRepo.getOutPrice() * (discount / 100.0)))
+                    .repo(productRepo.getQuantity())
+                    .build());
         }
 
         return sizeAndprices;
     }
-
 
     public List<ProductItem> getSuggestionProducts(String id) {
 
         List<Product> sameTypeProducts = productRepository.getSameTypeProducts(id);
         List<ProductItem> suggesstionProducts = new ArrayList<>();
 
-        for(Product sameTypeProduct : sameTypeProducts) {
+        for (Product sameTypeProduct : sameTypeProducts) {
             suggesstionProducts.add(takeActionServiceImpl.createProductTakeAction(sameTypeProduct));
         }
 
