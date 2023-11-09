@@ -38,7 +38,7 @@ public interface ProductRepository extends JpaRepository<Product, String> {
                         + "where p.product_id in ( select top 100 product_id from order_detail group by product_id ) and p.is_active = 1")
         List<Product> findAllProducts();
 
-        @Query("SELECT p, MIN(pr.outPrice) FROM Product p " +
+       @Query("SELECT p, MIN(pr.outPrice) FROM Product p " +
                         "INNER JOIN p.productsRepo pr " +
                         "INNER JOIN p.brand " +
                         "WHERE (:typeName IS NULL OR p.productType.name = :typeName) " +
