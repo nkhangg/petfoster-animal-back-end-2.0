@@ -2,6 +2,7 @@ package com.poly.petfoster.response.product_details;
 
 import java.util.List;
 
+import com.poly.petfoster.entity.Brand;
 import com.poly.petfoster.entity.ProductType;
 
 import lombok.AllArgsConstructor;
