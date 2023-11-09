@@ -25,7 +25,7 @@ import com.poly.petfoster.response.statistic.SalesOverviewsResponse;
 import com.poly.petfoster.service.report.DashBoardService;
 
 @Service
-public class DashBoardServiceImpl implements DashBoardService{
+public class DashBoardServiceImpl implements DashBoardService {
 
     @Autowired
     OrdersRepository ordersRepository;
@@ -38,37 +38,37 @@ public class DashBoardServiceImpl implements DashBoardService{
 
     @Override
     public ApiResponse dailyReport() {
-        
+
         return ApiResponse.builder()
-                        .message("Successfully!!!")
-                        .status(200)
-                        .errors(false)
-                        .data(ReportResponse.builder().reports(getReport()).build())
-                        .build();
+                .message("Successfully!!!")
+                .status(200)
+                .errors(false)
+                .data(ReportResponse.builder().reports(getReport()).build())
+                .build();
     }
-    
+
     @Override
     @Transactional
     public ApiResponse salesOverview(Optional<Integer> year) {
 
         Integer yearValue = year.orElse(null);
 
-        if(yearValue == null || yearValue < 0) {
+        if (yearValue == null || yearValue < 0) {
             yearValue = 2023;
         }
-        
+
         return ApiResponse.builder()
-                        .message("Successfully!!!")
-                        .status(200)
-                        .errors(false)
-                        .data(
-                            SalesOverviewsResponse.builder().salesOverview(
-                                SalesOverview.builder().revenue(getRevenueByYear(yearValue)).productRevenueByType(getProductTypeRevenueByYear(yearValue)).build()
-                            ).build()
-                        ).build();
+                .message("Successfully!!!")
+                .status(200)
+                .errors(false)
+                .data(
+                        SalesOverviewsResponse.builder().salesOverview(
+                                SalesOverview.builder().revenue(getRevenueByYear(yearValue))
+                                        .productRevenueByType(getProductTypeRevenueByYear(yearValue)).build())
+                                .build())
+                .build();
     }
 
-    
     @Override
     @Transactional
     public ApiResponse productRevenueByDate(Optional<Date> minDate, Optional<Date> maxDate) {
@@ -76,39 +76,40 @@ public class DashBoardServiceImpl implements DashBoardService{
         Date minDateValue = minDate.orElse(null);
         Date maxDateValue = maxDate.orElse(null);
 
-        if(minDateValue == null && maxDateValue != null) {
+        if (minDateValue == null && maxDateValue != null) {
             minDateValue = maxDateValue;
         }
 
-        if(maxDateValue == null && minDateValue != null) {
+        if (maxDateValue == null && minDateValue != null) {
             maxDateValue = minDateValue;
         }
 
-        if(maxDateValue == null && minDateValue == null) {
+        if (maxDateValue == null && minDateValue == null) {
             minDateValue = ordersRepository.getMinDate();
             maxDateValue = ordersRepository.getMaxDate();
         }
 
         if (minDateValue.after(maxDateValue)) {
             ApiResponse errorResponse = ApiResponse.builder()
-                .message("Invalid date data")
-                .status(400)
-                .errors("Invalid date data")
-                .data(null)
-                .build();
+                    .message("Invalid date data")
+                    .status(400)
+                    .errors("Invalid date data")
+                    .data(null)
+                    .build();
             return errorResponse;
         }
 
         List<Map<String, Object>> list = ordersRepository.getProductRevenueByDate(minDateValue, maxDateValue);
 
         return ApiResponse.builder().message("Successfully").status(200).errors(false)
-        .data(
-            ProductRevenueByDateResponse.builder().productRevenueByDate(
-                ProductRevenueByDate.builder().data(list).total(ordersRepository.getTotalRevenueByDate(minDateValue, maxDateValue)).build())
-            .build())
-        .build();
+                .data(
+                        ProductRevenueByDateResponse.builder().productRevenueByDate(
+                                ProductRevenueByDate.builder().data(list)
+                                        .total(ordersRepository.getTotalRevenueByDate(minDateValue, maxDateValue))
+                                        .build())
+                                .build())
+                .build();
     }
-    
 
     public Report getReport() {
 
@@ -124,21 +125,22 @@ public class DashBoardServiceImpl implements DashBoardService{
         users.put("value", userRepository.getTotalUsers());
 
         return Report.builder()
-                    .dailyRevenue(dailyRevenue)
-                    .dailyOrders(dailyOrders)
-                    .users(users)
-                    .build();
+                .dailyRevenue(dailyRevenue)
+                .dailyOrders(dailyOrders)
+                .users(users)
+                .build();
     }
 
     public Map<String, Object> getRevenueByYear(Integer year) {
 
         Map<String, Object> revenue = new HashMap<>();
-        List<String> months = Arrays.asList("Jan", "Feb", "Mar", "Apr", "May", "Jun", "July", "Aug", "Sep", "Oct", "Nov", "Dec");
+        List<String> months = Arrays.asList("Jan", "Feb", "Mar", "Apr", "May", "Jun", "July", "Aug", "Sep", "Oct",
+                "Nov", "Dec");
         revenue.put("categories", months);
 
         List<Integer> revenueMonths = ordersRepository.getRevenueByYear(year);
         Map<String, Object> dataList = new HashMap<>();
-        dataList.put("name", "Name");
+        dataList.put("name", "Revenue");
         dataList.put("data", revenueMonths);
 
         List<Map<String, Object>> data = new ArrayList<>();
@@ -158,7 +160,7 @@ public class DashBoardServiceImpl implements DashBoardService{
 
         List<Integer> revenueProductType = ordersRepository.getProductTypeRevenueByYear(year);
         Map<String, Object> dataList = new HashMap<>();
-        dataList.put("name", "Name");
+        dataList.put("name", "Product Revenue By Type");
         dataList.put("data", revenueProductType);
 
         List<Map<String, Object>> data = new ArrayList<>();
