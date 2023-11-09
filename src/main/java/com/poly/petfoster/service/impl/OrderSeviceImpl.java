@@ -264,10 +264,7 @@ public class OrderSeviceImpl implements OrderService {
 
     public OrderProductItem createOrderProductItem(OrderDetail orderDetail) {
         String image = "";
-
-        // if (!orderDetail.getProduct().getImgs().isEmpty()) {
-        //     image = orderDetail.getProduct().getImgs().get(0).getNameImg();
-        // }
+       
         if (!orderDetail.getProductRepo().getProduct().getImgs().isEmpty()) {
             image = orderDetail.getProductRepo().getProduct().getImgs().get(0).getNameImg();
         }
