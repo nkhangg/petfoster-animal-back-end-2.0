@@ -1,4 +1,4 @@
-package com.poly.petfoster.service.impl;
+package com.poly.petfoster.service.impl.product;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +18,8 @@ import com.poly.petfoster.repository.ProductRepository;
 import com.poly.petfoster.response.ApiResponse;
 import com.poly.petfoster.response.productfilter.ProductFilterResponse;
 import com.poly.petfoster.response.takeaction.ProductItem;
-import com.poly.petfoster.service.ProductFilterService;
+import com.poly.petfoster.service.impl.TakeActionServiceImpl;
+import com.poly.petfoster.service.product.ProductFilterService;
 
 @Service
 public class ProductFilterServiceImpl implements ProductFilterService {

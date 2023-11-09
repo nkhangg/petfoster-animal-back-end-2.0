@@ -31,7 +31,7 @@ import com.poly.petfoster.request.RegisterRequest;
 import com.poly.petfoster.response.ApiResponse;
 import com.poly.petfoster.response.AuthResponse;
 import com.poly.petfoster.service.AuthService;
-import com.poly.petfoster.service.UserService;
+import com.poly.petfoster.service.user.UserService;
 
 @Service
 public class AuthServiceImpl implements AuthService {

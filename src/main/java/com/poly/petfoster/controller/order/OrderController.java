@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.poly.petfoster.request.OrderRequest;
 import com.poly.petfoster.response.ApiResponse;
-import com.poly.petfoster.service.OrderService;
+import com.poly.petfoster.service.order.OrderService;
 
 @RestController
 @RequestMapping("/api/user/")

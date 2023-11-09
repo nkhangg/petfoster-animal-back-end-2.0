@@ -34,10 +34,8 @@ public class AppConfig {
         http.sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(Authorize -> Authorize
-                        .antMatchers("/api/admin/authorize").hasRole("SUPER_ADMIN")
-                        .antMatchers("/api/admin/product/update-product").hasRole("SUPER_ADMIN, ADMIN")
-                        .antMatchers("/api/admin/product/delete-product").hasRole("SUPER_ADMIN, ADMIN")
-                        .antMatchers("/api/admin/**").hasAnyRole("SUPER_ADMIN, ADMIN, STAFF")
+                        .antMatchers("/api/admin/report/**").hasAnyRole("ADMIN", "SUPER")
+                        .antMatchers("/api/admin/**").hasAnyRole("ADMIN", "SUPER", "STAFF")
                         .antMatchers("/api/user/**").authenticated()
                         .anyRequest().permitAll())
                 .addFilterBefore(new JwtValidator(), BasicAuthenticationFilter.class)

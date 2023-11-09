@@ -1,4 +1,4 @@
-package com.poly.petfoster.service.impl;
+package com.poly.petfoster.service.impl.user;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -38,7 +38,7 @@ import com.poly.petfoster.response.common.PagiantionResponse;
 import com.poly.petfoster.response.order_history.OrderHistory;
 import com.poly.petfoster.response.product_manage.ProductManageResponse;
 import com.poly.petfoster.response.users.UserManageResponse;
-import com.poly.petfoster.service.UserService;
+import com.poly.petfoster.service.user.UserService;
 import com.poly.petfoster.ultils.ImageUtils;
 import com.poly.petfoster.ultils.MailUtils;
 import com.poly.petfoster.ultils.PortUltil;
