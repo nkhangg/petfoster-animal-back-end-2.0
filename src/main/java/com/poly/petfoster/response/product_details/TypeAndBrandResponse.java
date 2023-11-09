@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.poly.petfoster.entity.Brand;
 import com.poly.petfoster.entity.ProductType;
+import com.poly.petfoster.response.others.BrandResponse;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,5 +17,5 @@ import lombok.NoArgsConstructor;
 @Builder
 public class TypeAndBrandResponse {
     private List<ProductType> types;
-    private List<Brand> brands;
+    private List<BrandResponse> brands;
 }

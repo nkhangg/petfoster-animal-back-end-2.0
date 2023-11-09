@@ -34,11 +34,10 @@ public interface ProductRepository extends JpaRepository<Product, String> {
         // t on t.product_type_id = p.[type_id] where p.product_id in ( select top 100
         // order_detail.product_id from order_detail group by order_detail.product_id
         // order by sum(order_detail.quantity) desc)")
-        @Query(nativeQuery = true, value = "select * from product p join product_type t on t.product_type_id = p.[type_id] "
-                        + "where p.product_id in ( select top 100 product_id from order_detail group by product_id ) and p.is_active = 1")
+        @Query(nativeQuery = true, value = "select * from product p join product_type t on t.product_type_id = p.[type_id] where p.product_id in ( select top 100 product_id from order_detail od join product_repo rp on rp.product_repo_id = od.product_repo_id group by product_id ) and p.is_active = 1")
         List<Product> findAllProducts();
 
-       @Query("SELECT p, MIN(pr.outPrice) FROM Product p " +
+        @Query("SELECT p, MIN(pr.outPrice) FROM Product p " +
                         "INNER JOIN p.productsRepo pr " +
                         "INNER JOIN p.brand " +
                         "WHERE (:typeName IS NULL OR p.productType.name = :typeName) " +
