@@ -38,16 +38,17 @@ public interface ProductRepository extends JpaRepository<Product, String> {
                         + "where p.product_id in ( select top 100 product_id from order_detail group by product_id ) and p.is_active = 1")
         List<Product> findAllProducts();
 
-        @Query("SELECT p, MIN(pr.outPrice) FROM Product p " +
+       @Query("SELECT p, MIN(pr.outPrice) FROM Product p " +
                         "INNER JOIN p.productsRepo pr " +
+                        "INNER JOIN p.brand " +
                         "WHERE (:typeName IS NULL OR p.productType.name = :typeName) " +
                         "AND ((:minPrice IS NULL AND :maxPrice IS NULL) OR (pr.outPrice BETWEEN :minPrice AND :maxPrice)) "
                         +
                         "AND (:stock IS NULL OR pr.inStock = :stock) " +
-                        "AND (:brand IS NULL OR p.brand = :brand) " +
+                        "AND (:brand IS NULL OR p.brand.brand = :brand) " +
                         "AND (:productName IS NULL OR p.name LIKE %:productName%) " +
                         "AND p.isActive = true " +
-                        "GROUP BY p.id, p.name, p.desc, p.isActive, p.brand, p.createAt, p.productType.id  " +
+                        "GROUP BY p.id, p.name, p.desc, p.isActive, p.brand.id, p.createAt, p.productType.id  " +
                         "ORDER BY " +
                         "CASE WHEN :sort = 'low' THEN MIN(pr.outPrice) END ASC, " +
                         "CASE WHEN :sort = 'high' THEN MIN(pr.outPrice) END DESC")

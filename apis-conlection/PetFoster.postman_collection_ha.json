@@ -1,0 +1,526 @@
+{
+	"info": {
+		"_postman_id": "2a656025-93d1-4ddb-b01f-1300380b872b",
+		"name": "PetFoster",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "29532805"
+	},
+	"item": [
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"hantl1\",\r\n    \"password\": \"123456\"\r\n}\r\n\r\n                    \r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8019/api/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8019",
+							"path": [
+								"api",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"hantl111\",\r\n    \"password\": \"123456\",\r\n    \"confirmPassword\": \"123456\",\r\n    \"email\": \"qianqian1810@gmail.com\",\r\n    \"gender\": \"true\",\r\n    \"fullname\": \"Nguyen Thi Lam Ha\"\r\n}\r\n\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8019/api/register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8019",
+							"path": [
+								"api",
+								"register"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "statistical",
+			"item": [
+				{
+					"name": "Report Daily",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2OTcxMTc2MTQsImV4cCI6MTY5NzEyMTIxNCwidXNlcm5hbWUiOiJoYW50bDEiLCJhdXRob3JpdGllcyI6IlJPTEVfQURNSU4ifQ.lAMoaT5TPOJiiLLm5IE2IJKXK0-o71F3_lbXt7g4RwebmA-t2czN4q1SukV-y14NTb5PWy6tOmp4Z7iv4vZp1Q",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8019/api/admin/report/daily",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8019",
+							"path": [
+								"api",
+								"admin",
+								"report",
+								"daily"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Report Sales Overview",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2OTcxMzIwMTAsImV4cCI6MTY5NzEzNTYxMCwidXNlcm5hbWUiOiJoYW50bDEiLCJhdXRob3JpdGllcyI6IlJPTEVfQURNSU4ifQ.7_Z6y5d-O9dMVRGPZ4ebIz0KUfKVl4Pt6z-lpKnB3HWo-XYu1lKoHBZFrm6udGa2hUVi4739sDt8avY1p7HgjA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8019/api/admin/report/sales-overview/?year=2023",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8019",
+							"path": [
+								"api",
+								"admin",
+								"report",
+								"sales-overview",
+								""
+							],
+							"query": [
+								{
+									"key": "year",
+									"value": "2023"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Report Product Revenue By Date",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2OTcxNjI5NjYsImV4cCI6MTY5NzE2NjU2NiwidXNlcm5hbWUiOiJoYW50bDEiLCJhdXRob3JpdGllcyI6IlJPTEVfQURNSU4ifQ.9y6_QL4pTr7D0Ftc_M6Whv63ym35zBhhFpy60xUA4H494SCOQoNwOstiHVChoGsm_CGOw5TUV7aw58vCvmhC8g",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8019/api/admin/report/product-revenue-by-date?minDate=2023-10-01&maxDate=2023-10-10",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8019",
+							"path": [
+								"api",
+								"admin",
+								"report",
+								"product-revenue-by-date"
+							],
+							"query": [
+								{
+									"key": "minDate",
+									"value": "2023-10-01"
+								},
+								{
+									"key": "maxDate",
+									"value": "2023-10-10"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "product",
+			"item": [
+				{
+					"name": "Filter",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8019/api/filter-product/?typeName=Cat food&minPrice=0&maxPrice=200000&stock=True&brand=Me-o&page=0&sort=low",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8019",
+							"path": [
+								"api",
+								"filter-product",
+								""
+							],
+							"query": [
+								{
+									"key": "typeName",
+									"value": "Cat food"
+								},
+								{
+									"key": "minPrice",
+									"value": "0"
+								},
+								{
+									"key": "maxPrice",
+									"value": "200000"
+								},
+								{
+									"key": "stock",
+									"value": "True"
+								},
+								{
+									"key": "brand",
+									"value": "Me-o"
+								},
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "productName",
+									"value": "Tuna",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "low"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Product Details",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8019/api/product/detail/PD0001",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8019",
+							"path": [
+								"api",
+								"product",
+								"detail",
+								"PD0001"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Types And Brands",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8019/api/product/types-brands",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8019",
+							"path": [
+								"api",
+								"product",
+								"types-brands"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "pages",
+			"item": [
+				{
+					"name": "Take-action",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8019/api/take-action",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8019",
+							"path": [
+								"api",
+								"take-action"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Take-action-best-sellers",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8019/api/take-action/best-sellers?page=0",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8019",
+							"path": [
+								"api",
+								"take-action",
+								"best-sellers"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "user",
+			"item": [
+				{
+					"name": "[auth]Profile",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": ""
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[auth]Update-profile",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2OTcwMzc1NDIsImV4cCI6MTY5NzA0MTE0MiwidXNlcm5hbWUiOiJraGFuZ3BuMSIsImF1dGhvcml0aWVzIjoiUk9MRV9BRE1JTiJ9.TAhbbwNpoX8Wk6UMZVBzsBv-hmHxef--Ev3JAWkSKx8F35lXZGX_oBy8W6gnEpZfZadBoDNHBHLm2bXRrY8yzA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": \"dc9d7109-6c0b-486f-b9e9-31266c2f8534\",\r\n    \"username\": \"khangpn1\",\r\n    \"fullname\": \"Pham Nhut Khang 123\",\r\n    \"phone\": \"123456\",\r\n    \"email\": \"ha1@gmail.com\",\r\n    \"gender\": \"false\",\r\n    \"birthday\": \"12/2/2023\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8019/api/user/update",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8019",
+							"path": [
+								"api",
+								"user",
+								"update"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "[auth]orther",
+			"item": [
+				{
+					"name": "[auth]payment",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2OTczOTMzNjMsImV4cCI6MTY5NzM5Njk2MywidXNlcm5hbWUiOiJkdXlucSIsImF1dGhvcml0aWVzIjoiUk9MRV9VU0VSIn0._xxWdaBXEKl_aDiWYS6wV1e5xYT4LyXN6RWUAXrO-hAElODz-zb1OE_4o3i2T6VX3onXfR553YHhstN3Q9XcBg",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"fullname\": \"ha nguyen\",\r\n    \"address\": \"1\",\r\n    \"phone\": \"0123456789\",\r\n    \"shippingFee\": 1,\r\n    \"orderProducts\": [\r\n        {\r\n            \"productId\": \"PD0001\",\r\n            \"size\": 250,\r\n            \"quantity\": 2\r\n        },\r\n        {\r\n            \"productId\": \"PD0001\",\r\n            \"size\": 500,\r\n            \"quantity\": 1\r\n        },\r\n        {\r\n            \"productId\": \"PD0002\",\r\n            \"size\": 500,\r\n            \"quantity\": 1\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8019/api/user/order",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8019",
+							"path": [
+								"api",
+								"user",
+								"order"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "order",
+			"item": [
+				{
+					"name": "Order History",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2OTczOTY3NjksImV4cCI6MTY5NzQwMDM2OSwidXNlcm5hbWUiOiJob2FuZ3ZsIiwiYXV0aG9yaXRpZXMiOiJST0xFX1VTRVIifQ.xv6ANCJjuq5oMwUMawHHWKeCTUAAOHg-5YIY3BT4cZMS2ir3mRoTWEpqU186CFXfM22dlnOLAG9wGFO4jtn7sw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8019/api/user/order/history/?page=0",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8019",
+							"path": [
+								"api",
+								"user",
+								"order",
+								"history",
+								""
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
