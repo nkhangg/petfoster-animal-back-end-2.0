@@ -1,4 +1,4 @@
-package com.poly.petfoster.controller.admin.report.user;
+package com.poly.petfoster.controller.admin.user;
 
 import java.util.Optional;
 
