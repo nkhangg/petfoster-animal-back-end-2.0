@@ -16,6 +16,7 @@ import com.poly.petfoster.entity.Product;
 import com.poly.petfoster.entity.ProductRepo;
 import com.poly.petfoster.entity.ProductType;
 import com.poly.petfoster.repository.BrandRepository;
+import com.poly.petfoster.repository.ProductRepoRepository;
 import com.poly.petfoster.repository.ProductRepository;
 import com.poly.petfoster.repository.ProductTypeRepository;
 import com.poly.petfoster.response.ApiResponse;
@@ -39,6 +40,9 @@ public class ProductDetailsServiceImpl implements ProductDetailsService {
 
     @Autowired
     TakeActionServiceImpl takeActionServiceImpl;
+
+    @Autowired
+    ProductRepoRepository productRepoRepository;
 
     @Autowired
     BrandRepository brandRepository;
@@ -145,7 +149,7 @@ public class ProductDetailsServiceImpl implements ProductDetailsService {
         int discount = 8;
         List<SizeAndPrice> sizeAndprices = new ArrayList<>();
 
-        for (ProductRepo productRepo : product.getProductsRepo()) {
+        for (ProductRepo productRepo : productRepoRepository.findByProductSorting(product.getId())) {
             sizeAndprices.add(SizeAndPrice.builder()
                     .size(productRepo.getSize())
                     .price(productRepo.getOutPrice())
