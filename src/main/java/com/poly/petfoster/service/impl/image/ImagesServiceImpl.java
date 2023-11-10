@@ -1,4 +1,4 @@
-package com.poly.petfoster.service.impl;
+package com.poly.petfoster.service.impl.image;
 
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -67,7 +67,9 @@ public class ImagesServiceImpl implements ImagesService {
         for (Imgs img : imgs) {
             String fileName = img.getNameImg();
             deleteImg(fileName);
+            imgsRepository.delete(img);
         }
+
 
         return ApiResponse.builder().message("Successfully").status(200).errors(false).data(imgs).build();
     }

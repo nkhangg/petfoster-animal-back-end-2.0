@@ -20,6 +20,7 @@ END
 
 
 --chay store nay
+-------------------------------------------------------------
 CREATE PROCEDURE GetRevenueByYear(@year INT)
 AS
 BEGIN
@@ -54,7 +55,7 @@ LEFT JOIN orders o ON am.Month = MONTH(o.create_at) AND YEAR(o.create_at) = @yea
 GROUP BY am.Month
 END
 
-
+-------------------------------------------------------------
 --tong doanh thu theo loai
 insert into orders values (getdate(), null, 490000, 10)
 
