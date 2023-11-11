@@ -9,7 +9,7 @@ import com.poly.petfoster.response.ApiResponse;
 
 public interface PetService {
 
-    public Pet findById(String petId);
+    public ApiResponse petDetail(String petId);
 
     public Pet findByName(String name);
 

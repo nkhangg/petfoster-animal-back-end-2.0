@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 public class Pet {
-    
+
     @Id
     private String petId;
 
@@ -43,6 +43,8 @@ public class Pet {
 
     private Boolean isSpay;
 
+    private Boolean vaccination;
+
     private Date createAt;
 
     private Date fosterAt;
@@ -58,5 +60,5 @@ public class Pet {
     @OneToMany(mappedBy = "pet", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Favorite> favorites;
-    
+
 }

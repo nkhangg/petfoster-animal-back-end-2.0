@@ -14,7 +14,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class ProductDetail {
-    
     public String id;
     public String brand;
     public Integer discount;
@@ -24,6 +23,6 @@ public class ProductDetail {
     public List<String> images;
     public String desciption;
     public List<SizeAndPrice> sizeAndPrice;
-    public List<ProductItem> suggestions; 
+    public List<ProductItem> suggestions;
 
 }

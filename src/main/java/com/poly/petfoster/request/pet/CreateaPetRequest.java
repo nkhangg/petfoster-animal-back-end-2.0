@@ -1,15 +1,9 @@
 package com.poly.petfoster.request.pet;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.web.multipart.MultipartFile;
-
-import com.poly.petfoster.entity.Favorite;
-import com.poly.petfoster.entity.Imgs;
-import com.poly.petfoster.entity.PetBreed;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,6 +14,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class CreateaPetRequest {
+
     private String petId;
 
     private String petName;
