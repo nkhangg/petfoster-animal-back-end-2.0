@@ -6,6 +6,7 @@ import javax.validation.constraints.NotBlank;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import com.poly.petfoster.entity.Brand;
 import com.poly.petfoster.entity.Imgs;
 import com.poly.petfoster.entity.OrderDetail;
 import com.poly.petfoster.entity.ProductRepo;
@@ -27,6 +28,6 @@ public class ProductRequest {
     private String desc;
     @NotBlank(message = "Product Type can't be blank!")
     private String productType;
-    private String brand;
+    private Brand brand;
     private List<ProductRepo> productsRepo;
 }

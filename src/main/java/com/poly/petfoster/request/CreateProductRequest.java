@@ -7,6 +7,8 @@ import javax.validation.constraints.NotBlank;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import com.poly.petfoster.entity.Brand;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -28,7 +30,7 @@ public class CreateProductRequest {
     private String type;
 
     @NotBlank(message = "Product Type can't be blank!")
-    private String brand;
+    private Brand brand;
 
     @Valid
     private List<ProductRepoRequest> repo;
