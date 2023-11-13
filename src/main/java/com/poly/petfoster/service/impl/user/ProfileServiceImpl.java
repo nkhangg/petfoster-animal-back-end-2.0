@@ -19,7 +19,9 @@ import com.poly.petfoster.entity.User;
 import com.poly.petfoster.repository.AuthoritiesRepository;
 import com.poly.petfoster.repository.UserRepository;
 import com.poly.petfoster.request.ProfileRepuest;
+import com.poly.petfoster.request.users.ChangePasswordRequest;
 import com.poly.petfoster.response.ApiResponse;
+import com.poly.petfoster.response.AuthResponse;
 import com.poly.petfoster.response.users.UserProfileResponse;
 import com.poly.petfoster.service.user.ProfileService;
 import com.poly.petfoster.ultils.ImageUtils;
@@ -168,25 +170,8 @@ public class ProfileServiceImpl implements ProfileService {
           .build();
     }
 
-    if (profileRepuest.getPassword() != null && profileRepuest.getNewPassword() != null) {
-      if (!profileRepuest.getPassword().equals("") && !profileRepuest.getNewPassword().equals("")) {
-        if (!passwordEncoder.matches(profileRepuest.getPassword(), user.getPassword())) {
-          errorsMap.put("password", "password is incorrect, please try again!!");
-
-          return ApiResponse.builder()
-              .message("Update faild !")
-              .errors(errorsMap)
-              .data(null)
-              .build();
-        }
-
-        user.setPassword(passwordEncoder.encode(profileRepuest.getNewPassword()));
-      }
-    }
-
     user.setFullname(profileRepuest.getFullname());
     user.setGender(profileRepuest.getGender());
-    // user.setAddress(profileRepuest.getAddress());
     user.setPhone(profileRepuest.getPhone());
 
     User newUser = userRepository.save(user);
@@ -198,6 +183,43 @@ public class ProfileServiceImpl implements ProfileService {
         .errors(false)
         .status(HttpStatus.OK.value())
         .data(newUser)
+        .build();
+  }
+
+  @Override
+  public ApiResponse changePassword(ChangePasswordRequest changePasswordRequest, String token) {
+    Map<String, String> errorsMap = new HashMap<>();
+
+    String username = jwtProvider.getUsernameFromToken(token);
+    User user = userRepository.findByUsername(username).orElse(null);
+
+    if (user == null) {
+      return ApiResponse.builder()
+          .message("User not found !")
+          .status(HttpStatus.NOT_FOUND.value())
+          .errors(true)
+          .data(null)
+          .build();
+    }
+
+    if (!passwordEncoder.matches(changePasswordRequest.getPassword(), user.getPassword())) {
+      errorsMap.put("password", "password is incorrect, please try again!!");
+      return ApiResponse.builder()
+          .message(RespMessage.FAILURE.getValue())
+          .errors(errorsMap)
+          .status(HttpStatus.BAD_REQUEST.value())
+          .data(null)
+          .build();
+    }
+
+    // all good
+    user.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
+
+    return ApiResponse.builder()
+        .message("Update success!")
+        .errors(false)
+        .status(HttpStatus.OK.value())
+        .data(userRepository.save(user))
         .build();
   }
 
