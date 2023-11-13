@@ -2,6 +2,7 @@ package com.poly.petfoster.entity;
 
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -15,12 +16,14 @@ import org.hibernate.annotations.Nationalized;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Entity
 public class Addresses {
 
@@ -43,7 +46,8 @@ public class Addresses {
 
     private String address;
 
-    private Boolean IsDefault;
+    @Column(name = "is_default")
+    private Boolean isDefault;
 
     @CreationTimestamp
     private Date createAt;
