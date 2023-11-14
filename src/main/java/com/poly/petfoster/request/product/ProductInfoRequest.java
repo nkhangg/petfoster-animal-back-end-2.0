@@ -1,5 +1,7 @@
 package com.poly.petfoster.request.product;
 
+import com.poly.petfoster.entity.Brand;
+
 import lombok.Builder;
 import lombok.Data;
 
@@ -8,7 +10,7 @@ import lombok.Data;
 public class ProductInfoRequest {
     private String id;
     private String name;
-    private String brand;
+    private Integer brand;
     private String type;
     private String description;
 }
