@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class CreateProductRequest {
-    
+
     @NotBlank(message = "Product Name can't be blank!")
     private String name;
 
@@ -30,7 +30,7 @@ public class CreateProductRequest {
     private String type;
 
     @NotBlank(message = "Product Type can't be blank!")
-    private Brand brand;
+    private Integer brand;
 
     @Valid
     private List<ProductRepoRequest> repo;
@@ -40,10 +40,10 @@ public class CreateProductRequest {
 }
 
 // type DataProductType = {
-//    name: string;
-//    type: string;
-//    brand: string;
-//    images: File[];
-//    repo: RepoType[];
-//    description: string;
+// name: string;
+// type: string;
+// brand: string;
+// images: File[];
+// repo: RepoType[];
+// description: string;
 // };

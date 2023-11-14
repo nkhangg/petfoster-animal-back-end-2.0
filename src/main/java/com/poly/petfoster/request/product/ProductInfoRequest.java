@@ -10,7 +10,7 @@ import lombok.Data;
 public class ProductInfoRequest {
     private String id;
     private String name;
-    private Brand brand;
+    private Integer brand;
     private String type;
     private String description;
 }

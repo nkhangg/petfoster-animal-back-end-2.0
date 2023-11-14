@@ -1,4 +1,4 @@
-package com.poly.petfoster.service.impl.dashboard;
+package com.poly.petfoster.service.impl.product;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -17,10 +17,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.poly.petfoster.constant.RespMessage;
+import com.poly.petfoster.entity.Brand;
 import com.poly.petfoster.entity.Imgs;
 import com.poly.petfoster.entity.Product;
 import com.poly.petfoster.entity.ProductRepo;
 import com.poly.petfoster.entity.ProductType;
+import com.poly.petfoster.repository.BrandRepository;
 import com.poly.petfoster.repository.ImagesRepository;
 import com.poly.petfoster.repository.ProductRepoRepository;
 import com.poly.petfoster.repository.ProductRepository;
@@ -54,6 +56,9 @@ public class ProductServiceImpl implements ProductService {
 
         @Autowired
         private ImagesRepository imagesRepository;
+
+        @Autowired
+        private BrandRepository brandRepository;
 
         @Override
         public ApiResponse getAllProduct(Optional<Integer> page) {
@@ -199,7 +204,6 @@ public class ProductServiceImpl implements ProductService {
 
         @Override
         public ApiResponse getProduct(String id) {
-                Map<String, String> errorsMap = new HashMap<>();
 
                 Product selectProduct = productRepository.findById(id).orElse(null);
 
@@ -267,7 +271,7 @@ public class ProductServiceImpl implements ProductService {
                                 .data(ProductInfoResponse.builder()
                                                 .id(selectProduct.getId())
                                                 .name(selectProduct.getName())
-                                                .brand(selectProduct.getBrand().getBrand())
+                                                .brand(selectProduct.getBrand().getId() + "")
                                                 .type(selectProduct.getProductType().getId())
                                                 .description(selectProduct.getDesc())
                                                 .build())
@@ -300,8 +304,20 @@ public class ProductServiceImpl implements ProductService {
                                         .build();
                 }
 
+                // find brand
+                Brand brand = brandRepository.findById(productInfoRequest.getBrand()).orElse(null);
+
+                if (brand == null) {
+                        return ApiResponse.builder()
+                                        .message("Can't found brand by " + productInfoRequest.getBrand())
+                                        .status(404)
+                                        .errors(true)
+                                        .data(null)
+                                        .build();
+                }
+
                 // all good
-                selectProduct.setBrand(productInfoRequest.getBrand());
+                selectProduct.setBrand(brand);
                 selectProduct.setProductType(getNewTypeForProduct(productInfoRequest.getType(), selectProduct));
                 selectProduct.setName(productInfoRequest.getName());
                 selectProduct.setDesc(productInfoRequest.getDescription());
@@ -339,9 +355,21 @@ public class ProductServiceImpl implements ProductService {
 
                 List<Product> products = productRepository.findAll();
 
+                // find brand
+                Brand brand = brandRepository.findById(createProductRequest.getBrand()).orElse(null);
+
+                if (brand == null) {
+                        return ApiResponse.builder()
+                                        .message("Can't found brand by " + createProductRequest.getBrand())
+                                        .status(404)
+                                        .errors(true)
+                                        .data(null)
+                                        .build();
+                }
+
                 Product product = Product.builder()
                                 .id(getNextId(products.get(products.size() - 1).getId()))
-                                .brand(createProductRequest.getBrand())
+                                .brand(brand)
                                 .name(createProductRequest.getName())
                                 .isActive(true)
                                 .desc(createProductRequest.getDescription())
@@ -423,5 +451,4 @@ public class ProductServiceImpl implements ProductService {
                 return nextId;
         }
 
-        
 }
