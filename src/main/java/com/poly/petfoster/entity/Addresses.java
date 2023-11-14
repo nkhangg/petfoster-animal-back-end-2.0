@@ -40,10 +40,8 @@ public class Addresses {
     @Nationalized
     private String district;
     @Nationalized
-
     private String ward;
     @Nationalized
-
     private String address;
 
     @Column(name = "is_default")
