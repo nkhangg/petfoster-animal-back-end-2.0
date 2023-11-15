@@ -310,6 +310,22 @@ public class AddressServiceImp implements AddressService {
 
         addressRepository.delete(addresses);
 
+        if (addresses.getIsDefault()) {
+
+            List<Addresses> list = addressRepository.findByUser(user);
+
+            if (list.size() > 0) {
+
+                Addresses radomAddresses = list.get(0);
+
+                if (radomAddresses != null) {
+                    radomAddresses.setIsDefault(true);
+                    addressRepository.save(radomAddresses);
+                }
+            }
+
+        }
+
         return ApiResponse.builder()
                 .message(RespMessage.SUCCESS.getValue())
                 .status(HttpStatus.OK.value())
