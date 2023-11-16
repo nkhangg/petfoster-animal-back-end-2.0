@@ -13,20 +13,13 @@
 					"name": "Login",
 					"request": {
 						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "",
-									"type": "string"
-								}
-							]
+							"type": "noauth"
 						},
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"username\": \"hantl1\",\r\n    \"password\": \"123456\"\r\n}\r\n\r\n                    \r\n",
+							"raw": "{\r\n    \"username\": \"hantl111\",\r\n    \"password\": \"123456\"\r\n}\r\n\r\n                    \r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -93,7 +86,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2OTcxMTc2MTQsImV4cCI6MTY5NzEyMTIxNCwidXNlcm5hbWUiOiJoYW50bDEiLCJhdXRob3JpdGllcyI6IlJPTEVfQURNSU4ifQ.lAMoaT5TPOJiiLLm5IE2IJKXK0-o71F3_lbXt7g4RwebmA-t2czN4q1SukV-y14NTb5PWy6tOmp4Z7iv4vZp1Q",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2OTk1MjcyNzgsImV4cCI6MTY5OTg4NzI3OCwidXNlcm5hbWUiOiJoYW50bDExMSIsImF1dGhvcml0aWVzIjoiUk9MRV9TVEFGRiJ9.WoopS_oxM5yVMLLCO5-mbHMOoMxzQtBGBw5DMojba8Yo0JSgVSlPHBYYpKFHrQmlUoKMeL6YR9YGe0hupSi99w",
 									"type": "string"
 								}
 							]
@@ -137,7 +130,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2OTcxMzIwMTAsImV4cCI6MTY5NzEzNTYxMCwidXNlcm5hbWUiOiJoYW50bDEiLCJhdXRob3JpdGllcyI6IlJPTEVfQURNSU4ifQ.7_Z6y5d-O9dMVRGPZ4ebIz0KUfKVl4Pt6z-lpKnB3HWo-XYu1lKoHBZFrm6udGa2hUVi4739sDt8avY1p7HgjA",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2OTk1Mjg0ODgsImV4cCI6MTY5OTg4ODQ4OCwidXNlcm5hbWUiOiJoYW50bDExMSIsImF1dGhvcml0aWVzIjoiUk9MRV9BRE1JTiJ9.H-LZFS_CZroJvNhPdCOmMc-x2O440oEjEmFWSE08r9tgIddPBG-D3YxODIvIIjAfH1wltYClCnsxABTkQDloaQ",
 									"type": "string"
 								}
 							]
@@ -185,7 +178,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2OTcxNjI5NjYsImV4cCI6MTY5NzE2NjU2NiwidXNlcm5hbWUiOiJoYW50bDEiLCJhdXRob3JpdGllcyI6IlJPTEVfQURNSU4ifQ.9y6_QL4pTr7D0Ftc_M6Whv63ym35zBhhFpy60xUA4H494SCOQoNwOstiHVChoGsm_CGOw5TUV7aw58vCvmhC8g",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2OTk1Mjg0ODgsImV4cCI6MTY5OTg4ODQ4OCwidXNlcm5hbWUiOiJoYW50bDExMSIsImF1dGhvcml0aWVzIjoiUk9MRV9BRE1JTiJ9.H-LZFS_CZroJvNhPdCOmMc-x2O440oEjEmFWSE08r9tgIddPBG-D3YxODIvIIjAfH1wltYClCnsxABTkQDloaQ",
 									"type": "string"
 								}
 							]
@@ -193,7 +186,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8019/api/admin/report/product-revenue-by-date?minDate=2023-10-01&maxDate=2023-10-10",
+							"raw": "http://localhost:8019/api/admin/report/product-revenue-by-date?minDate=2023-08-01&maxDate=2023-10-10",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -208,7 +201,7 @@
 							"query": [
 								{
 									"key": "minDate",
-									"value": "2023-10-01"
+									"value": "2023-08-01"
 								},
 								{
 									"key": "maxDate",
@@ -434,17 +427,17 @@
 			]
 		},
 		{
-			"name": "[auth]orther",
+			"name": "[auth]order",
 			"item": [
 				{
-					"name": "[auth]payment",
+					"name": "[auth]Order",
 					"request": {
 						"auth": {
 							"type": "bearer",
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2OTczOTMzNjMsImV4cCI6MTY5NzM5Njk2MywidXNlcm5hbWUiOiJkdXlucSIsImF1dGhvcml0aWVzIjoiUk9MRV9VU0VSIn0._xxWdaBXEKl_aDiWYS6wV1e5xYT4LyXN6RWUAXrO-hAElODz-zb1OE_4o3i2T6VX3onXfR553YHhstN3Q9XcBg",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE3MDAxMjE4MDIsImV4cCI6MTcwMDQ4MTgwMiwidXNlcm5hbWUiOiJoYW50bDExMSIsImF1dGhvcml0aWVzIjoiUk9MRV9TVEFGRiJ9.pa2USwgnr6-eV-qVluxtorWZDrkSVVLEyUFAqrUjGmS4RYUx0n90Hw330b0Z5eHmxdfnlALY_52jo1sYmxCfYg",
 									"type": "string"
 								}
 							]
@@ -453,7 +446,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"fullname\": \"ha nguyen\",\r\n    \"address\": \"1\",\r\n    \"phone\": \"0123456789\",\r\n    \"shippingFee\": 1,\r\n    \"orderProducts\": [\r\n        {\r\n            \"productId\": \"PD0001\",\r\n            \"size\": 250,\r\n            \"quantity\": 2\r\n        },\r\n        {\r\n            \"productId\": \"PD0001\",\r\n            \"size\": 500,\r\n            \"quantity\": 1\r\n        },\r\n        {\r\n            \"productId\": \"PD0002\",\r\n            \"size\": 500,\r\n            \"quantity\": 1\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"addressId\": 1,\r\n    \"deliveryId\": 1,\r\n    \"methodId\": 2,\r\n    \"orderItems\": [\r\n        {\r\n            \"productId\": \"PD0001\",\r\n            \"size\": 1000,\r\n            \"quantity\": 2\r\n        },\r\n        {\r\n            \"productId\": \"PD0001\",\r\n            \"size\": 500,\r\n            \"quantity\": 1\r\n        },\r\n        {\r\n            \"productId\": \"PD0002\",\r\n            \"size\": 500,\r\n            \"quantity\": 1\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -475,21 +468,16 @@
 						}
 					},
 					"response": []
-				}
-			]
-		},
-		{
-			"name": "order",
-			"item": [
+				},
 				{
-					"name": "Order History",
+					"name": "[auth]Order History",
 					"request": {
 						"auth": {
 							"type": "bearer",
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2OTczOTY3NjksImV4cCI6MTY5NzQwMDM2OSwidXNlcm5hbWUiOiJob2FuZ3ZsIiwiYXV0aG9yaXRpZXMiOiJST0xFX1VTRVIifQ.xv6ANCJjuq5oMwUMawHHWKeCTUAAOHg-5YIY3BT4cZMS2ir3mRoTWEpqU186CFXfM22dlnOLAG9wGFO4jtn7sw",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2OTk1MTg2NzEsImV4cCI6MTY5OTg3ODY3MSwidXNlcm5hbWUiOiJraGFjaDAwMyIsImF1dGhvcml0aWVzIjoiUk9MRV9VU0VSIn0.UqeGgXFPfwHeaxlWpwxUJkLGU_7uR2UWbSbT5IWOu8AFerOR7mY86fhk4BAcOwjSjJk5dcuQiujgdpq10z854w",
 									"type": "string"
 								}
 							]
@@ -515,6 +503,35 @@
 									"key": "page",
 									"value": "0"
 								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Payment",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"orderId\": 33,\r\n    \"amount\": 100000,\r\n    \"isPaid\": \"true\",\r\n    \"payAt\": \"1700119937783\",\r\n    \"transactionNumber\": 14182407,\r\n    \"paymentMethod\": {\r\n        \"id\": 2,\r\n        \"method\": \"ATM\"\r\n    }\r\n}\r\n\r\n    private PaymentMethod paymentMethod;",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8019/api/payment",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8019",
+							"path": [
+								"api",
+								"payment"
 							]
 						}
 					},
