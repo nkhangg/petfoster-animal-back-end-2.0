@@ -14,24 +14,30 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.poly.petfoster.request.OrderRequest;
+import com.poly.petfoster.request.order.OrderRequest;
+import com.poly.petfoster.request.payments.PaymentRequest;
 import com.poly.petfoster.response.ApiResponse;
 import com.poly.petfoster.service.order.OrderService;
 
 @RestController
-@RequestMapping("/api/user/")
+@RequestMapping("/api/")
 public class OrderController {
     
     @Autowired
     OrderService orderService;
 
-    // @PostMapping("order")
-    // public ResponseEntity<ApiResponse> createOrder(@RequestHeader("Authorization") String jwt, @Valid @RequestBody OrderRequest orderRequest) {
-    //     return ResponseEntity.ok(orderService.createOrder(jwt, orderRequest));
-    // }
+    @PostMapping("user/order")
+    public ResponseEntity<ApiResponse> order(@RequestHeader("Authorization") String jwt, @Valid @RequestBody OrderRequest orderRequest) {
+        return ResponseEntity.ok(orderService.order(jwt, orderRequest));
+    }
 
-    @GetMapping("order/history")
+    @GetMapping("user/order/history")
     public ResponseEntity<ApiResponse> ordersHistory(@RequestHeader("Authorization") String jwt, @RequestParam("page") Optional<Integer> page) {
         return ResponseEntity.ok(orderService.orderHistory(jwt, page));
+    }
+
+    @PostMapping("payment")
+    public ResponseEntity<ApiResponse> payment(@Valid @RequestBody PaymentRequest paymentRequest) {
+        return ResponseEntity.ok(orderService.payment(paymentRequest));
     }
 }

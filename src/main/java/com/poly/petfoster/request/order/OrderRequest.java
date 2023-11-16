@@ -1,4 +1,4 @@
-package com.poly.petfoster.request;
+package com.poly.petfoster.request.order;
 
 import java.util.List;
 
@@ -19,21 +19,17 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class OrderRequest {
-    
-    @NotBlank(message = RespMessage.NOT_EMPTY)
-    private String fullname;
-
-    @NotBlank(message = RespMessage.NOT_EMPTY)
-    private String address;
-
-    @NotBlank(message = RespMessage.NOT_EMPTY)
-    private String phone;
 
     @NotNull(message = RespMessage.NOT_EMPTY)
-    private Long shippingFee;
+    private Integer addressId;
+
+    @NotNull(message = RespMessage.NOT_EMPTY)
+    private Integer deliveryId;
+
+    @NotNull(message = RespMessage.NOT_EMPTY)
+    private Integer methodId;
 
     @Valid
     @NotEmpty(message = RespMessage.NOT_EMPTY)
-    List<OrderProduct> orderProducts;
-
+    private List<OrderItem> orderItems;
 }

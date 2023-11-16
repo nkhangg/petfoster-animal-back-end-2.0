@@ -21,10 +21,12 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.poly.petfoster.constant.Constant;
 import com.poly.petfoster.request.payments.VnpaymentRequest;
 
+@Component
 public class VnpayUltils {
 
     public static String md5(String message) {
@@ -62,6 +64,7 @@ public class VnpayUltils {
         }
         return digest;
     }
+
 
     // Util for VNPAY
     public static String hashAllFields(Map fields) {
@@ -134,7 +137,7 @@ public class VnpayUltils {
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
         String orderType = "other";
-        long amount = data.getAmouts() * 100;
+        long amount = data.getAmount() * 100;
         String bankCode = "";
 
         String vnp_TxnRef = VnpayUltils.getRandomNumber(8);

@@ -49,7 +49,7 @@ public class ShippingInfo {
 
     private String phone;
 
-    private Long shipFee;
+    private Integer shipFee;
 
     @OneToMany(mappedBy = "shippingInfo", cascade = CascadeType.ALL)
     @JsonIgnore

@@ -13,6 +13,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class VnpaymentRequest {
     private HttpServletRequest httpServletRequest;
-    private Integer amouts;
+    private Integer amount;
     private String orderInfo;
 }

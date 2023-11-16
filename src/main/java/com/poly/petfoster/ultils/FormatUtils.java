@@ -20,4 +20,9 @@ public class FormatUtils {
        return dateString.format(date);
     }
 
+    public Date convertMilisecondsToDate(String miliString) throws NumberFormatException {
+        Long miliseconds = Long.parseLong(miliString);
+        return new Date(miliseconds);
+    }
+
 }

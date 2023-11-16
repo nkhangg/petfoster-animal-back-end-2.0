@@ -1,10 +1,13 @@
 package com.poly.petfoster.service.impl.order;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -14,23 +17,34 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.nimbusds.openid.connect.sdk.claims.Address;
 import com.poly.petfoster.config.JwtProvider;
 import com.poly.petfoster.constant.PatternExpression;
 import com.poly.petfoster.constant.RespMessage;
+import com.poly.petfoster.entity.Addresses;
+import com.poly.petfoster.entity.DeliveryCompany;
 import com.poly.petfoster.entity.OrderDetail;
 import com.poly.petfoster.entity.Orders;
+import com.poly.petfoster.entity.Payment;
+import com.poly.petfoster.entity.PaymentMethod;
 import com.poly.petfoster.entity.Product;
 import com.poly.petfoster.entity.ProductRepo;
 import com.poly.petfoster.entity.ShippingInfo;
 import com.poly.petfoster.entity.User;
+import com.poly.petfoster.repository.AddressRepository;
+import com.poly.petfoster.repository.DeliveryCompanyRepository;
 import com.poly.petfoster.repository.OrderDetailRepository;
 import com.poly.petfoster.repository.OrdersRepository;
+import com.poly.petfoster.repository.PaymentMethodRepository;
+import com.poly.petfoster.repository.PaymentRepository;
 import com.poly.petfoster.repository.ProductRepoRepository;
 import com.poly.petfoster.repository.ProductRepository;
 import com.poly.petfoster.repository.ShippingInfoRepository;
 import com.poly.petfoster.repository.UserRepository;
-import com.poly.petfoster.request.OrderProduct;
-import com.poly.petfoster.request.OrderRequest;
+import com.poly.petfoster.request.order.OrderItem;
+import com.poly.petfoster.request.order.OrderRequest;
+import com.poly.petfoster.request.payments.PaymentRequest;
+import com.poly.petfoster.request.payments.VnpaymentRequest;
 import com.poly.petfoster.response.ApiResponse;
 import com.poly.petfoster.response.order_history.OrderHistory;
 import com.poly.petfoster.response.order_history.OrderHistoryResponse;
@@ -39,6 +53,7 @@ import com.poly.petfoster.service.impl.TakeActionServiceImpl;
 import com.poly.petfoster.service.order.OrderService;
 import com.poly.petfoster.ultils.FormatUtils;
 import com.poly.petfoster.ultils.PortUltil;
+import com.poly.petfoster.ultils.VnpayUltils;
 
 @Service
 public class OrderSeviceImpl implements OrderService {
@@ -73,129 +88,128 @@ public class OrderSeviceImpl implements OrderService {
     @Autowired
     TakeActionServiceImpl takeActionServiceImpl;
 
-//     @Override
-//     public ApiResponse createOrder(String jwt, OrderRequest orderRequest) {
+    @Autowired
+    AddressRepository addressRepository;
 
-//         Map<String, String> errorsMap = new HashMap<>();
-//         User user = userRepository.findByUsername(jwtProvider.getUsernameFromToken(jwt)).orElse(null);
+    @Autowired
+    PaymentMethodRepository paymentMethodRepository;
 
-//         if (user == null) {
-//             errorsMap.put("user", "user not found");
-//             return ApiResponse.builder()
-//                     .message("Unauthenrized")
-//                     .status(HttpStatus.UNAUTHORIZED.value())
-//                     .errors(errorsMap).build();
-//         }
+    @Autowired
+    VnpayUltils vnpayUltils;
 
-//         if (PatternExpression.NOT_SPECIAL_SPACE.matcher(orderRequest.getFullname()).find()) {
-//             errorsMap.put("fullname", "full name must not contains special characters!");
-//             return ApiResponse.builder()
-//                     .message(HttpStatus.BAD_REQUEST.toString())
-//                     .errors(errorsMap)
-//                     .build();
-//         }
+    @Autowired
+    HttpServletRequest httpServletRequest;
 
-//         if (orderRequest.getShippingFee() < 0) {
-//             errorsMap.put("shippingFee", "Shipping fee must larger than 0");
-//             return ApiResponse.builder()
-//                     .message(HttpStatus.BAD_REQUEST.toString())
-//                     .errors(errorsMap)
-//                     .build();
-//         }
+    @Autowired
+    DeliveryCompanyRepository deliveryCompanyRepository;
 
-//         if (!PatternExpression.IS_PHONE_VALID.matcher(orderRequest.getPhone()).matches()) {
-//             errorsMap.put("phone", "phone number must start with 0 and has 10 digits!");
-//             return ApiResponse.builder()
-//                     .message(HttpStatus.BAD_REQUEST.toString())
-//                     .errors(errorsMap)
-//                     .build();
-//         }
+    @Autowired
+    PaymentRepository paymentRepository;
 
-//         ShippingInfo shippingInfo = shippingInfoRepository.save(this.createShippingInfo(user, orderRequest));
+    @Override
+    public ApiResponse order(String jwt, OrderRequest orderRequest) {
 
-//         Orders order = Orders.builder()
-//                 .shippingInfo(shippingInfo)
-//                 .build();
-//         ordersRepository.save(order);
+        Double total = 0.0;
+        Map<String, String> errorsMap = new HashMap<>();
+        User user = userRepository.findByUsername(jwtProvider.getUsernameFromToken(jwt)).orElse(null);
 
-//         List<OrderDetail> orderDetails = new ArrayList<>();
-//         Double total = 0.0;
-//         for (OrderProduct orderProduct : orderRequest.getOrderProducts()) {
+        if (user == null) {
+            errorsMap.put("user", "user not found");
+            return ApiResponse.builder()
+                    .message("Unauthenrized")
+                    .status(HttpStatus.UNAUTHORIZED.value())
+                    .errors(errorsMap).build();
+        }
 
-//             if (orderProduct.getQuantity() < 0) {
-//                 errorsMap.put("quantity", "quantity must larger than 0");
-//                 return ApiResponse.builder()
-//                         .message(HttpStatus.BAD_REQUEST.toString())
-//                         .errors(errorsMap)
-//                         .build();
-//             }
+        Addresses address = addressRepository.findById(orderRequest.getAddressId()).orElse(null);
+        if(address == null) {
+            errorsMap.put("address", "address not found");
+            return ApiResponse.builder()
+                    .message("address not found")
+                    .status(404)
+                    .errors(errorsMap).build();
+        }
 
-//             Product product = productRepository.findById(orderProduct.getProductId()).orElse(null);
-//             ProductRepo productRepo = productRepoRepository.findProductRepoByIdAndSize(orderProduct.getProductId(),
-//                     orderProduct.getSize());
+        ShippingInfo shippingInfo = this.createShippingInfo(address, orderRequest);
 
-//             if (productRepo.getQuantity() < orderProduct.getQuantity()) {
-//                 errorsMap.put("quantity", "quantity are not enought, please try another one!!!");
-//                 return ApiResponse.builder()
-//                         .message(HttpStatus.BAD_REQUEST.toString())
-//                         .errors(errorsMap)
-//                         .build();
-//             }
+        PaymentMethod paymentMethod = paymentMethodRepository.findById(orderRequest.getMethodId()).orElse(null);
+        if(paymentMethod == null) {
+            errorsMap.put("payment method", "payment method not found");
+            return ApiResponse.builder()
+                    .message("payment method is not support")
+                    .status(404)
+                    .errors(errorsMap).build();
+        }
+        Payment payment = this.createPayment(orderRequest);      
+        
+        Orders order = this.createOrder(address, payment, shippingInfo);
+        List<OrderDetail> orderDetails = new ArrayList<>();
+        for (OrderItem orderItem : orderRequest.getOrderItems()) {
+            ProductRepo productRepo = productRepoRepository.findProductRepoByIdAndSize(orderItem.getProductId(), orderItem.getSize());
 
-//             OrderDetail orderDetail = this.createOrderDetail(order, orderProduct);
-//             orderDetails.add(orderDetail);
+            if (orderItem.getQuantity() <= 0) {
+                errorsMap.put("quantity", "quantity must larger than 0");
+                return ApiResponse.builder()
+                        .status(HttpStatus.BAD_REQUEST.value())
+                        .message("quantity must larger than 0")
+                        .errors(errorsMap)
+                        .build();
+            }
 
-//             // ProductRepo productRepo =
-//             // productRepoRepository.findProductRepoByIdAndSize(orderDetail.getProduct().getId(),
-//             // orderDetail.getSize());
+            if (productRepo.getQuantity() < orderItem.getQuantity()) {
+                errorsMap.put("quantity", "quantity are not enought, please try another one!!!");
+                return ApiResponse.builder()
+                        .message(HttpStatus.BAD_REQUEST.toString())
+                        .errors(errorsMap)
+                        .build();
+            }
 
-//             productRepo.setQuantity(productRepo.getQuantity() -
-//                     orderDetail.getQuantity());
-//             productRepoRepository.save(productRepo);
+            OrderDetail orderDetail = this.crateOrderDetails(productRepo, orderItem, order);
+            orderDetails.add(orderDetail);
+            
+            total += orderDetail.getTotal();
+        }
+                        
+        order.setTotal(total);
+        order.setOrderDetails(orderDetails);
+        ordersRepository.save(order);
 
-//             total += orderDetail.getTotal();
-//         }
+        payment.setAmount(order.getTotal() + shippingInfo.getShipFee());
+        paymentRepository.save(payment);
 
-//         order.setTotal(total);
-//         order.setOrderDetails(orderDetails);
-//         order.setStatus("Placed");
-//         ordersRepository.save(order);
+        String paymentUrl;
+        if(orderRequest.getMethodId() == 1) {
+            order.setStatus("Placed");
+            
+            for (OrderDetail orderDetail : orderDetails) {
+                ProductRepo productRepo = orderDetail.getProductRepo();
+                this.updateQuantity(productRepo, orderDetail.getQuantity());
+            }
 
-//         return ApiResponse.builder()
-//                 .message("order successfuly!!!")
-//                 .status(200)
-//                 .errors(false)
-//                 .data(orderDetails).build();
-//     }
+            return ApiResponse.builder()
+                .message("order successfuly!!!")
+                .status(200)
+                .errors(false)
+                .data(null)
+                .build();
+        }else {
+            try {
+                paymentUrl = VnpayUltils.getVnpayPayment(VnpaymentRequest.builder().httpServletRequest(httpServletRequest).amount(payment.getAmount().intValue()).build());
+            } catch (Exception e) {
+                return ApiResponse.builder()
+                    .message("Unsupported encoding exception")
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                    .errors(false)
+                    .build();
+            }
 
-//     public ShippingInfo createShippingInfo(User user, OrderRequest orderRequest) {
-
-//         return ShippingInfo.builder()
-//                 .user(user)
-//                 .fullName(orderRequest.getFullname())
-//                 .address(orderRequest.getAddress())
-//                 .phone(orderRequest.getPhone())
-//                 .shipFee(orderRequest.getShippingFee()).build();
-
-//     }
-
-//     public OrderDetail createOrderDetail(Orders order, OrderProduct orderProduct) {
-
-//         Product product = productRepository.findById(orderProduct.getProductId()).orElse(null);
-//         ProductRepo productRepo = productRepoRepository.findProductRepoByIdAndSize(orderProduct.getProductId(),
-//                 orderProduct.getSize());
-
-//         OrderDetail orderDetail = orderDetailRepository.save(
-//                 OrderDetail.builder()
-//                         .order(order)
-//                         .product(product)
-//                         .size(orderProduct.getSize())
-//                         .quantity(orderProduct.getQuantity())
-//                         .total(orderProduct.getQuantity() * productRepo.getOutPrice())
-//                         .build());
-
-//         return orderDetail;
-//     }
+            return ApiResponse.builder()
+                .message("order successfuly!!!")
+                .status(200)
+                .errors(false)
+                .data(paymentUrl).build();
+        }
+    }
 
     @Override
     public ApiResponse orderHistory(String jwt, Optional<Integer> page) {
@@ -263,6 +277,65 @@ public class OrderSeviceImpl implements OrderService {
                 .build();
     }
 
+
+    @Override
+    public ApiResponse payment(PaymentRequest paymentRequest) {
+        
+        Map<String, String> errorMap = new HashMap<>();
+
+        Orders order = ordersRepository.findById(paymentRequest.getOrderId()).orElse(null);
+
+        if(order == null) {
+            errorMap.put("order", "order not found");
+            return ApiResponse.builder()
+                    .message("order not found")
+                    .status(404)
+                    .errors(errorMap).build();
+        }
+
+        Payment payment = order.getPayment();
+
+        if(paymentRequest.getIsPaid()) {
+            payment.setAmount(paymentRequest.getAmount().doubleValue());
+            payment.setIsPaid(paymentRequest.getIsPaid());
+
+            try {
+                payment.setPayAt(formatUtils.convertMilisecondsToDate(paymentRequest.getPayAt()));
+            } catch (Exception e) {
+                errorMap.put("payAt", "Number Format Exception");
+                return ApiResponse.builder()
+                    .message("Number Format Exception")
+                    .status(HttpStatus.CONFLICT.value())
+                    .errors(errorMap)
+                    .data(null).build();
+            }
+            
+            payment.setTransactionNumber(paymentRequest.getTransactionNumber().toString());
+            paymentRepository.save(payment);
+            
+            order.setStatus("Placed");
+            ordersRepository.save(order);
+
+            List<OrderDetail> orderDetails = order.getOrderDetails();
+            for (OrderDetail orderDetail : orderDetails) {
+                ProductRepo productRepo = orderDetail.getProductRepo();
+                this.updateQuantity(productRepo, orderDetail.getQuantity());
+            }
+
+            return ApiResponse.builder()
+                    .message("order successfuly!!!")
+                    .status(200)
+                    .errors(false)
+                    .data(null).build();
+        }
+
+        return ApiResponse.builder()
+                    .message("Transaction failure!!! Please try again")
+                    .status(HttpStatus.FAILED_DEPENDENCY.value())
+                    .errors(true)
+                    .data(null).build();
+    }
+
     public OrderProductItem createOrderProductItem(OrderDetail orderDetail) {
         String image = "";
        
@@ -281,6 +354,53 @@ public class OrderSeviceImpl implements OrderService {
                 .quantity(orderDetail.getQuantity())
                 .repo(orderDetail.getProductRepo().getQuantity())
                 .build();
+    }
+
+
+     private ShippingInfo createShippingInfo(Addresses address, OrderRequest orderRequest) {
+        return shippingInfoRepository.save(ShippingInfo.builder()
+            .fullName(address.getRecipient())
+            .province(address.getProvince())
+            .district(address.getDistrict())
+            .ward(address.getWard())
+            .address(address.getAddress())
+            .phone(address.getPhone())
+            .shipFee(20000)
+            .deliveryCompany(deliveryCompanyRepository.findById(orderRequest.getDeliveryId()).get())
+            .build());
+    }
+
+
+    private OrderDetail crateOrderDetails(ProductRepo productRepo, OrderItem orderItem, Orders order) {
+        return orderDetailRepository.save(OrderDetail.builder()
+            .price(productRepo.getOutPrice())
+            .quantity(orderItem.getQuantity())
+            .total(productRepo.getOutPrice() * orderItem.getQuantity())
+            .order(order)
+            .productRepo(productRepo)
+            .build());
+    }
+
+
+    private Payment createPayment(OrderRequest orderRequest) {
+        return paymentRepository.save(Payment.builder()
+                    .isPaid(false)
+                    .paymentMethod(paymentMethodRepository.findById(orderRequest.getMethodId()).get())
+                    .build()); 
+    }
+
+
+    private Orders createOrder(Addresses address, Payment payment, ShippingInfo shippingInfo) {
+        return ordersRepository.save(Orders.builder()
+                        .user(address.getUser())
+                        .payment(payment)
+                        .shippingInfo(shippingInfo)
+                        .build());
+    }
+
+    private ProductRepo updateQuantity(ProductRepo productRepo, Integer quantity) {
+        productRepo.setQuantity(productRepo.getQuantity() - quantity);
+        return productRepoRepository.save(productRepo);
     }
 
 }
