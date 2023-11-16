@@ -29,6 +29,9 @@ public class OrderRequest {
     @NotNull(message = RespMessage.NOT_EMPTY)
     private Integer methodId;
 
+    @NotNull(message = RespMessage.NOT_EMPTY)
+    private Integer ship;
+
     @Valid
     @NotEmpty(message = RespMessage.NOT_EMPTY)
     private List<OrderItem> orderItems;

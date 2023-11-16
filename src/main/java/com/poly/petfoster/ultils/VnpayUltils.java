@@ -137,7 +137,7 @@ public class VnpayUltils {
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
         String orderType = "other";
-        long amount = data.getAmount() * 100;
+        long amount = data.getAmouts() * 100;
         String bankCode = "";
 
         String vnp_TxnRef = VnpayUltils.getRandomNumber(8);

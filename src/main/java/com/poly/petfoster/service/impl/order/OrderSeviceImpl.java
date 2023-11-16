@@ -194,7 +194,7 @@ public class OrderSeviceImpl implements OrderService {
                 .build();
         }else {
             try {
-                paymentUrl = VnpayUltils.getVnpayPayment(VnpaymentRequest.builder().httpServletRequest(httpServletRequest).amount(payment.getAmount().intValue()).build());
+                paymentUrl = VnpayUltils.getVnpayPayment(VnpaymentRequest.builder().idOrder(order.getId().toString()).httpServletRequest(httpServletRequest).amouts(payment.getAmount().intValue()).build());
             } catch (Exception e) {
                 return ApiResponse.builder()
                     .message("Unsupported encoding exception")
@@ -365,7 +365,7 @@ public class OrderSeviceImpl implements OrderService {
             .ward(address.getWard())
             .address(address.getAddress())
             .phone(address.getPhone())
-            .shipFee(20000)
+            .shipFee(orderRequest.getShip())
             .deliveryCompany(deliveryCompanyRepository.findById(orderRequest.getDeliveryId()).get())
             .build());
     }

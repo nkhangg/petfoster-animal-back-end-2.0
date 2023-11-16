@@ -20,18 +20,18 @@ import com.poly.petfoster.response.ApiResponse;
 import com.poly.petfoster.service.order.OrderService;
 
 @RestController
-@RequestMapping("/api/")
+@RequestMapping("/api/user/")
 public class OrderController {
     
     @Autowired
     OrderService orderService;
 
-    @PostMapping("user/order")
+    @PostMapping("order")
     public ResponseEntity<ApiResponse> order(@RequestHeader("Authorization") String jwt, @Valid @RequestBody OrderRequest orderRequest) {
         return ResponseEntity.ok(orderService.order(jwt, orderRequest));
     }
 
-    @GetMapping("user/order/history")
+    @GetMapping("order/history")
     public ResponseEntity<ApiResponse> ordersHistory(@RequestHeader("Authorization") String jwt, @RequestParam("page") Optional<Integer> page) {
         return ResponseEntity.ok(orderService.orderHistory(jwt, page));
     }
