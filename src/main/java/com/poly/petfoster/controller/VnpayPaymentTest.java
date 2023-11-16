@@ -39,7 +39,7 @@ public class VnpayPaymentTest {
         String paymentUrl = VnpayUltils
                 .getVnpayPayment(VnpaymentRequest.builder()
                         .httpServletRequest(req)
-                        .amount(20000).build());
+                        .amouts(20000).build());
 
         return ResponseEntity.ok(AuthResponse.builder().token(paymentUrl).message("success").build());
     }
