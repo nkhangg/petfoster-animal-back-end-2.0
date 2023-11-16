@@ -167,7 +167,7 @@ public class VnpayUltils {
         } else {
             vnp_Params.put("vnp_Locale", "vn");
         }
-        vnp_Params.put("vnp_ReturnUrl", Constant.VNP_RETURN_URL);
+        vnp_Params.put("vnp_ReturnUrl", Constant.VNP_RETURN_URL + "?order_Id=" + data.getIdOrder());
         vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
 
         Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));

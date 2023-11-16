@@ -40,6 +40,7 @@ public class VnpayPaymentTest {
                 .getVnpayPayment(VnpaymentRequest.builder()
                         .httpServletRequest(req)
                         .amount(20000).build());
+
         return ResponseEntity.ok(AuthResponse.builder().token(paymentUrl).message("success").build());
     }
 }
