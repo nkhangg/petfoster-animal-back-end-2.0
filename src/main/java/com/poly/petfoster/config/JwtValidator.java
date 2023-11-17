@@ -34,10 +34,10 @@ public class JwtValidator extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        
+
         String jwt = request.getHeader(Constant.JWT_HEADER);
 
-        if(jwt != null) {
+        if (jwt != null) {
 
             jwt = jwt.substring(7);
 
@@ -50,10 +50,10 @@ public class JwtValidator extends OncePerRequestFilter {
                 List<GrantedAuthority> auths = AuthorityUtils.commaSeparatedStringToAuthorityList(authorities);
                 Authentication authentication = new UsernamePasswordAuthenticationToken(username, null, auths);
 
-                SecurityContextHolder.getContext().setAuthentication(authentication);       
+                SecurityContextHolder.getContext().setAuthentication(authentication);
 
             } catch (Exception e) {
-                throw new BadCredentialsException("invalid token... from jwt validator");
+                throw new BadCredentialsException(e.getMessage());
             }
         }
 
