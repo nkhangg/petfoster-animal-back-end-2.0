@@ -36,7 +36,6 @@ public class CartItem {
 
     @OneToOne
     @JoinColumn(name = "product_repo_id")
-    @JsonIgnore
     private ProductRepo productRepo;
 
     private Integer quantity;
