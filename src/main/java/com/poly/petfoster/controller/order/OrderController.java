@@ -32,8 +32,11 @@ public class OrderController {
     }
 
     @GetMapping("order/history")
-    public ResponseEntity<ApiResponse> ordersHistory(@RequestHeader("Authorization") String jwt, @RequestParam("page") Optional<Integer> page) {
-        return ResponseEntity.ok(orderService.orderHistory(jwt, page));
+    public ResponseEntity<ApiResponse> ordersHistory(
+            @RequestHeader("Authorization") String jwt, 
+            @RequestParam("page") Optional<Integer> page,
+            @RequestParam("status") Optional<String> status) {
+        return ResponseEntity.ok(orderService.orderHistory(jwt, page, status));
     }
 
     @PostMapping("payment")

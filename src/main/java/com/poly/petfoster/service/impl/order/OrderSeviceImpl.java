@@ -218,7 +218,7 @@ public class OrderSeviceImpl implements OrderService {
     }
 
     @Override
-    public ApiResponse orderHistory(String jwt, Optional<Integer> page) {
+    public ApiResponse orderHistory(String jwt, Optional<Integer> page, Optional<String> status) {
 
         User user = userRepository.findByUsername(jwtProvider.getUsernameFromToken(jwt)).orElse(null);
 
@@ -230,7 +230,7 @@ public class OrderSeviceImpl implements OrderService {
                     .build();
         }
 
-        List<Orders> ordersHistory = ordersRepository.orderHistory(user.getId());
+        List<Orders> ordersHistory = ordersRepository.orderHistory(user.getId(), status.orElse(""));
 
         if (ordersHistory.isEmpty()) {
             return ApiResponse.builder().message("No data available").status(200).errors(false).data(ordersHistory)
@@ -260,7 +260,7 @@ public class OrderSeviceImpl implements OrderService {
             data.add(orderHistory);
         }
 
-        Pageable pageable = PageRequest.of(page.orElse(0), 3);
+        Pageable pageable = PageRequest.of(page.orElse(0), 8);
         int startIndex = (int) pageable.getOffset();
         int endIndex = Math.min(startIndex + pageable.getPageSize(), data.size());
 
