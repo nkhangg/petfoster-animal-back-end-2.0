@@ -15,6 +15,6 @@ public class VnpaymentRequest {
     private HttpServletRequest httpServletRequest;
 
     private String idOrder;
-    private Integer amount;
+    private Integer amouts;
     private String orderInfo;
 }
