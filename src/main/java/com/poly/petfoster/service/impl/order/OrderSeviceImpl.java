@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import com.nimbusds.openid.connect.sdk.claims.Address;
 import com.poly.petfoster.config.JwtProvider;
+import com.poly.petfoster.constant.OrderStatus;
 import com.poly.petfoster.constant.PatternExpression;
 import com.poly.petfoster.constant.RespMessage;
 import com.poly.petfoster.entity.Addresses;
@@ -179,8 +180,9 @@ public class OrderSeviceImpl implements OrderService {
         paymentRepository.save(payment);
 
         String paymentUrl;
-        if (orderRequest.getMethodId() == 1) {
-            order.setStatus("Placed");
+        if(orderRequest.getMethodId() == 1) {
+            order.setStatus(OrderStatus.PLACED.getValue());
+            
 
             for (OrderDetail orderDetail : orderDetails) {
                 ProductRepo productRepo = orderDetail.getProductRepo();
@@ -195,8 +197,10 @@ public class OrderSeviceImpl implements OrderService {
                     .build();
         } else {
             try {
-                paymentUrl = VnpayUltils.getVnpayPayment(VnpaymentRequest.builder().idOrder(order.getId().toString())
-                        .httpServletRequest(httpServletRequest).amouts(payment.getAmount().intValue()).build());
+                paymentUrl = VnpayUltils.getVnpayPayment(VnpaymentRequest.builder().idOrder(order.getId().toString()).httpServletRequest(httpServletRequest).amouts(payment.getAmount().intValue()).build());
+                order.setStatus(OrderStatus.WAITING.getValue());
+                ordersRepository.save(order);
+
             } catch (Exception e) {
                 return ApiResponse.builder()
                         .message("Unsupported encoding exception")
@@ -313,8 +317,9 @@ public class OrderSeviceImpl implements OrderService {
 
             payment.setTransactionNumber(paymentRequest.getTransactionNumber().toString());
             paymentRepository.save(payment);
+            
+            order.setStatus(OrderStatus.PLACED.getValue());
 
-            order.setStatus("Placed");
             ordersRepository.save(order);
 
             List<OrderDetail> orderDetails = order.getOrderDetails();

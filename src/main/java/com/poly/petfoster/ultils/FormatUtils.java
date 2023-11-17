@@ -25,4 +25,19 @@ public class FormatUtils {
         return new Date(miliseconds);
     }
 
+    public Date dateToDateFormat(Date date, String pattern) {
+
+        SimpleDateFormat format = new SimpleDateFormat(pattern);
+
+        Date formattedDate = null;
+        try {
+            formattedDate = format.parse(format.format(date));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+
+        return formattedDate;
+    }
+
 }
