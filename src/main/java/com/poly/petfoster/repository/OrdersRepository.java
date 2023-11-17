@@ -20,26 +20,26 @@ public interface OrdersRepository extends JpaRepository<Orders, Integer> {
 //     public Double getRevenueByMonth(@Param("month") Integer month);
 
     @Query(nativeQuery = true, 
-            value ="select sum(total) from orders where convert(date, create_at) = convert(date, getdate())")
+            value ="select sum(total) from orders where convert(date, create_at) = convert(date, getdate()) and [status] != 'cancelled' and [status] != 'waiting'")
     public Integer getDailyRevenue();
 
     @Query(nativeQuery = true, 
-            value ="select sum(total) from orders where convert(date, create_at) = convert(date, getdate() - 1)")
+            value ="select sum(total) from orders where convert(date, create_at) = convert(date, getdate() - 1) and [status] != 'cancelled' and [status] != 'waiting'")
     public Integer getYesterdayRevenue();
 
     @Query(nativeQuery = true, 
-            value ="select count(*) from orders where convert(date, create_at) = convert(date, getdate())")
+            value ="select count(*) from orders where convert(date, create_at) = convert(date, getdate()) and [status] != 'cancelled' and [status] != 'waiting'")
     public Integer getDailyOrder();
 
     @Query(nativeQuery = true, 
-            value ="select count(*) from orders where convert(date, create_at) = convert(date, getdate() - 1)")
+            value ="select count(*) from orders where convert(date, create_at) = convert(date, getdate() - 1) and [status] != 'cancelled' and [status] != 'waiting'")
     public Integer getYesterdayOrder();
 
     @Procedure(name = "GetRevenueByYear")
     List<Integer> getRevenueByYear(@Param("year") Integer year);
 
     @Query(nativeQuery = true, 
-            value ="select sum(total) from orders where year(create_at) = :year")
+            value ="select sum(total) from orders where year(create_at) = :year and [status] != 'cancelled' and [status] != 'waiting'")
     public Integer getTotalRevenueByYear(@Param("year") Integer year);
 
     @Procedure(name = "GetProductTypeRevenueByYear")
@@ -52,13 +52,14 @@ public interface OrdersRepository extends JpaRepository<Orders, Integer> {
                     "inner join order_detail od on od.product_repo_id = pr.product_repo_id " + 
                     "inner join orders o on o.id = od.order_id " + 
                     "where convert(date, o.create_at) between :minDate and :maxDate " +
+                    "and [status] != 'cancelled' and [status] != 'waiting' " +
                     "group by p.product_id, product_name, brand, size")
 
     List<Map<String, Object>> getProductRevenueByDate(@Param("minDate") Date minDate, @Param("maxDate") Date maxDate);
 
     
     @Query(nativeQuery = true, 
-            value ="select sum(total) from orders where convert(date, create_at) between :minDate and :maxDate")
+            value ="select sum(total) from orders where convert(date, create_at) between :minDate and :maxDate and [status] != 'cancelled' and [status] != 'waiting'")
     public Integer getTotalRevenueByDate(@Param("minDate") Date minDate, @Param("maxDate") Date maxDate);    
 
     @Query(nativeQuery = true, value = "select convert(date, min(create_at)) from orders")

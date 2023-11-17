@@ -1,10 +1,12 @@
 package com.poly.petfoster.service.impl.dashboard;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
@@ -23,6 +25,7 @@ import com.poly.petfoster.response.statistic.ReportResponse;
 import com.poly.petfoster.response.statistic.SalesOverview;
 import com.poly.petfoster.response.statistic.SalesOverviewsResponse;
 import com.poly.petfoster.service.report.DashBoardService;
+import com.poly.petfoster.ultils.FormatUtils;
 
 @Service
 public class DashBoardServiceImpl implements DashBoardService {
@@ -35,6 +38,9 @@ public class DashBoardServiceImpl implements DashBoardService {
 
     @Autowired
     ProductTypeRepository productTypeRepository;
+
+    @Autowired
+    FormatUtils formatUtils;
 
     @Override
     public ApiResponse dailyReport() {
@@ -85,8 +91,11 @@ public class DashBoardServiceImpl implements DashBoardService {
         }
 
         if (maxDateValue == null && minDateValue == null) {
-            minDateValue = ordersRepository.getMinDate();
-            maxDateValue = ordersRepository.getMaxDate();
+            // minDateValue = ordersRepository.getMinDate();
+            // maxDateValue = ordersRepository.getMaxDate();
+            
+            minDateValue = formatUtils.dateToDateFormat(new Date(), "yyyy-MM-dd");
+            maxDateValue = formatUtils.dateToDateFormat(new Date(), "yyyy-MM-dd");
         }
 
         if (minDateValue.after(maxDateValue)) {

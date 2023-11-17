@@ -5,17 +5,36 @@
 CREATE PROCEDURE GetProductTypeRevenueByYear(@year int)
 AS
 BEGIN
-SELECT COALESCE(SUM(od.total), 0)
-FROM product_type pt
-LEFT JOIN product p ON pt.product_type_id = p.[type_id]
-LEFT JOIN product_repo pr ON pr.product_id = p.product_id
-LEFT JOIN order_detail od ON od.product_repo_id = pr.product_repo_id
+SELECT
+    COALESCE(SUM(COALESCE(od.total, 0)), 0) AS total_revenue
+FROM
+    product_type pt
+LEFT JOIN
+    product p ON pt.product_type_id = p.[type_id]
+LEFT JOIN
+    product_repo pr ON pr.product_id = p.product_id
+LEFT JOIN
+    order_detail od ON od.product_repo_id = pr.product_repo_id
 LEFT JOIN (
-    SELECT o.id, YEAR(o.create_at) AS order_year
-    FROM orders o
+    SELECT
+        o.id,
+        [status],
+        YEAR(o.create_at) AS order_year
+    FROM
+        orders o
 ) AS order_year ON od.order_id = order_year.id
-WHERE order_year.order_year = @year OR order_year.order_year IS NULL
-GROUP BY pt.product_type_name
+LEFT JOIN (
+    SELECT
+        o.id,
+        COALESCE([status], 'default_status') AS [status]
+    FROM
+        orders o
+) AS order_status ON od.order_id = order_status.id
+WHERE
+    (order_year.order_year = @year OR order_year.order_year IS NULL)
+    AND (COALESCE(order_status.[status], 'default_status') NOT IN ('cancelled', 'waiting'))
+GROUP BY
+    pt.product_type_name;
 END
 
 
@@ -51,9 +70,11 @@ WITH AllMonths AS (
 )
 SELECT COALESCE(SUM(o.total), 0)
 FROM AllMonths am
-LEFT JOIN orders o ON am.Month = MONTH(o.create_at) AND YEAR(o.create_at) = @year
+LEFT JOIN orders o ON am.Month = MONTH(o.create_at) AND YEAR(o.create_at) = @year and o.[status] != 'cancelled' and o.[status] != 'waiting'
 GROUP BY am.Month
 END
+
+
 
 -------------------------------------------------------------
 --tong doanh thu theo loai
@@ -77,15 +98,6 @@ select sum(a.total)
 	group by product_type_name
 
 ------------------------------
---tong so don hang, doanh thu theo ngay (hien tai)
-insert into orders values ('2023-10-11', null, 120000, 2)
-insert into orders values ('2023-10-11', null, 240000, 3)
-
-insert into orders values (getdate(), null, 100000, 1)
-insert into orders values (getdate(), null, 120000, 2)
-insert into orders values (getdate(), null, 240000, 3)
-
-------------------------------
 --doang thu theo ngay (truyen ngay vao)
 select sum(total) from orders where convert(date, create_at) between '2023-10-01' and '2023-10-10'
 
@@ -96,29 +108,24 @@ inner join orders o on o.id = od.order_id
 where convert(date, o.create_at) between '2023-10-01' and '2023-10-10'
 group by p.product_id, product_name, brand, size
 
----------------------
+------------------------------------------------------------
+CREATE PROCEDURE GetProductTypeRevenueByYear(@year int)
+AS
+BEGIN
+SELECT COALESCE(SUM(od.total), 0)
+FROM product_type pt
+LEFT JOIN product p ON pt.product_type_id = p.[type_id]
+LEFT JOIN product_repo pr ON pr.product_id = p.product_id
+LEFT JOIN order_detail od ON od.product_repo_id = pr.product_repo_id
+LEFT JOIN (
+    SELECT o.id, YEAR(o.create_at) AS order_year
+    FROM orders o
+) AS order_year ON od.order_id = order_year.id
+WHERE order_year.order_year = 2023 OR order_year.order_year IS NULL
+GROUP BY pt.product_type_name
+END
 
---doanh thu theo thang (truyen thang vao)
-select sum(total)
-from orders
-where year(create_at) = year('2023-10-08 11:00:20.0166667') and month(create_at) = month('2023-10-08 11:00:20.0166667')
-
---doanh thu theo nam (truyen nam vao)
-select sum(total)
-from orders
-where year(create_at) = year('2023-10-08 11:00:20.0166667')
-------------------------------
-
-select *
-from product_repo
-where product_id = 'PD0002' and size = 200
-
-SELECT a.*, MIN(c.out_price) AS min_out_price
-FROM product a
-INNER JOIN product_type b ON b.product_type_id = a.[type_id]
-INNER JOIN product_repo c ON c.product_id = a.product_id
-WHERE product_type_name = 'Cat food'
-AND brand = 'Royal Canin'
-GROUP BY a.product_id, a.brand, a.create_at, a.product_desc, a.is_active, a.product_name, a.[type_id]
-ORDER BY min_out_price ASC;
+select * from order_detail b 
+inner join product_repo c on c.product_repo_id = b.product_repo_id
+inner join product d on d.product_id = c.product_id
 
