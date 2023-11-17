@@ -10,7 +10,8 @@ public interface OrderService {
 
     public ApiResponse order(String jwt, OrderRequest orderRequest);
 
-    public ApiResponse orderHistory(String jwt, Optional<Integer> page);
+    // public ApiResponse orderHistory(String jwt, Optional<Integer> page);
+    public ApiResponse orderHistory(String jwt, Optional<Integer> page, Optional<String> status);
 
     public ApiResponse payment(PaymentRequest paymentRequest);
 }

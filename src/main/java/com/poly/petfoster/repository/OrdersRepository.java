@@ -69,7 +69,7 @@ public interface OrdersRepository extends JpaRepository<Orders, Integer> {
 
     @Query(nativeQuery = true, value ="select * from orders o " +
                         "inner join shipping_info si on si.id = o.shipping_info_id " +
-                        "where [user_id] = :userId")
-    public List<Orders> orderHistory(@Param("userId") String userId);
+                        "where [user_id] = :userId and o.[status] like %:status%")
+    public List<Orders> orderHistory(@Param("userId") String userId, @Param("status") String status);
 
 }
