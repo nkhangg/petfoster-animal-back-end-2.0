@@ -123,7 +123,7 @@ public class OrderSeviceImpl implements OrderService {
         }
 
         Addresses address = addressRepository.findById(orderRequest.getAddressId()).orElse(null);
-        if(address == null) {
+        if (address == null) {
             errorsMap.put("address", "address not found");
             return ApiResponse.builder()
                     .message("address not found")
@@ -134,19 +134,20 @@ public class OrderSeviceImpl implements OrderService {
         ShippingInfo shippingInfo = this.createShippingInfo(address, orderRequest);
 
         PaymentMethod paymentMethod = paymentMethodRepository.findById(orderRequest.getMethodId()).orElse(null);
-        if(paymentMethod == null) {
+        if (paymentMethod == null) {
             errorsMap.put("payment method", "payment method not found");
             return ApiResponse.builder()
                     .message("payment method is not support")
                     .status(404)
                     .errors(errorsMap).build();
         }
-        Payment payment = this.createPayment(orderRequest);      
-        
+        Payment payment = this.createPayment(orderRequest);
+
         Orders order = this.createOrder(address, payment, shippingInfo);
         List<OrderDetail> orderDetails = new ArrayList<>();
         for (OrderItem orderItem : orderRequest.getOrderItems()) {
-            ProductRepo productRepo = productRepoRepository.findProductRepoByIdAndSize(orderItem.getProductId(), orderItem.getSize());
+            ProductRepo productRepo = productRepoRepository.findProductRepoByIdAndSize(orderItem.getProductId(),
+                    orderItem.getSize());
 
             if (orderItem.getQuantity() <= 0) {
                 errorsMap.put("quantity", "quantity must larger than 0");
@@ -167,10 +168,10 @@ public class OrderSeviceImpl implements OrderService {
 
             OrderDetail orderDetail = this.crateOrderDetails(productRepo, orderItem, order);
             orderDetails.add(orderDetail);
-            
+
             total += orderDetail.getTotal();
         }
-                        
+
         order.setTotal(total);
         order.setOrderDetails(orderDetails);
         ordersRepository.save(order);
@@ -182,35 +183,37 @@ public class OrderSeviceImpl implements OrderService {
         if(orderRequest.getMethodId() == 1) {
             order.setStatus(OrderStatus.PLACED.getValue());
             
+
             for (OrderDetail orderDetail : orderDetails) {
                 ProductRepo productRepo = orderDetail.getProductRepo();
                 this.updateQuantity(productRepo, orderDetail.getQuantity());
             }
 
             return ApiResponse.builder()
-                .message("order successfuly!!!")
-                .status(200)
-                .errors(false)
-                .data(null)
-                .build();
-        }else {
+                    .message("order successfuly!!!")
+                    .status(200)
+                    .errors(false)
+                    .data(null)
+                    .build();
+        } else {
             try {
                 paymentUrl = VnpayUltils.getVnpayPayment(VnpaymentRequest.builder().idOrder(order.getId().toString()).httpServletRequest(httpServletRequest).amouts(payment.getAmount().intValue()).build());
                 order.setStatus(OrderStatus.WAITING.getValue());
                 ordersRepository.save(order);
+
             } catch (Exception e) {
                 return ApiResponse.builder()
-                    .message("Unsupported encoding exception")
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                    .errors(false)
-                    .build();
+                        .message("Unsupported encoding exception")
+                        .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                        .errors(false)
+                        .build();
             }
 
             return ApiResponse.builder()
-                .message("order successfuly!!!")
-                .status(200)
-                .errors(false)
-                .data(paymentUrl).build();
+                    .message("order successfuly!!!")
+                    .status(200)
+                    .errors(false)
+                    .data(paymentUrl).build();
         }
     }
 
@@ -280,15 +283,14 @@ public class OrderSeviceImpl implements OrderService {
                 .build();
     }
 
-
     @Override
     public ApiResponse payment(PaymentRequest paymentRequest) {
-        
+
         Map<String, String> errorMap = new HashMap<>();
 
         Orders order = ordersRepository.findById(paymentRequest.getOrderId()).orElse(null);
 
-        if(order == null) {
+        if (order == null) {
             errorMap.put("order", "order not found");
             return ApiResponse.builder()
                     .message("order not found")
@@ -298,7 +300,7 @@ public class OrderSeviceImpl implements OrderService {
 
         Payment payment = order.getPayment();
 
-        if(paymentRequest.getIsPaid()) {
+        if (paymentRequest.getIsPaid()) {
             payment.setAmount(paymentRequest.getAmount().doubleValue());
             payment.setIsPaid(paymentRequest.getIsPaid());
 
@@ -307,16 +309,17 @@ public class OrderSeviceImpl implements OrderService {
             } catch (Exception e) {
                 errorMap.put("payAt", "Number Format Exception");
                 return ApiResponse.builder()
-                    .message("Number Format Exception")
-                    .status(HttpStatus.CONFLICT.value())
-                    .errors(errorMap)
-                    .data(null).build();
+                        .message("Number Format Exception")
+                        .status(HttpStatus.CONFLICT.value())
+                        .errors(errorMap)
+                        .data(null).build();
             }
-            
+
             payment.setTransactionNumber(paymentRequest.getTransactionNumber().toString());
             paymentRepository.save(payment);
             
             order.setStatus(OrderStatus.PLACED.getValue());
+
             ordersRepository.save(order);
 
             List<OrderDetail> orderDetails = order.getOrderDetails();
@@ -333,15 +336,15 @@ public class OrderSeviceImpl implements OrderService {
         }
 
         return ApiResponse.builder()
-                    .message("Transaction failure!!! Please try again")
-                    .status(HttpStatus.FAILED_DEPENDENCY.value())
-                    .errors(true)
-                    .data(null).build();
+                .message("Transaction failure!!! Please try again")
+                .status(HttpStatus.FAILED_DEPENDENCY.value())
+                .errors(true)
+                .data(null).build();
     }
 
     public OrderProductItem createOrderProductItem(OrderDetail orderDetail) {
         String image = "";
-       
+
         if (!orderDetail.getProductRepo().getProduct().getImgs().isEmpty()) {
             image = orderDetail.getProductRepo().getProduct().getImgs().get(0).getNameImg();
         }
@@ -359,46 +362,42 @@ public class OrderSeviceImpl implements OrderService {
                 .build();
     }
 
-
-     private ShippingInfo createShippingInfo(Addresses address, OrderRequest orderRequest) {
+    private ShippingInfo createShippingInfo(Addresses address, OrderRequest orderRequest) {
         return shippingInfoRepository.save(ShippingInfo.builder()
-            .fullName(address.getRecipient())
-            .province(address.getProvince())
-            .district(address.getDistrict())
-            .ward(address.getWard())
-            .address(address.getAddress())
-            .phone(address.getPhone())
-            .shipFee(orderRequest.getShip())
-            .deliveryCompany(deliveryCompanyRepository.findById(orderRequest.getDeliveryId()).get())
-            .build());
+                .fullName(address.getRecipient())
+                .province(address.getProvince())
+                .district(address.getDistrict())
+                .ward(address.getWard())
+                .address(address.getAddress())
+                .phone(address.getPhone())
+                .shipFee(orderRequest.getShip())
+                .deliveryCompany(deliveryCompanyRepository.findById(orderRequest.getDeliveryId()).get())
+                .build());
     }
-
 
     private OrderDetail crateOrderDetails(ProductRepo productRepo, OrderItem orderItem, Orders order) {
         return orderDetailRepository.save(OrderDetail.builder()
-            .price(productRepo.getOutPrice())
-            .quantity(orderItem.getQuantity())
-            .total(productRepo.getOutPrice() * orderItem.getQuantity())
-            .order(order)
-            .productRepo(productRepo)
-            .build());
+                .price(productRepo.getOutPrice())
+                .quantity(orderItem.getQuantity())
+                .total(productRepo.getOutPrice() * orderItem.getQuantity())
+                .order(order)
+                .productRepo(productRepo)
+                .build());
     }
-
 
     private Payment createPayment(OrderRequest orderRequest) {
         return paymentRepository.save(Payment.builder()
-                    .isPaid(false)
-                    .paymentMethod(paymentMethodRepository.findById(orderRequest.getMethodId()).get())
-                    .build()); 
+                .isPaid(false)
+                .paymentMethod(paymentMethodRepository.findById(orderRequest.getMethodId()).get())
+                .build());
     }
-
 
     private Orders createOrder(Addresses address, Payment payment, ShippingInfo shippingInfo) {
         return ordersRepository.save(Orders.builder()
-                        .user(address.getUser())
-                        .payment(payment)
-                        .shippingInfo(shippingInfo)
-                        .build());
+                .user(address.getUser())
+                .payment(payment)
+                .shippingInfo(shippingInfo)
+                .build());
     }
 
     private ProductRepo updateQuantity(ProductRepo productRepo, Integer quantity) {
