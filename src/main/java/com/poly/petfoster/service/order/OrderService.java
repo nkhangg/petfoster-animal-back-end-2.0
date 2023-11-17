@@ -13,4 +13,6 @@ public interface OrderService {
     public ApiResponse orderHistory(String jwt, Optional<Integer> page, Optional<String> status);
 
     public ApiResponse payment(PaymentRequest paymentRequest);
+
+    public ApiResponse orderDetails(Integer id);
 }
