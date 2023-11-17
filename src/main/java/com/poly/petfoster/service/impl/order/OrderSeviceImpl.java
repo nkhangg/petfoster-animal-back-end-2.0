@@ -46,6 +46,7 @@ import com.poly.petfoster.request.order.OrderRequest;
 import com.poly.petfoster.request.payments.PaymentRequest;
 import com.poly.petfoster.request.payments.VnpaymentRequest;
 import com.poly.petfoster.response.ApiResponse;
+import com.poly.petfoster.response.order_history.OrderDetails;
 import com.poly.petfoster.response.order_history.OrderHistory;
 import com.poly.petfoster.response.order_history.OrderHistoryResponse;
 import com.poly.petfoster.response.order_history.OrderProductItem;
@@ -337,6 +338,52 @@ public class OrderSeviceImpl implements OrderService {
                 .data(null).build();
     }
 
+
+    @Override
+    public ApiResponse orderDetails(Integer id) {
+
+        Orders order = ordersRepository.findById(id).orElse(null);
+        if(order == null) {
+            return ApiResponse.builder()
+                    .message("Order not found")
+                    .status(404)
+                    .errors("Order not found")
+                    .build();
+        }
+
+        ShippingInfo shippingInfo = order.getShippingInfo();
+        Payment payment = order.getPayment();
+        
+        List<OrderDetail> details = order.getOrderDetails();
+        List<OrderProductItem> products = new ArrayList<>();
+        details.forEach(item -> {
+            products.add(this.createOrderProductItem(item));
+        });
+
+        OrderDetails orderDetails = OrderDetails.builder()
+            .id(id)
+            .address(this.getAddress(shippingInfo.getAddress(), shippingInfo.getWard(), shippingInfo.getDistrict(), shippingInfo.getProvince()))
+            .placedDate(formatUtils.dateToString(order.getCreateAt()))
+            .deliveryMethod(shippingInfo.getDeliveryCompany().getCompany())
+            .name(shippingInfo.getFullName())
+            .paymentMethod(payment.getPaymentMethod().getMethod())
+            .phone(shippingInfo.getPhone())
+            .products(products)
+            .shippingFee(shippingInfo.getShipFee())
+            .subTotal(order.getTotal().intValue())
+            .total(order.getTotal().intValue() + shippingInfo.getShipFee())
+            .state(order.getStatus())
+            .build();
+
+
+
+        return ApiResponse.builder()
+                .message("Successfully")
+                .status(200)
+                .errors(false)
+                .data(orderDetails).build();
+    }
+
     public OrderProductItem createOrderProductItem(OrderDetail orderDetail) {
         String image = "";
 
@@ -398,6 +445,10 @@ public class OrderSeviceImpl implements OrderService {
     private ProductRepo updateQuantity(ProductRepo productRepo, Integer quantity) {
         productRepo.setQuantity(productRepo.getQuantity() - quantity);
         return productRepoRepository.save(productRepo);
+    }
+
+    private String getAddress(String street, String ward, String district, String province) {
+        return String.join(", ", street, ward, district, province);
     }
 
 }
