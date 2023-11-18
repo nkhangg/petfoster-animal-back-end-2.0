@@ -86,6 +86,8 @@ public class ProductDetailsServiceImpl implements ProductDetailsService {
                                 .desciption(product.getDesc())
                                 .sizeAndPrice(sizeAndPrices)
                                 .suggestions(getSuggestionProducts(id))
+                                .reviews(productItem.getReviews())
+                                .reviewItems(productItem.getReviewItems())
                                 .build())
                 .build();
     }

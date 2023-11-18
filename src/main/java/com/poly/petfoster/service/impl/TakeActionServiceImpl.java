@@ -13,22 +13,29 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.poly.petfoster.constant.RespMessage;
+import com.poly.petfoster.entity.OrderDetail;
 import com.poly.petfoster.entity.Product;
 import com.poly.petfoster.entity.ProductRepo;
+import com.poly.petfoster.entity.Review;
 import com.poly.petfoster.repository.ProductRepoRepository;
 import com.poly.petfoster.repository.ProductRepository;
 import com.poly.petfoster.response.ApiResponse;
 import com.poly.petfoster.response.takeaction.BestSellersResponse;
 import com.poly.petfoster.response.takeaction.ProductItem;
+import com.poly.petfoster.response.takeaction.ReviewItem;
 import com.poly.petfoster.response.takeaction.TakeActionResponse;
 import com.poly.petfoster.service.TakeActionService;
+import com.poly.petfoster.ultils.FormatUtils;
 import com.poly.petfoster.ultils.PortUltil;
 
 @Service
 public class TakeActionServiceImpl implements TakeActionService{
 
-     @Autowired
+    @Autowired
     private PortUltil portUltil;
+
+    @Autowired
+    private FormatUtils formatUtils;
 
     @Autowired
     private ProductRepository productRepository;
@@ -104,7 +111,31 @@ public class TakeActionServiceImpl implements TakeActionService{
     public ProductItem createProductTakeAction(Product product){
         String image = "";
         int discount = 8;
-        int rating = 5;
+        // int rating = 5;
+
+        List<Review> reviews = product.getReviews();
+        Double rating = reviews.stream().mapToDouble(Review::getRate).average().orElse(0.0);
+        List<ReviewItem> reviewItems = new ArrayList<>();
+
+        reviews.forEach(review -> {
+
+            List<Integer> sizes = new ArrayList<>();
+            List<OrderDetail> orderDetails = review.getOrder().getOrderDetails();
+            orderDetails.forEach(item -> {
+                sizes.add(item.getProductRepo().getSize());
+            });
+
+            reviewItems.add(ReviewItem.builder()
+                .id(review.getId())
+                .avatar(review.getUser().getAvatar() == null ? null : portUltil.getUrlImage(review.getUser().getAvatar()))
+                .name(review.getUser().getUsername())
+                .rating(review.getRate())
+                .sizes(sizes)
+                .comment(review.getComment())
+                .createAt(formatUtils.dateToString(review.getCreateAt()))
+                .build()
+            );
+        });
 
         if(!product.getImgs().isEmpty()){
             image = product.getImgs().get(0).getNameImg();   
@@ -127,6 +158,8 @@ public class TakeActionServiceImpl implements TakeActionService{
         .price(minRepo.getOutPrice().intValue())
         .oldPrice((int)(minRepo.getOutPrice() + (minRepo.getOutPrice() * (discount / 100.0))))
         .rating(rating)
+        .reviews(reviews.size())
+        .reviewItems(reviewItems)
         .build();
     }
     
