@@ -14,5 +14,5 @@ public interface OrderService {
 
     public ApiResponse payment(PaymentRequest paymentRequest);
 
-    public ApiResponse orderDetails(Integer id);
+    public ApiResponse orderDetails(String jwt, Integer id);
 }

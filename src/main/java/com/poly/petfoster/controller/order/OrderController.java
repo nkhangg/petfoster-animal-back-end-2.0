@@ -46,7 +46,7 @@ public class OrderController {
     }
 
     @GetMapping("order/history/{id}")
-    public ResponseEntity<ApiResponse> orderDetails(@PathVariable Integer id) {
-        return ResponseEntity.ok(orderService.orderDetails(id));
+    public ResponseEntity<ApiResponse> orderDetails(@RequestHeader("Authorization") String jwt, @PathVariable Integer id) {
+        return ResponseEntity.ok(orderService.orderDetails(jwt, id));
     }
 }

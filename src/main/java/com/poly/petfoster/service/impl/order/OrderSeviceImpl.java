@@ -30,6 +30,7 @@ import com.poly.petfoster.entity.Payment;
 import com.poly.petfoster.entity.PaymentMethod;
 import com.poly.petfoster.entity.Product;
 import com.poly.petfoster.entity.ProductRepo;
+import com.poly.petfoster.entity.Review;
 import com.poly.petfoster.entity.ShippingInfo;
 import com.poly.petfoster.entity.User;
 import com.poly.petfoster.repository.AddressRepository;
@@ -40,6 +41,7 @@ import com.poly.petfoster.repository.PaymentMethodRepository;
 import com.poly.petfoster.repository.PaymentRepository;
 import com.poly.petfoster.repository.ProductRepoRepository;
 import com.poly.petfoster.repository.ProductRepository;
+import com.poly.petfoster.repository.ReviewRepository;
 import com.poly.petfoster.repository.ShippingInfoRepository;
 import com.poly.petfoster.repository.UserRepository;
 import com.poly.petfoster.request.order.OrderItem;
@@ -107,6 +109,9 @@ public class OrderSeviceImpl implements OrderService {
 
     @Autowired
     PaymentRepository paymentRepository;
+
+    @Autowired
+    ReviewRepository reviewRepository;
 
     @Override
     public ApiResponse order(String jwt, OrderRequest orderRequest) {
@@ -292,6 +297,7 @@ public class OrderSeviceImpl implements OrderService {
                 .build();
     }
 
+
     @Override
     public ApiResponse payment(PaymentRequest paymentRequest) {
 
@@ -353,7 +359,17 @@ public class OrderSeviceImpl implements OrderService {
 
 
     @Override
-    public ApiResponse orderDetails(Integer id) {
+    public ApiResponse orderDetails(String jwt, Integer id) {
+
+        User user = userRepository.findByUsername(jwtProvider.getUsernameFromToken(jwt)).orElse(null);
+
+        if (user == null) {
+            return ApiResponse.builder()
+                    .message("Invalid Token!!!")
+                    .status(400)
+                    .errors("Invalid token")
+                    .build();
+        }
 
         Orders order = ordersRepository.findById(id).orElse(null);
         if(order == null) {
@@ -362,6 +378,13 @@ public class OrderSeviceImpl implements OrderService {
                     .status(404)
                     .errors("Order not found")
                     .build();
+        }
+
+        if(user.getOrders().indexOf(order) == -1) {
+            return ApiResponse.builder()
+                    .message("This order not found in order list of this user")
+                    .status(404)
+                    .errors("This order not found in order list of this user").build();
         }
 
         ShippingInfo shippingInfo = order.getShippingInfo();
@@ -389,7 +412,6 @@ public class OrderSeviceImpl implements OrderService {
             .build();
 
 
-
         return ApiResponse.builder()
                 .message("Successfully")
                 .status(200)
@@ -404,6 +426,8 @@ public class OrderSeviceImpl implements OrderService {
             image = orderDetail.getProductRepo().getProduct().getImgs().get(0).getNameImg();
         }
 
+        Review review = reviewRepository.findReviewByUserAndProduct(orderDetail.getOrder().getUser().getId(), orderDetail.getProductRepo().getProduct().getId()).orElse(null);
+
         return OrderProductItem
                 .builder()
                 .id(orderDetail.getProductRepo().getProduct().getId())
@@ -413,6 +437,7 @@ public class OrderSeviceImpl implements OrderService {
                 .brand(orderDetail.getProductRepo().getProduct().getBrand().getBrand())
                 .price(orderDetail.getProductRepo().getOutPrice().intValue())
                 .quantity(orderDetail.getQuantity())
+                .isRate(review != null)
                 .repo(orderDetail.getProductRepo().getQuantity())
                 .build();
     }
