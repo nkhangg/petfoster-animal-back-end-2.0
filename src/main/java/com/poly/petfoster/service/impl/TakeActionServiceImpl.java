@@ -29,7 +29,7 @@ import com.poly.petfoster.ultils.FormatUtils;
 import com.poly.petfoster.ultils.PortUltil;
 
 @Service
-public class TakeActionServiceImpl implements TakeActionService{
+public class TakeActionServiceImpl implements TakeActionService {
 
     @Autowired
     private PortUltil portUltil;
@@ -51,21 +51,23 @@ public class TakeActionServiceImpl implements TakeActionService{
             newArricals.add(this.createProductTakeAction(product));
         });
 
-        if(newArricals.isEmpty()) {
+        if (newArricals.isEmpty()) {
             return ApiResponse.builder()
-            .message(RespMessage.INTERNAL_SERVER_ERROR.getValue())
-            .data(newArricals)
-            .errors(true)
-            .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-            .build();
-        };
+                    .message(RespMessage.INTERNAL_SERVER_ERROR.getValue())
+                    .data(newArricals)
+                    .errors(true)
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                    .build();
+        }
+        ;
         return ApiResponse.builder()
-        .message(RespMessage.SUCCESS.getValue())
-        .errors(false)
-        .status(HttpStatus.OK.value())
-        .data(TakeActionResponse.builder()
-        .newArrivals(newArricals)
-        .build()).build();
+                .message(RespMessage.SUCCESS.getValue())
+                .errors(false)
+                .status(HttpStatus.OK.value())
+                .data(TakeActionResponse.builder()
+                        .newArrivals(newArricals)
+                        .build())
+                .build();
     }
 
     @Override
@@ -76,39 +78,39 @@ public class TakeActionServiceImpl implements TakeActionService{
         Pageable pageable = PageRequest.of(page.orElse(0), 8);
         List<Product> contents = productRepository.findAllProducts();
 
-        
         int startIndex = (int) pageable.getOffset();
         int endIndex = Math.min(startIndex + pageable.getPageSize(), contents.size());
 
-        if(startIndex >= endIndex){
+        if (startIndex >= endIndex) {
             return ApiResponse.builder()
-            .message(RespMessage.NOT_FOUND.getValue())
-            .data(null)
-            .errors(true)
-            .status(HttpStatus.NOT_FOUND.value())
-            .build();
+                    .message(RespMessage.NOT_FOUND.getValue())
+                    .data(null)
+                    .errors(true)
+                    .status(HttpStatus.NOT_FOUND.value())
+                    .build();
         }
-        
+
         List<Product> pageContent = contents.subList(startIndex, endIndex);
-        
+
         Page<Product> pagination = new PageImpl<Product>(pageContent, pageable, contents.size());
 
         pagination.getContent().stream().forEach((product) -> {
-           ProductItem productTakeAction = this.createProductTakeAction(product);
-           bestSellers.add(productTakeAction);
+            ProductItem productTakeAction = this.createProductTakeAction(product);
+            bestSellers.add(productTakeAction);
         });
 
         return ApiResponse.builder()
-        .message(RespMessage.SUCCESS.getValue())
-        .status(HttpStatus.OK.value())
-        .errors(false)
-        .data(BestSellersResponse.builder()
-        .data(bestSellers)
-        .pages(pagination.getTotalPages())
-        .build()).build();
+                .message(RespMessage.SUCCESS.getValue())
+                .status(HttpStatus.OK.value())
+                .errors(false)
+                .data(BestSellersResponse.builder()
+                        .data(bestSellers)
+                        .pages(pagination.getTotalPages())
+                        .build())
+                .build();
     }
 
-    public ProductItem createProductTakeAction(Product product){
+    public ProductItem createProductTakeAction(Product product) {
         String image = "";
         int discount = 8;
         // int rating = 5;
@@ -126,41 +128,42 @@ public class TakeActionServiceImpl implements TakeActionService{
             });
 
             reviewItems.add(ReviewItem.builder()
-                .id(review.getId())
-                .avatar(review.getUser().getAvatar() == null ? null : portUltil.getUrlImage(review.getUser().getAvatar()))
-                .name(review.getUser().getUsername())
-                .rating(review.getRate())
-                .sizes(sizes)
-                .comment(review.getComment())
-                .createAt(formatUtils.dateToString(review.getCreateAt()))
-                .build()
-            );
+                    .id(review.getId())
+                    .avatar(review.getUser().getAvatar() == null ? null
+                            : portUltil.getUrlImage(review.getUser().getAvatar()))
+                    .name(review.getUser().getUsername())
+                    .rating(review.getRate())
+                    .sizes(sizes)
+                    .comment(review.getComment())
+                    .createAt(formatUtils.dateToString(review.getCreateAt(), "MMM d, yyyy"))
+                    .build());
         });
 
-        if(!product.getImgs().isEmpty()){
-            image = product.getImgs().get(0).getNameImg();   
+        if (!product.getImgs().isEmpty()) {
+            image = product.getImgs().get(0).getNameImg();
         }
 
         List<Integer> sizes = productRepoRepository.findSizeByProduct(product.getId());
 
         ProductRepo minRepo = productRepoRepository.findByProductMinPrice(product.getId());
 
-        // ProductRepo minPrice = productRepoRepository.findByProductMinPrice(product.getId());
+        // ProductRepo minPrice =
+        // productRepoRepository.findByProductMinPrice(product.getId());
 
         return ProductItem
-        .builder()
-        .id(product.getId())
-        .size(sizes)
-        .discount(discount)
-        .image(portUltil.getUrlImage(image))
-        .name(product.getName())
-        .brand(product.getBrand().getBrand())
-        .price(minRepo.getOutPrice().intValue())
-        .oldPrice((int)(minRepo.getOutPrice() + (minRepo.getOutPrice() * (discount / 100.0))))
-        .rating(rating)
-        .reviews(reviews.size())
-        .reviewItems(reviewItems)
-        .build();
+                .builder()
+                .id(product.getId())
+                .size(sizes)
+                .discount(discount)
+                .image(portUltil.getUrlImage(image))
+                .name(product.getName())
+                .brand(product.getBrand().getBrand())
+                .price(minRepo.getOutPrice().intValue())
+                .oldPrice((int) (minRepo.getOutPrice() + (minRepo.getOutPrice() * (discount / 100.0))))
+                .rating(rating)
+                .reviews(reviews.size())
+                .reviewItems(reviewItems)
+                .build();
     }
-    
+
 }

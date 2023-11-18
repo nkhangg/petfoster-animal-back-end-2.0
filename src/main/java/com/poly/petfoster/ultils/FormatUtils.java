@@ -7,9 +7,9 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class FormatUtils {
-    
+
     public String dateToString(Date date, String pattern) {
-        
+
         SimpleDateFormat dateString = null;
         try {
             dateString = new SimpleDateFormat(pattern);
@@ -17,7 +17,7 @@ public class FormatUtils {
             e.printStackTrace();
         }
 
-       return dateString.format(date);
+        return dateString.format(date);
     }
 
     public Date convertMilisecondsToDate(String miliString) throws NumberFormatException {
@@ -35,7 +35,6 @@ public class FormatUtils {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
 
         return formattedDate;
     }
