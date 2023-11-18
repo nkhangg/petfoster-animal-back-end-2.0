@@ -426,7 +426,7 @@ public class OrderSeviceImpl implements OrderService {
             image = orderDetail.getProductRepo().getProduct().getImgs().get(0).getNameImg();
         }
 
-        Review review = reviewRepository.findReviewByUserAndProduct(orderDetail.getOrder().getUser().getId(), orderDetail.getProductRepo().getProduct().getId()).orElse(null);
+        Review review = reviewRepository.findReviewByUserAndProduct(orderDetail.getOrder().getUser().getId(), orderDetail.getProductRepo().getProduct().getId(), orderDetail.getOrder().getId()).orElse(null);
 
         return OrderProductItem
                 .builder()
