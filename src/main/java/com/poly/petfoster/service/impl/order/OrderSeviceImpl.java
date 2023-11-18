@@ -123,11 +123,19 @@ public class OrderSeviceImpl implements OrderService {
                     .errors(errorsMap).build();
         }
 
-        Addresses address = addressRepository.findById(orderRequest.getAddressId()).orElse(null);
+         Addresses address = addressRepository.findById(orderRequest.getAddressId()).orElse(null);
         if (address == null) {
             errorsMap.put("address", "address not found");
             return ApiResponse.builder()
                     .message("address not found")
+                    .status(404)
+                    .errors(errorsMap).build();
+        }
+
+        if(user.getAddresses().indexOf(address) == -1) {
+            errorsMap.put("address", "This address not found in address list of this user");
+            return ApiResponse.builder()
+                    .message("This address not found in address list of this user")
                     .status(404)
                     .errors(errorsMap).build();
         }
