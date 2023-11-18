@@ -18,5 +18,5 @@ public interface OrderService {
 
     public ApiResponse orderDetails(String jwt, Integer id);
 
-    public List<OrderDetails> orderDetails_table(String username);
+    public List<OrderDetails> orderDetailsTable(String username);
 }

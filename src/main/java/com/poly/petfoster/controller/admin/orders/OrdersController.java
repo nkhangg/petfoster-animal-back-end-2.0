@@ -19,8 +19,6 @@ import org.springframework.web.bind.annotation.RequestPart;
 import com.poly.petfoster.response.order_history.OrderDetails;
 import com.poly.petfoster.service.order.OrderService;
 
-import com.poly.petfoster.response.ApiResponse;
-
 @Controller
 @RequestMapping("/api/admin/orders")
 public class OrdersController {
@@ -29,7 +27,7 @@ public class OrdersController {
 
     @GetMapping("")
     public String getOrderTable(Model model) {
-        List<OrderDetails> orderDetailsList = orderService.orderDetails_table("All");
+        List<OrderDetails> orderDetailsList = orderService.orderDetailsTable("All");
         model.addAttribute("list", orderDetailsList);
         return "orders";
     }

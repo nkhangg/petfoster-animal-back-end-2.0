@@ -396,20 +396,20 @@ public class OrderSeviceImpl implements OrderService {
 
         OrderDetails orderDetails = OrderDetails.builder()
 
-            .id(id)
-            .address(this.getAddress(shippingInfo.getAddress(), shippingInfo.getWard(), shippingInfo.getDistrict(), shippingInfo.getProvince()))
-            .placedDate(formatUtils.dateToString(order.getCreateAt(), "MMM d, yyyy"))
-            .deliveryMethod(shippingInfo.getDeliveryCompany().getCompany())
-            .name(shippingInfo.getFullName())
-            .paymentMethod(payment.getPaymentMethod().getMethod())
-            .phone(shippingInfo.getPhone())
-            .products(products)
-            .shippingFee(shippingInfo.getShipFee())
-            .subTotal(order.getTotal().intValue())
-            .total(order.getTotal().intValue() + shippingInfo.getShipFee())
-            .state(order.getStatus())
-            .build();
-
+                .id(id)
+                .address(this.getAddress(shippingInfo.getAddress(), shippingInfo.getWard(), shippingInfo.getDistrict(),
+                        shippingInfo.getProvince()))
+                .placedDate(formatUtils.dateToString(order.getCreateAt(), "MMM d, yyyy"))
+                .deliveryMethod(shippingInfo.getDeliveryCompany().getCompany())
+                .name(shippingInfo.getFullName())
+                .paymentMethod(payment.getPaymentMethod().getMethod())
+                .phone(shippingInfo.getPhone())
+                .products(products)
+                .shippingFee(shippingInfo.getShipFee())
+                .subTotal(order.getTotal().intValue())
+                .total(order.getTotal().intValue() + shippingInfo.getShipFee())
+                .state(order.getStatus())
+                .build();
 
         return ApiResponse.builder()
                 .message("Successfully")
@@ -490,7 +490,7 @@ public class OrderSeviceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderDetails> orderDetails_table(String userID) {
+    public List<OrderDetails> orderDetailsTable(String userID) {
 
         List<Orders> orderList = new ArrayList<>();
 
@@ -518,7 +518,7 @@ public class OrderSeviceImpl implements OrderService {
             orderDetails.setId(order.getShippingInfo().getId());
             orderDetails.setAddress(this.getAddress(shippingInfo.getAddress(), shippingInfo.getWard(),
                     shippingInfo.getDistrict(), shippingInfo.getProvince()));
-            orderDetails.setPlacedDate(formatUtils.dateToString(order.getCreateAt()));
+            orderDetails.setPlacedDate(order.getCreateAt().toString());
             orderDetails.setDeliveryMethod(shippingInfo.getDeliveryCompany().getCompany());
             orderDetails.setName(shippingInfo.getFullName());
             orderDetails.setPaymentMethod(payment.getPaymentMethod().getMethod());
