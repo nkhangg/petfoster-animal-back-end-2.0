@@ -8,11 +8,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class FormatUtils {
     
-    public String dateToString(Date date) {
+    public String dateToString(Date date, String pattern) {
         
         SimpleDateFormat dateString = null;
         try {
-            dateString = new SimpleDateFormat("MMM d, yyyy");
+            dateString = new SimpleDateFormat(pattern);
         } catch (Exception e) {
             e.printStackTrace();
         }

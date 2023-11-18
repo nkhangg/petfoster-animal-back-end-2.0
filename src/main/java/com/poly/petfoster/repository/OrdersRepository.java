@@ -3,6 +3,7 @@ package com.poly.petfoster.repository;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -72,5 +73,29 @@ public interface OrdersRepository extends JpaRepository<Orders, Integer> {
                         "inner join shipping_info si on si.id = o.shipping_info_id " +
                         "where [user_id] = :userId and o.[status] like %:status%")
     public List<Orders> orderHistory(@Param("userId") String userId, @Param("status") String status);
+
+
+    @Query("SELECT o FROM Orders o " +
+                "WHERE (:username IS NULL OR o.user.username like %:username%) " +
+                "AND (:orderId IS NULL OR o.id = :orderId) " +
+                "AND (:status IS NULL OR o.status like %:status%) " +
+                "AND ((:minDate IS NULL AND :maxDate IS NULL) OR (convert(date, o.createAt) BETWEEN :minDate AND :maxDate)) " +
+                "ORDER BY " +
+                "CASE WHEN :sort = 'total-desc' THEN o.total END DESC, " +
+                "CASE WHEN :sort = 'total-asc' THEN o.total END ASC, " +
+                "CASE WHEN :sort = 'id-desc' THEN o.id END DESC, " +
+                "CASE WHEN :sort = 'id-asc' THEN o.id END ASC, " +
+                "CASE WHEN :sort = 'date-desc' THEN o.createAt END DESC, " +
+                "CASE WHEN :sort = 'date-asc' THEN o.createAt END ASC"
+        )
+        List<Orders> filterOrders(
+                        @Param("username") String username,
+                        @Param("orderId") Integer orderId,
+                        @Param("status") String status,
+                        @Param("minDate") Date minDate,
+                        @Param("maxDate") Date maxDate,
+                        @Param("sort") String sort
+        );
+
 
 }
