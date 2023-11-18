@@ -675,6 +675,48 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "[auth]Cancel Order",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE3MDAzMjQwODEsImV4cCI6MTcwMDY4NDA4MSwidXNlcm5hbWUiOiJoYW50bDExMSIsImF1dGhvcml0aWVzIjoiUk9MRV9BRE1JTiJ9.lMyzTh4kDPhSKMUXCG0qxvSi1MpSJLCHx-C1GLVZsAr_cX95n-fdDmo4EBElRqWU7SL2GjrSKIkkIiy8CnaA3A",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"status\": \"Cancelled\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8019/api/user/order/cancel/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8019",
+							"path": [
+								"api",
+								"user",
+								"order",
+								"cancel",
+								"2"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		}
