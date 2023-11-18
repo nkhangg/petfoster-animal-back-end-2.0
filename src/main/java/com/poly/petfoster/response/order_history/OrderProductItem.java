@@ -19,5 +19,6 @@ public class OrderProductItem {
     private Integer price;
     private Integer quantity;
     private Integer repo;
+    private Boolean isRate;
 
 }
