@@ -3,6 +3,7 @@ package com.poly.petfoster.service.impl.order;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +36,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                     .errors("order not found")
                     .build();
         }
+
         order.setStatus(updateStatusRequest.getStatus());
         ordersRepository.save(order);
         

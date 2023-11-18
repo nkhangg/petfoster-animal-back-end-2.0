@@ -46,6 +46,7 @@ import com.poly.petfoster.repository.ShippingInfoRepository;
 import com.poly.petfoster.repository.UserRepository;
 import com.poly.petfoster.request.order.OrderItem;
 import com.poly.petfoster.request.order.OrderRequest;
+import com.poly.petfoster.request.order.UpdateStatusRequest;
 import com.poly.petfoster.request.payments.PaymentRequest;
 import com.poly.petfoster.request.payments.VnpaymentRequest;
 import com.poly.petfoster.response.ApiResponse;
@@ -487,6 +488,54 @@ public class OrderSeviceImpl implements OrderService {
 
     private String getAddress(String street, String ward, String district, String province) {
         return String.join(", ", street, ward, district, province);
+    }
+
+    @Override
+    public ApiResponse cancelOrder(String jwt, Integer id, UpdateStatusRequest updateStatusRequest) {
+        
+        Map<String, String> errorsMap = new HashMap<>();
+        User user = userRepository.findByUsername(jwtProvider.getUsernameFromToken(jwt)).orElse(null);
+        if (user == null) {
+            errorsMap.put("user", "user not found");
+            return ApiResponse.builder()
+                    .message("Unauthenrized")
+                    .status(HttpStatus.UNAUTHORIZED.value())
+                    .errors(errorsMap).build();
+        }
+
+        Orders order = ordersRepository.findById(id).orElse(null);
+        if(order == null) {
+            return ApiResponse.builder()
+                    .message("order not found")
+                    .status(404)
+                    .errors("order not found")
+                    .build();
+        }
+
+        if(user.getOrders().indexOf(order) == -1) {
+            return ApiResponse.builder()
+                    .message("This order not found in order list of this user")
+                    .status(HttpStatus.FAILED_DEPENDENCY.value())
+                    .errors("This order not found in order list of this user")
+                    .build();
+        }
+
+        if(order.getStatus().equalsIgnoreCase(OrderStatus.SHIPPING.getValue())) {
+                return ApiResponse.builder()
+                .message("Cannot cancel the order!!!")
+                .status(HttpStatus.FAILED_DEPENDENCY.value())
+                .errors("The order is shipping")
+                .build();
+        }
+
+        order.setStatus(updateStatusRequest.getStatus());
+        ordersRepository.save(order);
+
+        return ApiResponse.builder()
+                .message("Successfully!!!")
+                .status(200)
+                .errors(false)
+                .build(); 
     }
 
 }
