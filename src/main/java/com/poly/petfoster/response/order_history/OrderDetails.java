@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class OrderDetails {
-    
+
     private Integer id;
 
     private String address;
@@ -32,6 +32,8 @@ public class OrderDetails {
     private Integer shippingFee;
 
     private Integer subTotal;
+
+    private Integer quantity;
 
     private Integer total;
 
