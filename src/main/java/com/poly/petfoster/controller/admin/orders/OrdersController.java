@@ -15,7 +15,7 @@ import com.poly.petfoster.response.order_history.OrderDetails;
 import com.poly.petfoster.service.order.OrderService;
 
 @Controller
-@RequestMapping("/admin/orders")
+@RequestMapping("/api/admin/orders")
 public class OrdersController {
     @Autowired
     OrderService orderService;
@@ -24,7 +24,6 @@ public class OrdersController {
     public String getOrderTable(Model model) {
         List<OrderDetails> orderDetailsList = orderService.orderDetails_table("All");
         model.addAttribute("list", orderDetailsList);
-        System.out.println(orderDetailsList);
         return "orders";
     }
 }
