@@ -73,9 +73,8 @@ public class TakeActionServiceImpl implements TakeActionService {
     @Override
     public ApiResponse bestSellers(Optional<Integer> page) {
 
-        // System.out.println(page.get());
         List<ProductItem> bestSellers = new ArrayList<>();
-        Pageable pageable = PageRequest.of(page.orElse(0), 8);
+        Pageable pageable = PageRequest.of(page.orElse(0), 16);
         List<Product> contents = productRepository.findAllProducts();
 
         int startIndex = (int) pageable.getOffset();
