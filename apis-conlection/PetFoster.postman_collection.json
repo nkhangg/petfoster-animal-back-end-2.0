@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "5ba5d887-6c05-4739-a78f-099de7c2fd73",
-		"name": "PetFoster",
+		"_postman_id": "fce1a32a-bd1b-4c23-98d2-f7d68e4ea51f",
+		"name": "PetFoster 2",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "21344732"
+		"_exporter_id": "29532805"
 	},
 	"item": [
 		{
@@ -400,7 +400,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8019/api/product/detail/PD0033",
+							"raw": "http://localhost:8019/api/product/detail/PD0001",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -410,7 +410,7 @@
 								"api",
 								"product",
 								"detail",
-								"PD0033"
+								"PD0001"
 							]
 						}
 					},
@@ -1762,6 +1762,29 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "[admin]Order Details",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8019/api/admin/orders/details/42",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8019",
+							"path": [
+								"api",
+								"admin",
+								"orders",
+								"details",
+								"42"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -1775,7 +1798,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"orderId\":\"14\",\r\n    \"productId\": \"PD0001\",\r\n    \"comment\": \"Good !!!\",\r\n    \"rate\": 5\r\n}",
+							"raw": "{\r\n    \"orderId\":\"42\",\r\n    \"productId\": \"PD0001\",\r\n    \"comment\": \"Good\",\r\n    \"rate\": 4\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1832,7 +1855,7 @@
 		"bearer": [
 			{
 				"key": "token",
-				"value": "eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE3MDAyNDYxODUsImV4cCI6MTcwMDYwNjE4NSwidXNlcm5hbWUiOiJraGFuZ3BuMSIsImF1dGhvcml0aWVzIjoiUk9MRV9BRE1JTiJ9.HAumU0-fPu3Ia3hRA65Y-HI3EUAhhIcdzeXu5vcanITE3k2fBCgsGiWg9I3dZ91wgsrb-ybvdvxBG8cr_ozZ4Q",
+				"value": "eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE3MDA0MDk1MTAsImV4cCI6MTcwMDc2OTUxMCwidXNlcm5hbWUiOiJoYW50bDExMSIsImF1dGhvcml0aWVzIjoiUk9MRV9BRE1JTiJ9.MjANKIkmKQ9ZGVEz0BeO4bC4fEdiSDynZPTI5KkDkiJ-wjmqJgaSEvEphFM2D2q1cDg0ZtL4rKdqGJexlI3F6A",
 				"type": "string"
 			}
 		]

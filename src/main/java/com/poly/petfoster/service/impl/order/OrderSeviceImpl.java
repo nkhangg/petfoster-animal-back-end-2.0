@@ -485,7 +485,7 @@ public class OrderSeviceImpl implements OrderService {
         return productRepoRepository.save(productRepo);
     }
 
-    private String getAddress(String street, String ward, String district, String province) {
+    public String getAddress(String street, String ward, String district, String province) {
         return String.join(", ", street, ward, district, province);
     }
 
