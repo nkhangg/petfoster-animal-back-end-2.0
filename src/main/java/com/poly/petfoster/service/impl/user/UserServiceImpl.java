@@ -111,9 +111,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ApiResponse getAllUser(String jwt, Optional<Integer> pages) {
+    public ApiResponse getAllUser(String jwt, Optional<String> username, Optional<String> fullname,
+            Optional<String> email, Optional<Integer> pages) {
 
-        List<User> users = userRepository.findAll();
+        List<User> users = userRepository.findAll(username.orElse(null), fullname.orElse(null), email.orElse(null));
 
         Pageable pageable = PageRequest.of(pages.orElse(0), 10);
         int startIndex = (int) pageable.getOffset();

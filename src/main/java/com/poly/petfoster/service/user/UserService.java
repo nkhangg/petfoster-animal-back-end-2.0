@@ -17,7 +17,8 @@ public interface UserService {
 
     public ApiResponse updatePassword(ResetPasswordRequest resetPasswordRequest);
 
-    public ApiResponse getAllUser(String jwt, Optional<Integer> pages);
+    public ApiResponse getAllUser(String jwt, Optional<String> username, Optional<String> fullname,
+            Optional<String> email, Optional<Integer> pages);
 
     public ApiResponse updateUser(UpdateUserRequest updateUserRequest);
 

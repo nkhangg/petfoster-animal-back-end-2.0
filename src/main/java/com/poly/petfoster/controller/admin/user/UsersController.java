@@ -24,16 +24,19 @@ import com.poly.petfoster.response.ApiResponse;
 import com.poly.petfoster.service.user.UserService;
 
 @RestController
-@RequestMapping("/api/admin/users")
+@RequestMapping("api/admin/users")
 public class UsersController {
     @Autowired
     UserService userService;
 
     @GetMapping("")
     public ResponseEntity<ApiResponse> getProfile(@RequestHeader("Authorization") String jwt,
-            @RequestParam("page") Optional<Integer> pages) {
+            @RequestParam("page") Optional<Integer> pages,
+            @RequestParam("username") Optional<String> username,
+            @RequestParam("fullname") Optional<String> fullname,
+            @RequestParam("email") Optional<String> email) {
 
-        return ResponseEntity.ok(userService.getAllUser(jwt, pages));
+        return ResponseEntity.ok(userService.getAllUser(jwt, username, fullname, email, pages));
     }
 
     @GetMapping("/{id}")
