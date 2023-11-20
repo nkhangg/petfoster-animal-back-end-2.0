@@ -1,5 +1,6 @@
 package com.poly.petfoster.service.impl.brand;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,7 +23,6 @@ public class BrandServiceImpl implements BrandService {
     BrandRepository brandRepository;
 
     public ApiResponse getAllBrand() {
-        Map<String, String> errorsMap = new HashMap<>();
 
         List<Brand> listBrand = brandRepository.findAll();
         if (listBrand.isEmpty()) {
@@ -30,7 +30,7 @@ public class BrandServiceImpl implements BrandService {
                     .message("No brands data available!")
                     .status(200)
                     .errors(false)
-                    .data(null)
+                    .data(new ArrayList<>())
                     .build();
         } else
             return ApiResponse.builder()
@@ -64,7 +64,7 @@ public class BrandServiceImpl implements BrandService {
         Brand newBrand = Brand.builder()
                 .brand(brand.getName())
                 .build();
-       
+
         return ApiResponse.builder()
                 .message("Review successfuly!!!")
                 .status(200)
@@ -94,32 +94,31 @@ public class BrandServiceImpl implements BrandService {
                     .build();
         }
 
-        boolean check= false;
-        List<Brand> listBrand = brandRepository.findbyName(brandRequest.getName()).orElse(null);        
-        
+        boolean check = false;
+        List<Brand> listBrand = brandRepository.findbyName(brandRequest.getName()).orElse(null);
+
         for (Brand item : listBrand) {
-             if (item.getBrand().equals(brandRequest.getName())) {
+            if (item.getBrand().equals(brandRequest.getName())) {
                 if (!item.getId().equals(brandRequest.getId()) || (!item.getId().equals(brandRequest.getId()))) {
-                    check =true;
+                    check = true;
                 }
-             }
-        } 
-        if( check)         {
-        errorsMap.put("brand", "brand already exits!");
-            return
-                    ApiResponse.builder()
+            }
+        }
+        if (check) {
+            errorsMap.put("brand", "brand already exits!");
+            return ApiResponse.builder()
                     .message("brand already exits!")
                     .status(HttpStatus.FOUND.value())
                     .errors(errorsMap).build();
         }
-           
+
         Brand updateBrand = Brand.builder()
                 .id(brandRequest.getId())
                 .brand(brandRequest.getName())
                 .build();
-    
+
         // brandRepository.save(updateBrand);
-       
+
         return ApiResponse.builder()
                 .message("Review successfuly!!!")
                 .status(200)
@@ -129,7 +128,7 @@ public class BrandServiceImpl implements BrandService {
     };
 
     public ApiResponse deleteBrand(Integer id) {
-         Map<String, String> errorsMap = new HashMap<>();
+        Map<String, String> errorsMap = new HashMap<>();
 
         if (!brandRepository.existsById(id)) {
             return ApiResponse.builder()
@@ -139,24 +138,24 @@ public class BrandServiceImpl implements BrandService {
                     .build();
         }
         try {
-                brandRepository.deleteById(id);
-                return ApiResponse.builder()
-                .message("Query product Successfully")
-                .status(200)
-                .errors(false)
-                .data(null)
-                .build();
-   
+            brandRepository.deleteById(id);
+            return ApiResponse.builder()
+                    .message("Query product Successfully")
+                    .status(200)
+                    .errors(false)
+                    .data(null)
+                    .build();
+
         } catch (Exception e) {
-                        errorsMap.put("brand", "Can't delete Brand!");
+            errorsMap.put("brand", "Can't delete Brand!");
 
             return ApiResponse.builder()
-                .message("Can't delete Brand!")
-                .status(HttpStatus.NOT_MODIFIED.value())
-                .errors(errorsMap)
-                .data(null)
-                .build();
+                    .message("Can't delete Brand!")
+                    .status(HttpStatus.NOT_MODIFIED.value())
+                    .errors(errorsMap)
+                    .data(null)
+                    .build();
         }
-       
+
     };
 }

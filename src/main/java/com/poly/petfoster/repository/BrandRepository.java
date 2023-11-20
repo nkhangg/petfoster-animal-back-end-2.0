@@ -8,10 +8,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.poly.petfoster.entity.Brand;
-import com.poly.petfoster.entity.Review;
 
 public interface BrandRepository extends JpaRepository<Brand, Integer> {
-    @Query( nativeQuery=true, value="select* from brand where brand= :name")
+    @Query(nativeQuery = true, value = "select * from brand where brand= :name and deleted = 0")
     public Optional<List<Brand>> findbyName(@Param("name") String name);
+
+    @Query("select b from Brand b where deleted = 0 or deleted is null")
+    public List<Brand> findAll();
 
 }
