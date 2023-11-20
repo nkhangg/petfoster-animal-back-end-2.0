@@ -29,8 +29,11 @@ public class Review {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
     @Nationalized
     private String comment;
+
+    private Integer repliedId;
 
     private Integer rate;
     @CreationTimestamp

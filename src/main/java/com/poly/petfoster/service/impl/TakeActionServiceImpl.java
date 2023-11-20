@@ -19,6 +19,7 @@ import com.poly.petfoster.entity.ProductRepo;
 import com.poly.petfoster.entity.Review;
 import com.poly.petfoster.repository.ProductRepoRepository;
 import com.poly.petfoster.repository.ProductRepository;
+import com.poly.petfoster.repository.ReviewRepository;
 import com.poly.petfoster.response.ApiResponse;
 import com.poly.petfoster.response.takeaction.BestSellersResponse;
 import com.poly.petfoster.response.takeaction.ProductItem;
@@ -123,7 +124,9 @@ public class TakeActionServiceImpl implements TakeActionService {
             List<Integer> sizes = new ArrayList<>();
             List<OrderDetail> orderDetails = review.getOrder().getOrderDetails();
             orderDetails.forEach(item -> {
-                sizes.add(item.getProductRepo().getSize());
+                if(product.getId().equalsIgnoreCase(item.getProductRepo().getProduct().getId())) {
+                    sizes.add(item.getProductRepo().getSize());
+                }
             });
 
             reviewItems.add(ReviewItem.builder()
