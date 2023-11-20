@@ -50,7 +50,7 @@ import com.poly.petfoster.request.order.UpdateStatusRequest;
 import com.poly.petfoster.request.payments.PaymentRequest;
 import com.poly.petfoster.request.payments.VnpaymentRequest;
 import com.poly.petfoster.response.ApiResponse;
-import com.poly.petfoster.response.order_history.OrderDetails;
+import com.poly.petfoster.response.order_history.OrderDetailsResponse;
 import com.poly.petfoster.response.order_history.OrderHistory;
 import com.poly.petfoster.response.order_history.OrderHistoryResponse;
 import com.poly.petfoster.response.order_history.OrderProductItem;
@@ -395,7 +395,7 @@ public class OrderSeviceImpl implements OrderService {
             products.add(this.createOrderProductItem(item));
         });
 
-        OrderDetails orderDetails = OrderDetails.builder()
+        OrderDetailsResponse orderDetails = OrderDetailsResponse.builder()
 
                 .id(id)
                 .address(this.getAddress(shippingInfo.getAddress(), shippingInfo.getWard(), shippingInfo.getDistrict(),
@@ -543,7 +543,7 @@ public class OrderSeviceImpl implements OrderService {
                 .build();
     }
 
-    public List<OrderDetails> orderDetailsTable(String userID) {
+    public List<OrderDetailsResponse> orderDetailsTable(String userID) {
 
         List<Orders> orderList = new ArrayList<>();
 
@@ -557,7 +557,7 @@ public class OrderSeviceImpl implements OrderService {
             return null;
         }
 
-        List<OrderDetails> oDetailsList = new ArrayList<>();
+        List<OrderDetailsResponse> oDetailsList = new ArrayList<>();
         for (Orders order : orderList) {
             ShippingInfo shippingInfo = order.getShippingInfo();
             Payment payment = order.getPayment();
@@ -567,7 +567,7 @@ public class OrderSeviceImpl implements OrderService {
                 products.add(this.createOrderProductItem(item));
             });
 
-            OrderDetails orderDetails = new OrderDetails();
+            OrderDetailsResponse orderDetails = new OrderDetailsResponse();
             orderDetails.setId(order.getShippingInfo().getId());
             orderDetails.setAddress(this.getAddress(shippingInfo.getAddress(), shippingInfo.getWard(),
                     shippingInfo.getDistrict(), shippingInfo.getProvince()));
