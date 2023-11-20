@@ -21,7 +21,7 @@ public class AdminReviewController {
     @Autowired
     AdminReviewService reviewService;
     
-    @GetMapping("/filter")
+    @GetMapping("filter")
     public ResponseEntity<ApiResponse> filterReviews(
             @RequestParam("productName") Optional<String> productName,
             @RequestParam("minStar") Optional<Integer> minStar,

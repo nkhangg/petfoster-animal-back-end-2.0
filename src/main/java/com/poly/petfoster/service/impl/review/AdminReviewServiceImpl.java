@@ -44,18 +44,10 @@ public class AdminReviewServiceImpl implements AdminReviewService {
         Integer max = maxStar.orElse(5);
         String customSort = sort.orElse("");
 
-        List<Product> products = new ArrayList<>();
+        List<Product> products = productRepository.getProductsReview();
        
         if(name != null) {
             products = productRepository.getProductsByNameInReview(name);
-        }
-
-        if(products.isEmpty()) {
-            return ApiResponse.builder()
-                    .message("No data available")
-                    .status(200)
-                    .errors(false)
-                    .build();
         }
 
         List<ReviewFilterResponse> reviews = new ArrayList<>();
