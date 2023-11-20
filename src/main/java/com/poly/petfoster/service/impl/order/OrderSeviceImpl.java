@@ -551,6 +551,7 @@ public class OrderSeviceImpl implements OrderService {
         }
 
         order.setStatus(updateStatusRequest.getStatus());
+        order.setDescriptions(updateStatusRequest.getReason() != null ? updateStatusRequest.getReason() : "");
         ordersRepository.save(order);
 
         return ApiResponse.builder()

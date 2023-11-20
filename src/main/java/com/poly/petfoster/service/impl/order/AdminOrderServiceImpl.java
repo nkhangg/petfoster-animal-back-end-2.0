@@ -64,6 +64,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         }
 
         order.setStatus(updateStatus);
+        order.setDescriptions(updateStatusRequest.getReason() != null ? updateStatusRequest.getReason() : "");
         ordersRepository.save(order);
 
         Payment payment = order.getPayment();
