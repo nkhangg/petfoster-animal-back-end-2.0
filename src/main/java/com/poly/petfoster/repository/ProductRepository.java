@@ -27,7 +27,7 @@ public interface ProductRepository extends JpaRepository<Product, String> {
         // @Query("select p from product p where p.product_name = :name")
         // public Optional<Product> findByName(@Param("name") String name);
 
-        @Query(nativeQuery = true, value = "select top 4 * from product p where p.is_active = 1 order by create_at desc")
+        @Query(nativeQuery = true, value = "select top 8 * from product p where p.is_active = 1 order by create_at desc")
         public List<Product> selectNewArrivals();
 
         // @Query(nativeQuery = true, value = "select * from product p join product_type

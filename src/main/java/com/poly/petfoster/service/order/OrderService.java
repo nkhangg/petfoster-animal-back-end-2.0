@@ -1,11 +1,13 @@
 package com.poly.petfoster.service.order;
 
+import java.util.List;
 import java.util.Optional;
 
 import com.poly.petfoster.request.order.OrderRequest;
 import com.poly.petfoster.request.order.UpdateStatusRequest;
 import com.poly.petfoster.request.payments.PaymentRequest;
 import com.poly.petfoster.response.ApiResponse;
+import com.poly.petfoster.response.order_history.OrderDetails;
 
 public interface OrderService {
 
@@ -18,4 +20,6 @@ public interface OrderService {
     public ApiResponse orderDetails(String jwt, Integer id);
 
     public ApiResponse cancelOrder(String jwt, Integer id, UpdateStatusRequest updateStatusRequest);
+  
+    public List<OrderDetails> orderDetailsTable(String username);
 }

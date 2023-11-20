@@ -428,7 +428,7 @@
 								{
 									"key": "token",
 									"value": "eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE3MDAyODgxNTksImV4cCI6MTcwMDY0ODE1OSwidXNlcm5hbWUiOiJoYW50bDExMSIsImF1dGhvcml0aWVzIjoiUk9MRV9BRE1JTiJ9.gTZJchZGtu0nya5S3vTHOR5un0FizsUW1jSJCEE_zNPlf-VC1EoNznEecA6TcxaHTsvInLhE9M-LVAP57oqueg",
-									"type": "string"
+
 								}
 							]
 						},
@@ -437,6 +437,7 @@
 						"body": {
 							"mode": "raw",
 							"raw": "{\r\n    \"addressId\": 3,\r\n    \"deliveryId\": 1,\r\n    \"methodId\": 2,\r\n    \"ship\": 40000,\r\n    \"orderItems\": [\r\n        {\r\n            \"productId\": \"PD0010\",\r\n            \"size\": 5000,\r\n            \"quantity\": 2\r\n        },\r\n        {\r\n            \"productId\": \"PD0035\",\r\n            \"size\": 500,\r\n            \"quantity\": 1\r\n        },\r\n        {\r\n            \"productId\": \"PD0007\",\r\n            \"size\": 300,\r\n            \"quantity\": 1\r\n        }\r\n    ]\r\n}",
+
 							"options": {
 								"raw": {
 									"language": "json"
@@ -551,6 +552,7 @@
 								{
 									"key": "token",
 									"value": "eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE3MDAyOTMzNjcsImV4cCI6MTcwMDY1MzM2NywidXNlcm5hbWUiOiJoYW50bDExMSIsImF1dGhvcml0aWVzIjoiUk9MRV9BRE1JTiJ9.tmdYHNcKLwZXSmFlyq72hcNS3FBUx-R0HZwVcw-cSZmMC6x4QTn35IIOZ_zAOqVgoWPAHtWd2MZIQLSNJFbcYg",
+
 									"type": "string"
 								}
 							]
@@ -559,6 +561,7 @@
 						"header": [],
 						"url": {
 							"raw": "http://localhost:8019/api/user/order/history/39",
+
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -570,6 +573,7 @@
 								"order",
 								"history",
 								"39"
+
 							]
 						}
 					},
@@ -633,90 +637,7 @@
 						}
 					},
 					"response": []
-				},
-				{
-					"name": "[admin]Update Order Status",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE3MDAzMjE0NjAsImV4cCI6MTcwMDY4MTQ2MCwidXNlcm5hbWUiOiJoYW50bDExMSIsImF1dGhvcml0aWVzIjoiUk9MRV9BRE1JTiJ9.tx9RA_-PDcjBJ5FgcYWWwQQlroWNWW0RdLnSP0D6vLOk_qzYeo7FWK7tqBkzmq5zIGJiyfe8sHIyAG5MReHDSw",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"status\": \"Shipping\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:8019/api/admin/orders/status/341",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8019",
-							"path": [
-								"api",
-								"admin",
-								"orders",
-								"status",
-								"341"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "[auth]Cancel Order",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE3MDAzMjQwODEsImV4cCI6MTcwMDY4NDA4MSwidXNlcm5hbWUiOiJoYW50bDExMSIsImF1dGhvcml0aWVzIjoiUk9MRV9BRE1JTiJ9.lMyzTh4kDPhSKMUXCG0qxvSi1MpSJLCHx-C1GLVZsAr_cX95n-fdDmo4EBElRqWU7SL2GjrSKIkkIiy8CnaA3A",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"status\": \"Cancelled\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:8019/api/user/order/cancel/2",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8019",
-							"path": [
-								"api",
-								"user",
-								"order",
-								"cancel",
-								"2"
-							]
-						}
-					},
-					"response": []
+
 				}
 			]
 		}
