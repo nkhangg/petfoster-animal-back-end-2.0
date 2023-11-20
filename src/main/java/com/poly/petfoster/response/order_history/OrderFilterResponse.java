@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class OrderFilter {
-    
+public class OrderFilterResponse {
+
     private Integer orderId;
 
     private String username;
