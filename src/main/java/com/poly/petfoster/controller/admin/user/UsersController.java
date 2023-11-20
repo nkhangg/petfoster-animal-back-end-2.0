@@ -1,10 +1,12 @@
 package com.poly.petfoster.controller.admin.user;
 
+import java.util.Date;
 import java.util.Optional;
 
 import javax.swing.text.html.Option;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,10 +32,10 @@ public class UsersController {
     UserService userService;
 
     @GetMapping("")
+
     public ResponseEntity<ApiResponse> getAllUser(@RequestHeader("Authorization") String jwt,
             @RequestParam("page") Optional<Integer> pages) {
-
-        return ResponseEntity.ok(userService.getAllUser(jwt, pages));
+        return ResponseEntity.ok(userService.getAllUser(jwt, keyword, sort, pages));
     }
 
     @GetMapping("/{id}")
