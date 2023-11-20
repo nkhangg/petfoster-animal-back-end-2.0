@@ -492,7 +492,7 @@ public class OrderSeviceImpl implements OrderService {
 
     @Override
     public ApiResponse cancelOrder(String jwt, Integer id, UpdateStatusRequest updateStatusRequest) {
-        
+
         Map<String, String> errorsMap = new HashMap<>();
         User user = userRepository.findByUsername(jwtProvider.getUsernameFromToken(jwt)).orElse(null);
         if (user == null) {
@@ -500,32 +500,36 @@ public class OrderSeviceImpl implements OrderService {
             return ApiResponse.builder()
                     .message("Unauthenrized")
                     .status(HttpStatus.UNAUTHORIZED.value())
+                    .data(null)
                     .errors(errorsMap).build();
         }
 
         Orders order = ordersRepository.findById(id).orElse(null);
-        if(order == null) {
+        if (order == null) {
             return ApiResponse.builder()
                     .message("order not found")
                     .status(404)
-                    .errors("order not found")
+                    .errors(true)
+                    .data(null)
                     .build();
         }
 
-        if(user.getOrders().indexOf(order) == -1) {
+        if (user.getOrders().indexOf(order) == -1) {
             return ApiResponse.builder()
                     .message("This order not found in order list of this user")
                     .status(HttpStatus.FAILED_DEPENDENCY.value())
-                    .errors("This order not found in order list of this user")
+                    .errors(true)
+                    .data(null)
                     .build();
         }
 
-        if(order.getStatus().equalsIgnoreCase(OrderStatus.SHIPPING.getValue())) {
-                return ApiResponse.builder()
-                .message("Cannot cancel the order!!!")
-                .status(HttpStatus.FAILED_DEPENDENCY.value())
-                .errors("The order is shipping")
-                .build();
+        if (order.getStatus().equalsIgnoreCase(OrderStatus.SHIPPING.getValue())) {
+            return ApiResponse.builder()
+                    .message("Cannot cancel the order!!!")
+                    .status(HttpStatus.FAILED_DEPENDENCY.value())
+                    .errors(true)
+                    .data(null)
+                    .build();
         }
 
         order.setStatus(updateStatusRequest.getStatus());
@@ -535,8 +539,10 @@ public class OrderSeviceImpl implements OrderService {
                 .message("Successfully!!!")
                 .status(200)
                 .errors(false)
-                .build(); 
-}
+                .data(null)
+                .build();
+    }
+
     public List<OrderDetails> orderDetailsTable(String userID) {
 
         List<Orders> orderList = new ArrayList<>();
