@@ -13,4 +13,6 @@ public class UpdateStatusRequest {
 
     String status;
 
+    String reason;
+
 }
