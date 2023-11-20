@@ -1,6 +1,5 @@
 package com.poly.petfoster.service.user;
 
-import java.util.Date;
 import java.util.Optional;
 
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,9 +17,7 @@ public interface UserService {
 
     public ApiResponse updatePassword(ResetPasswordRequest resetPasswordRequest);
 
-    public ApiResponse getAllUser(String jwt, Optional<String> keyword,
-            Optional<String> sort,
-            Optional<Integer> pages);
+    public ApiResponse getAllUser(String jwt, Optional<Integer> pages);
 
     public ApiResponse updateUser(UpdateUserRequest updateUserRequest);
 
