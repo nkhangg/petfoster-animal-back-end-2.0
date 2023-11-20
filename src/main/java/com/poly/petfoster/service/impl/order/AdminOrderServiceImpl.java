@@ -3,6 +3,7 @@ package com.poly.petfoster.service.impl.order;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.poly.petfoster.constant.OrderStatus;
@@ -35,14 +36,43 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                     .build();
         }
 
-        order.setStatus(updateStatusRequest.getStatus());
-        ordersRepository.save(order);
+        if(order.getStatus().equalsIgnoreCase(OrderStatus.CANCELLED.getValue()) || order.getStatus().equalsIgnoreCase(OrderStatus.DELIVERED.getValue())) {
+            return ApiResponse.builder()
+                    .message("Cannot update the order has been delivered or cancelled")
+                    .status(HttpStatus.FAILED_DEPENDENCY.value())
+                    .errors("Cannot update the order has been delivered or cancelled")
+                    .build();
+        }
+
+        String updateStatus;
+        try {
+            updateStatus = OrderStatus.valueOf(updateStatusRequest.getStatus().toUpperCase()).getValue();
+        } catch (Exception e) {
+            return ApiResponse.builder()
+                    .message(updateStatusRequest.getStatus() + " doesn't exists in the enum")
+                    .status(404)
+                    .errors(updateStatusRequest.getStatus() + " doesn't exists in the enum")
+                    .build();
+        }
         
+        if(updateStatus.equalsIgnoreCase(OrderStatus.PLACED.getValue())) {
+            return ApiResponse.builder()
+                    .message("Cannot update back the status")
+                    .status(HttpStatus.CONFLICT.value())
+                    .errors("Cannot update back the status")
+                    .build();
+        }
+
+        order.setStatus(updateStatus);
+        ordersRepository.save(order);
+
         Payment payment = order.getPayment();
-        if(updateStatusRequest.getStatus().equalsIgnoreCase(OrderStatus.DELIVERED.getValue())) {
-            payment.setIsPaid(true);
-            payment.setPayAt(new Date());
-            paymentRepository.save(order.getPayment());
+        if(updateStatus.equalsIgnoreCase(OrderStatus.DELIVERED.getValue())) {
+            if(payment.getPaymentMethod().getId() == 1) {
+                payment.setIsPaid(true);
+                payment.setPayAt(new Date());
+                paymentRepository.save(order.getPayment());
+            }
         }
 
         return ApiResponse.builder()
