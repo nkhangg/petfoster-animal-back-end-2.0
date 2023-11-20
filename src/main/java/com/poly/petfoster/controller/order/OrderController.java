@@ -16,8 +16,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.poly.petfoster.request.order.OrderRequest;
+import com.poly.petfoster.request.order.UpdateStatusRequest;
 import com.poly.petfoster.request.payments.PaymentRequest;
 import com.poly.petfoster.response.ApiResponse;
+import com.poly.petfoster.service.impl.order.AdminOrderServiceImpl;
+import com.poly.petfoster.service.order.AdminOrderService;
 import com.poly.petfoster.service.order.OrderService;
 
 @RestController
@@ -48,5 +51,10 @@ public class OrderController {
     @GetMapping("order/history/{id}")
     public ResponseEntity<ApiResponse> orderDetails(@RequestHeader("Authorization") String jwt, @PathVariable Integer id) {
         return ResponseEntity.ok(orderService.orderDetails(jwt, id));
+    }
+
+    @PostMapping("order/cancel/{id}")
+    public ResponseEntity<ApiResponse> cancelOrder(@RequestHeader("Authorization") String jwt, @PathVariable Integer id, @RequestBody UpdateStatusRequest updateStatusRequest) {
+        return ResponseEntity.ok(orderService.cancelOrder(jwt, id, updateStatusRequest));
     }
 }
