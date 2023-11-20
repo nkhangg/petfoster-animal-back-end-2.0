@@ -1,5 +1,6 @@
 package com.poly.petfoster.repository;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,13 +18,21 @@ public interface UserRepository extends JpaRepository<User, String> {
 
         Boolean existsByPhone(String phone);
 
-        @Query(nativeQuery = true, value = "SELECT * FROM Users u WHERE u.is_active = 1 " +
-                        "AND (username IS NULL OR u.username LIKE %:username% ) " +
-                        "AND (fullname IS NULL OR u.fullname LIKE %:fullname% ) " +
-                        "AND (email IS NULL OR u.email LIKE %:email%) ")
-        public List<User> findAll(@Param("username") String username,
-                        @Param("fullname") String fullname,
-                        @Param("email") String email);
+        @Query("SELECT u FROM Users u WHERE u.isActive = 1 " +
+                        "AND (:keyword IS NULL OR u.username LIKE %:keyword% ) " +
+                        "OR (:keyword IS NULL OR u.fullname LIKE %:keyword% ) " +
+                        "OR (:keyword IS NULL OR u.email LIKE %:keyword%) " +
+                        "ORDER BY " +
+                        "CASE WHEN :sort = 'username-desc' THEN u.username END DESC, " +
+                        "CASE WHEN :sort = 'username-asc' THEN u.username END ASC, " +
+                        "CASE WHEN :sort = 'fullname-desc' THEN u.fullname END DESC, " +
+                        "CASE WHEN :sort = 'fullname-asc' THEN u.fullname END ASC, " +
+                        "CASE WHEN :sort = 'create-desc' THEN u.createAt END DESC, " +
+                        "CASE WHEN :sort = 'create-asc' THEN u.createAt END ASC, " +
+                        "CASE WHEN :sort = 'birthday-desc' THEN u.birthday END DESC, " +
+                        "CASE WHEN :sort = 'birthday-asc' THEN u.birthday END ASC")
+        public List<User> findAll(@Param("keyword") String keyword,
+                        @Param("sort") String sort);
 
         @Query("select u from Users u where u.email = :email")
         public Optional<User> findByEmail(@Param("email") String email);

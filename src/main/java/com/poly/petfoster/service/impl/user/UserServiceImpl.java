@@ -111,10 +111,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ApiResponse getAllUser(String jwt, Optional<String> username, Optional<String> fullname,
-            Optional<String> email, Optional<Integer> pages) {
+    public ApiResponse getAllUser(String jwt, Optional<String> keyword,
+            Optional<String> sort,
+            Optional<Integer> pages) {
 
-        List<User> users = userRepository.findAll(username.orElse(null), fullname.orElse(null), email.orElse(null));
+        List<User> users = userRepository.findAll(keyword.orElse(null), sort.orElse(null));
+
+        if (users.isEmpty()) {
+            return ApiResponse.builder().message("No data!")
+                    .status(400)
+                    .errors(false)
+                    .data(PagiantionResponse.builder().data(null)
+                            .build())
+                    .build();
+        }
 
         Pageable pageable = PageRequest.of(pages.orElse(0), 10);
         int startIndex = (int) pageable.getOffset();
@@ -135,17 +145,22 @@ public class UserServiceImpl implements UserService {
 
         visibleUsers.forEach((user) -> {
             // find role by user
-            Role role = authoritiesRepository.findByUser(user).get(0).getRole();
+            List<Authorities> roles = authoritiesRepository.findByUser(user);
+            Role role = null;
+            if (roles.size() > 0) {
+                role = roles.get(0).getRole();
+            }
+
             UserProfileResponse userProfile = UserProfileResponse.builder()
                     .id(user.getId())
                     .username(user.getUsername())
                     .fullname(user.getFullname())
                     .birthday(user.getBirthday())
-                    .gender(user.getGender())
+                    .gender(user.getGender() == null ? false : true)
                     .phone(user.getPhone())
                     .email(user.getEmail())
                     .avatar(user.getAvatar() == null ? null : portUltil.getUrlImage(user.getAvatar()))
-                    .role(role.getRole())
+                    .role(role == null ? null : role.getRole())
                     .createAt(user.getCreateAt())
                     .build();
 
