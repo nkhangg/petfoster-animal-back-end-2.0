@@ -31,7 +31,7 @@ public class AdminReviewController {
         return ResponseEntity.ok(reviewService.filterReviews(productName, minStar, maxStar, sort));
     }
 
-    @GetMapping("/details/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<ApiResponse> reviewDetails(@PathVariable String id) {
         return ResponseEntity.ok(reviewService.reviewDetails(id));
     }
