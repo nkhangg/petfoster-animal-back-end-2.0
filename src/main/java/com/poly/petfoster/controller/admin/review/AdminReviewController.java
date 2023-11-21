@@ -15,13 +15,13 @@ import com.poly.petfoster.response.ApiResponse;
 import com.poly.petfoster.service.admin.review.AdminReviewService;
 
 @RestController
-@RequestMapping("/api/admin/reviews/")
+@RequestMapping("/api/admin/reviews")
 public class AdminReviewController {
 
     @Autowired
     AdminReviewService reviewService;
-    
-    @GetMapping("filter")
+
+    @GetMapping("")
     public ResponseEntity<ApiResponse> filterReviews(
             @RequestParam("productName") Optional<String> productName,
             @RequestParam("minStar") Optional<Integer> minStar,
