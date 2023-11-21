@@ -14,12 +14,18 @@ import org.springframework.stereotype.Service;
 
 import com.poly.petfoster.constant.RespMessage;
 import com.poly.petfoster.entity.Product;
+import com.poly.petfoster.repository.ProductRepoRepository;
 import com.poly.petfoster.repository.ProductRepository;
+import com.poly.petfoster.repository.ProductTypeRepository;
 import com.poly.petfoster.response.ApiResponse;
+import com.poly.petfoster.response.common.PagiantionResponse;
+import com.poly.petfoster.response.product_manage.ProductManageResponse;
+import com.poly.petfoster.response.productfilter.AdmicProductFilterResponse;
 import com.poly.petfoster.response.productfilter.ProductFilterResponse;
 import com.poly.petfoster.response.takeaction.ProductItem;
 import com.poly.petfoster.service.impl.TakeActionServiceImpl;
 import com.poly.petfoster.service.product.ProductFilterService;
+import com.poly.petfoster.ultils.PortUltil;
 
 @Service
 public class ProductFilterServiceImpl implements ProductFilterService {
@@ -29,6 +35,12 @@ public class ProductFilterServiceImpl implements ProductFilterService {
 
     @Autowired
     TakeActionServiceImpl takeActionServiceImpl;
+
+    @Autowired
+        private ProductRepoRepository productRepoRepository;
+
+        @Autowired
+        private PortUltil portUltil;
 
     @Override
     public ApiResponse filterProducts(Optional<String> typeName, Optional<Double> minPrice, Optional<Double> maxPrice, Optional<Boolean> stock, Optional<String> brand, Optional<String> productName, Optional<String> sort, Optional<Integer> page) {
@@ -65,5 +77,48 @@ public class ProductFilterServiceImpl implements ProductFilterService {
                                         .build()
                                     ).build();
     }
+    public ApiResponse filterAdminProducts(Optional<String> id, Optional<String> typeName,  Optional<String> brand, Optional<String> productName, Optional<String> sort, Optional<Integer> page, Boolean isActive){
+        List<ProductManageResponse> productItems = new ArrayList<>();
+        
+                List<Product> products = productRepository.filterAdminProducts(id.orElse(null), typeName.orElse(null), brand.orElse(null), productName.orElse(null), sort.orElse(null), isActive);
+
+                Pageable pageable = PageRequest.of(page.orElse(0), 10);
+                int startIndex = (int) pageable.getOffset();
+                int endIndex = Math.min(startIndex + pageable.getPageSize(), products.size());
+
+                if (startIndex >= endIndex) {
+                        return ApiResponse.builder()
+                                        .message(RespMessage.NOT_FOUND.getValue())
+                                        .data(null)
+                                        .errors(true)
+                                        .status(HttpStatus.NOT_FOUND.value())
+                                        .build();
+                }
+
+                List<Product> visibleProducts = products.subList(startIndex, endIndex);
+
+                visibleProducts.stream().forEach(product -> {
+                        productItems.add(ProductManageResponse.builder()
+                                        .id(product.getId())
+                                        .image(portUltil.getUrlImage(product.getImgs().get(0).getNameImg()))
+                                        .brand(product.getBrand().getBrand())
+                                        .name(product.getName())
+                                        .type(product.getProductType().getName())
+                                        .repo(productRepoRepository.findByProduct(product))
+                                        .build());
+                });
+
+                Page<ProductManageResponse> pagination = new PageImpl<ProductManageResponse>(productItems, pageable,
+                                products.size());
+
+                return ApiResponse.builder()
+                                .message("Query product Successfully")
+                                .status(HttpStatus.OK.value())
+                                .errors(false)
+                                .data(PagiantionResponse.builder().data(pagination.getContent())
+                                .pages(pagination.getTotalPages()).build())
+                                .build();
+    };
+
 }
         

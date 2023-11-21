@@ -68,4 +68,33 @@ public interface ProductRepository extends JpaRepository<Product, String> {
         @Query(nativeQuery = true, value = "select distinct brand from product")
         public List<String> getProductBrands();
 
+        
+        @Query("SELECT p FROM Product p " +
+                        // "INNER JOIN p.productsRepo pr " +
+                        "INNER JOIN p.brand " +
+                        "WHERE  (:id IS NULL OR p.id LIKE %:id%)" +
+                        "AND (:typeName IS NULL OR p.productType.name = :typeName) " +
+                        "AND (:brand IS NULL OR p.brand.brand = :brand) " +
+                        "AND (:productName IS NULL OR p.name LIKE %:productName%) " +
+                        "AND  (p.isActive = :isActive) " +
+                        // "GROUP BY p.id, p.name, p.desc, p.isActive, p.brand.brand, p.createAt, p.productType.name  " +
+                        "ORDER BY " +
+                        "CASE WHEN :sort = 'id-asc' THEN p.id END ASC, " +
+                        "CASE WHEN :sort = 'id-desc' THEN p.id END DESC," +
+                        "CASE WHEN :sort = 'name-asc' THEN p.name END ASC, " +
+                        "CASE WHEN :sort = 'name-desc' THEN p.name END DESC," +
+                        "CASE WHEN :sort = 'brand-asc' THEN p.brand.brand END ASC, " +
+                        "CASE WHEN :sort = 'brand-desc' THEN p.brand.brand END DESC," +
+                        "CASE WHEN :sort = 'type-asc' THEN p.productType.name END ASC, " +
+                        "CASE WHEN :sort = 'type-desc' THEN p.productType.name END DESC")
+
+        List<Product> filterAdminProducts(
+                        @Param("id") String id,
+                        @Param("typeName") String typeName,                       
+                        @Param("brand") String brand,
+                        @Param("productName") String productName,
+                        @Param("sort") String sort,
+                        @Param("isActive") Boolean isActive);
+
+
 }
