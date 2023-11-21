@@ -72,10 +72,10 @@ public interface ProductRepository extends JpaRepository<Product, String> {
         @Query("SELECT p FROM Product p " +
                         // "INNER JOIN p.productsRepo pr " +
                         "INNER JOIN p.brand " +
-                        "WHERE  (:id IS NULL OR p.id LIKE %:id%)" +
+                        "WHERE  (:keyword IS NULL OR p.id LIKE %:keyword%)" +
+                        "OR (:keyword IS NULL OR p.name LIKE %:keyword%) " +
                         "AND (:typeName IS NULL OR p.productType.name = :typeName) " +
                         "AND (:brand IS NULL OR p.brand.brand = :brand) " +
-                        "AND (:productName IS NULL OR p.name LIKE %:productName%) " +
                         "AND  (p.isActive = :isActive) " +
                         // "GROUP BY p.id, p.name, p.desc, p.isActive, p.brand.brand, p.createAt, p.productType.name  " +
                         "ORDER BY " +
@@ -89,10 +89,9 @@ public interface ProductRepository extends JpaRepository<Product, String> {
                         "CASE WHEN :sort = 'type-desc' THEN p.productType.name END DESC")
 
         List<Product> filterAdminProducts(
-                        @Param("id") String id,
+                        @Param("keyword") String id,
                         @Param("typeName") String typeName,                       
                         @Param("brand") String brand,
-                        @Param("productName") String productName,
                         @Param("sort") String sort,
                         @Param("isActive") Boolean isActive);
 

@@ -76,22 +76,20 @@ public class ProductController {
 
     @GetMapping("")
     public ResponseEntity<ApiResponse> filterAdminProducts(
-            @RequestParam("id") Optional<String> id,
+            @RequestParam("keyword") Optional<String> keyword,
             @RequestParam("typeName") Optional<String> typeName,            
             @RequestParam("brand") Optional<String> brand,
-            @RequestParam("productName") Optional<String> productName,
             @RequestParam("sort") Optional<String> sort,
             @RequestParam("page") Optional<Integer> page) {
-        return ResponseEntity.ok(productFilterService.filterAdminProducts(id,typeName, brand, productName, sort, page,true));
+        return ResponseEntity.ok(productFilterService.filterAdminProducts(keyword,typeName, brand, sort, page,true));
     }
     @GetMapping("deleted")
     public ResponseEntity<ApiResponse> filterAdminProductDeleted(
-            @RequestParam("id") Optional<String> id,
+            @RequestParam("keyword") Optional<String> keyword,
             @RequestParam("typeName") Optional<String> typeName,            
             @RequestParam("brand") Optional<String> brand,
-            @RequestParam("productName") Optional<String> productName,
             @RequestParam("sort") Optional<String> sort,
             @RequestParam("page") Optional<Integer> page) {
-        return ResponseEntity.ok(productFilterService.filterAdminProducts(id,typeName, brand, productName, sort, page,false));
+        return ResponseEntity.ok(productFilterService.filterAdminProducts(keyword,typeName, brand, sort, page,false));
     }
 }

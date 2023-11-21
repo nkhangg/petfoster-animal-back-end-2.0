@@ -77,10 +77,10 @@ public class ProductFilterServiceImpl implements ProductFilterService {
                                         .build()
                                     ).build();
     }
-    public ApiResponse filterAdminProducts(Optional<String> id, Optional<String> typeName,  Optional<String> brand, Optional<String> productName, Optional<String> sort, Optional<Integer> page, Boolean isActive){
+    public ApiResponse filterAdminProducts(Optional<String> keyword, Optional<String> typeName,  Optional<String> brand, Optional<String> sort, Optional<Integer> page, Boolean isActive){
         List<ProductManageResponse> productItems = new ArrayList<>();
         
-                List<Product> products = productRepository.filterAdminProducts(id.orElse(null), typeName.orElse(null), brand.orElse(null), productName.orElse(null), sort.orElse(null), isActive);
+                List<Product> products = productRepository.filterAdminProducts(keyword.orElse(null), typeName.orElse(null), brand.orElse(null), sort.orElse(null), isActive);
 
                 Pageable pageable = PageRequest.of(page.orElse(0), 10);
                 int startIndex = (int) pageable.getOffset();
