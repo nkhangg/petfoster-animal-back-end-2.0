@@ -1,4 +1,4 @@
-package com.poly.petfoster.request.carts;
+package com.poly.petfoster.response.carts;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +9,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CartRequest {
+public class CartResponse {
     private String id;
+    private String brand;
     private Integer size;
+    private String image;
+    private String name;
+    private Double price;
     private Integer quantity;
+    private Integer repo;
 }

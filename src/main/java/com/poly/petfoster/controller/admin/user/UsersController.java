@@ -30,7 +30,7 @@ public class UsersController {
     UserService userService;
 
     @GetMapping("")
-    public ResponseEntity<ApiResponse> getProfile(@RequestHeader("Authorization") String jwt,
+    public ResponseEntity<ApiResponse> getAllUser(@RequestHeader("Authorization") String jwt,
             @RequestParam("page") Optional<Integer> pages) {
 
         return ResponseEntity.ok(userService.getAllUser(jwt, pages));

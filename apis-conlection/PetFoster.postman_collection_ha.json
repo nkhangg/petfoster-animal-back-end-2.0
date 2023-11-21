@@ -86,7 +86,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2OTk1MjcyNzgsImV4cCI6MTY5OTg4NzI3OCwidXNlcm5hbWUiOiJoYW50bDExMSIsImF1dGhvcml0aWVzIjoiUk9MRV9TVEFGRiJ9.WoopS_oxM5yVMLLCO5-mbHMOoMxzQtBGBw5DMojba8Yo0JSgVSlPHBYYpKFHrQmlUoKMeL6YR9YGe0hupSi99w",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE3MDAyMDkxMzMsImV4cCI6MTcwMDU2OTEzMywidXNlcm5hbWUiOiJoYW50bDExMSIsImF1dGhvcml0aWVzIjoiUk9MRV9BRE1JTiJ9.Wg5KGBdxvMlYCkd_C0sWeV5GhSadn-wy80UEc5s7_ntnQERxhDujEBGsKcADLB9UKAYGv5kN4g2YXKY9jDe1pA",
 									"type": "string"
 								}
 							]
@@ -130,7 +130,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2OTk1Mjg0ODgsImV4cCI6MTY5OTg4ODQ4OCwidXNlcm5hbWUiOiJoYW50bDExMSIsImF1dGhvcml0aWVzIjoiUk9MRV9BRE1JTiJ9.H-LZFS_CZroJvNhPdCOmMc-x2O440oEjEmFWSE08r9tgIddPBG-D3YxODIvIIjAfH1wltYClCnsxABTkQDloaQ",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE3MDAyMTcxNTQsImV4cCI6MTcwMDU3NzE1NCwidXNlcm5hbWUiOiJoYW50bDExMSIsImF1dGhvcml0aWVzIjoiUk9MRV9BRE1JTiJ9.2IY3csL9APupspDejFSXFY1CXximyp5VaF_x2MaywzAL94S-KIq0pLFH4r6Gs_V4N-otekqWMtMdcHEetH4W0Q",
 									"type": "string"
 								}
 							]
@@ -178,7 +178,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2OTk1Mjg0ODgsImV4cCI6MTY5OTg4ODQ4OCwidXNlcm5hbWUiOiJoYW50bDExMSIsImF1dGhvcml0aWVzIjoiUk9MRV9BRE1JTiJ9.H-LZFS_CZroJvNhPdCOmMc-x2O440oEjEmFWSE08r9tgIddPBG-D3YxODIvIIjAfH1wltYClCnsxABTkQDloaQ",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE3MDAyMTcxNTQsImV4cCI6MTcwMDU3NzE1NCwidXNlcm5hbWUiOiJoYW50bDExMSIsImF1dGhvcml0aWVzIjoiUk9MRV9BRE1JTiJ9.2IY3csL9APupspDejFSXFY1CXximyp5VaF_x2MaywzAL94S-KIq0pLFH4r6Gs_V4N-otekqWMtMdcHEetH4W0Q",
 									"type": "string"
 								}
 							]
@@ -186,7 +186,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8019/api/admin/report/product-revenue-by-date?minDate=2023-08-01&maxDate=2023-10-10",
+							"raw": "http://localhost:8019/api/admin/report/product-revenue-by-date",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -197,16 +197,6 @@
 								"admin",
 								"report",
 								"product-revenue-by-date"
-							],
-							"query": [
-								{
-									"key": "minDate",
-									"value": "2023-08-01"
-								},
-								{
-									"key": "maxDate",
-									"value": "2023-10-10"
-								}
 							]
 						}
 					},
@@ -437,8 +427,8 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE3MDAxMjE4MDIsImV4cCI6MTcwMDQ4MTgwMiwidXNlcm5hbWUiOiJoYW50bDExMSIsImF1dGhvcml0aWVzIjoiUk9MRV9TVEFGRiJ9.pa2USwgnr6-eV-qVluxtorWZDrkSVVLEyUFAqrUjGmS4RYUx0n90Hw330b0Z5eHmxdfnlALY_52jo1sYmxCfYg",
-									"type": "string"
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE3MDAyODgxNTksImV4cCI6MTcwMDY0ODE1OSwidXNlcm5hbWUiOiJoYW50bDExMSIsImF1dGhvcml0aWVzIjoiUk9MRV9BRE1JTiJ9.gTZJchZGtu0nya5S3vTHOR5un0FizsUW1jSJCEE_zNPlf-VC1EoNznEecA6TcxaHTsvInLhE9M-LVAP57oqueg",
+
 								}
 							]
 						},
@@ -446,7 +436,8 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"addressId\": 1,\r\n    \"deliveryId\": 1,\r\n    \"methodId\": 2,\r\n    \"orderItems\": [\r\n        {\r\n            \"productId\": \"PD0001\",\r\n            \"size\": 1000,\r\n            \"quantity\": 2\r\n        },\r\n        {\r\n            \"productId\": \"PD0001\",\r\n            \"size\": 500,\r\n            \"quantity\": 1\r\n        },\r\n        {\r\n            \"productId\": \"PD0002\",\r\n            \"size\": 500,\r\n            \"quantity\": 1\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"addressId\": 3,\r\n    \"deliveryId\": 1,\r\n    \"methodId\": 2,\r\n    \"ship\": 40000,\r\n    \"orderItems\": [\r\n        {\r\n            \"productId\": \"PD0010\",\r\n            \"size\": 5000,\r\n            \"quantity\": 2\r\n        },\r\n        {\r\n            \"productId\": \"PD0035\",\r\n            \"size\": 500,\r\n            \"quantity\": 1\r\n        },\r\n        {\r\n            \"productId\": \"PD0007\",\r\n            \"size\": 300,\r\n            \"quantity\": 1\r\n        }\r\n    ]\r\n}",
+
 							"options": {
 								"raw": {
 									"language": "json"
@@ -477,7 +468,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2OTk1MTg2NzEsImV4cCI6MTY5OTg3ODY3MSwidXNlcm5hbWUiOiJraGFjaDAwMyIsImF1dGhvcml0aWVzIjoiUk9MRV9VU0VSIn0.UqeGgXFPfwHeaxlWpwxUJkLGU_7uR2UWbSbT5IWOu8AFerOR7mY86fhk4BAcOwjSjJk5dcuQiujgdpq10z854w",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE3MDAyMjg2MjcsImV4cCI6MTcwMDU4ODYyNywidXNlcm5hbWUiOiJraGFjaDAwMyIsImF1dGhvcml0aWVzIjoiUk9MRV9VU0VSIn0.T2EybTPzca1SWjD1iZkRRGBGBSwO0-KP98IawKG2k_DUxjY7Wli6MJsgmSeTiAB87bRqcDOHNDHZf6YQT1nu_A",
 									"type": "string"
 								}
 							]
@@ -485,7 +476,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8019/api/user/order/history/?page=0",
+							"raw": "http://localhost:8019/api/user/order/history/?page=0&status=cancelled",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -502,6 +493,10 @@
 								{
 									"key": "page",
 									"value": "0"
+								},
+								{
+									"key": "status",
+									"value": "cancelled"
 								}
 							]
 						}
@@ -511,11 +506,21 @@
 				{
 					"name": "Payment",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE3MDAyMTcxNTQsImV4cCI6MTcwMDU3NzE1NCwidXNlcm5hbWUiOiJoYW50bDExMSIsImF1dGhvcml0aWVzIjoiUk9MRV9BRE1JTiJ9.2IY3csL9APupspDejFSXFY1CXximyp5VaF_x2MaywzAL94S-KIq0pLFH4r6Gs_V4N-otekqWMtMdcHEetH4W0Q",
+									"type": "string"
+								}
+							]
+						},
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"orderId\": 33,\r\n    \"amount\": 100000,\r\n    \"isPaid\": \"true\",\r\n    \"payAt\": \"1700119937783\",\r\n    \"transactionNumber\": 14182407,\r\n    \"paymentMethod\": {\r\n        \"id\": 2,\r\n        \"method\": \"ATM\"\r\n    }\r\n}\r\n\r\n    private PaymentMethod paymentMethod;",
+							"raw": "{\r\n    \"orderId\": 35,\r\n    \"amount\": 1470000,\r\n    \"isPaid\": \"true\",\r\n    \"payAt\": \"1700119937783\",\r\n    \"transactionNumber\": 14182407,\r\n    \"paymentMethod\": {\r\n        \"id\": 2,\r\n        \"method\": \"ATM\"\r\n    }\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -523,7 +528,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8019/api/payment",
+							"raw": "http://localhost:8019/api/user/payment",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -531,11 +536,108 @@
 							"port": "8019",
 							"path": [
 								"api",
+								"user",
 								"payment"
 							]
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "[auth]Order Details",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE3MDAyOTMzNjcsImV4cCI6MTcwMDY1MzM2NywidXNlcm5hbWUiOiJoYW50bDExMSIsImF1dGhvcml0aWVzIjoiUk9MRV9BRE1JTiJ9.tmdYHNcKLwZXSmFlyq72hcNS3FBUx-R0HZwVcw-cSZmMC6x4QTn35IIOZ_zAOqVgoWPAHtWd2MZIQLSNJFbcYg",
+
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8019/api/user/order/history/39",
+
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8019",
+							"path": [
+								"api",
+								"user",
+								"order",
+								"history",
+								"39"
+
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[admin]Order Tracking",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE3MDAyODA2MjQsImV4cCI6MTcwMDY0MDYyNCwidXNlcm5hbWUiOiJoYW50bDExMSIsImF1dGhvcml0aWVzIjoiUk9MRV9BRE1JTiJ9.mv-Ynzlr6Vaq5oJUaVMRGY4TZJFgYVulDZtg1iYv_w23uh-M2fTkk6gX6wgXzD8OGrLlbwsqBh_zPZuvtwwrBw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8019/api/admin/orders/filter?username=khach&status=placed&sort=date-desc&maxDate=2023-11-17&minDate=2023-11-15",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8019",
+							"path": [
+								"api",
+								"admin",
+								"orders",
+								"filter"
+							],
+							"query": [
+								{
+									"key": "username",
+									"value": "khach"
+								},
+								{
+									"key": "status",
+									"value": "placed"
+								},
+								{
+									"key": "orderId",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "date-desc"
+								},
+								{
+									"key": "maxDate",
+									"value": "2023-11-17"
+								},
+								{
+									"key": "minDate",
+									"value": "2023-11-15"
+								}
+							]
+						}
+					},
+					"response": []
+
 				}
 			]
 		}

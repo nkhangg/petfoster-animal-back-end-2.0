@@ -11,8 +11,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class OrderDetails {
-    
+public class OrderDetailsResponse {
+
     private Integer id;
 
     private String address;
@@ -27,11 +27,15 @@ public class OrderDetails {
 
     private String phone;
 
+    private String description;
+
     private List<OrderProductItem> products;
 
     private Integer shippingFee;
 
     private Integer subTotal;
+
+    private Integer quantity;
 
     private Integer total;
 
