@@ -112,10 +112,8 @@ public class BrandServiceImpl implements BrandService {
                     .errors(errorsMap).build();
         }
 
-        Brand updateBrand = Brand.builder()
-                .id(brandRequest.getId())
-                .brand(brandRequest.getName())
-                .build();
+        Brand updateBrand = brandRepository.findById(id).orElse(null);
+        updateBrand.setBrand(brandRequest.getName());
 
         // brandRepository.save(updateBrand);
 
@@ -138,12 +136,16 @@ public class BrandServiceImpl implements BrandService {
                     .build();
         }
         try {
-            brandRepository.deleteById(id);
+
+            Brand curBrand = brandRepository.findById(id).orElse(null);
+
+            curBrand.setDeleted(true);
+
             return ApiResponse.builder()
                     .message("Query product Successfully")
                     .status(200)
                     .errors(false)
-                    .data(null)
+                    .data(brandRepository.save(curBrand))
                     .build();
 
         } catch (Exception e) {
