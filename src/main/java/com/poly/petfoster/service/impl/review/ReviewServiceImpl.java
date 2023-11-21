@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.poly.petfoster.config.JwtProvider;
+import com.poly.petfoster.constant.OrderStatus;
 import com.poly.petfoster.entity.OrderDetail;
 import com.poly.petfoster.entity.Orders;
 import com.poly.petfoster.entity.Product;
@@ -94,6 +95,14 @@ public class ReviewServiceImpl implements ReviewService {
                         errorsMap.put("product", "The order doesn't have this product!");
                         return ApiResponse.builder()
                                         .message("The order doesn't have this product!")
+                                        .status(HttpStatus.NOT_ACCEPTABLE.value())
+                                        .data(null)
+                                        .errors(errorsMap).build();
+                }
+                if(!order.getStatus().equalsIgnoreCase(OrderStatus.DELIVERED.getValue())){
+                        errorsMap.put("order", "The order hasn't been delivered!");
+                        return ApiResponse.builder()
+                                        .message("The order hasn't been delivered!")
                                         .status(HttpStatus.NOT_ACCEPTABLE.value())
                                         .data(null)
                                         .errors(errorsMap).build();
