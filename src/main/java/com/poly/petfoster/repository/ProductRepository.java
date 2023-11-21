@@ -68,4 +68,13 @@ public interface ProductRepository extends JpaRepository<Product, String> {
         @Query(nativeQuery = true, value = "select distinct brand from product")
         public List<String> getProductBrands();
 
+        @Query(nativeQuery = true, value = "select * from product where product_id in (select distinct product_id from review)")
+        public List<Product> getProductsReview();
+        
+        @Query(nativeQuery = true, value = "select * from product " + 
+                        "where product_name like %:name% and product_id in (select distinct product_id from review)")
+        public List<Product> getProductsByNameInReview(@Param("name") String name); 
+
+
+
 }
