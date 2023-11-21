@@ -29,6 +29,5 @@ public class ReviewRequest {
     @NotNull(message = RespMessage.NOT_EMPTY)
     @Min(value = 1, message = "Min is 1")
     @Max(value = 5, message = "Max is 5")
-    @NotNull
     private Integer rate;
 }
