@@ -15,8 +15,12 @@ import com.poly.petfoster.entity.Review;
 import com.poly.petfoster.repository.ProductRepository;
 import com.poly.petfoster.repository.ReviewRepository;
 import com.poly.petfoster.response.ApiResponse;
+import com.poly.petfoster.response.review.DetailRate;
+import com.poly.petfoster.response.review.HasReplyReviews;
+import com.poly.petfoster.response.review.ReviewDetailsResponse;
 import com.poly.petfoster.response.review.ReviewFilterResponse;
 import com.poly.petfoster.response.takeaction.ProductItem;
+import com.poly.petfoster.response.takeaction.ReviewItem;
 import com.poly.petfoster.service.admin.review.AdminReviewService;
 import com.poly.petfoster.service.impl.TakeActionServiceImpl;
 import com.poly.petfoster.ultils.FormatUtils;
@@ -44,7 +48,8 @@ public class AdminReviewServiceImpl implements AdminReviewService {
         Integer max = maxStar.orElse(5);
         String customSort = sort.orElse("");
 
-        List<Product> products = productRepository.getProductsReview();
+        // List<Product> products = productRepository.getProductsReview();
+        List<Product> products = productRepository.findAll();
        
         if(name != null) {
             products = productRepository.getProductsByNameInReview(name);
@@ -61,8 +66,8 @@ public class AdminReviewServiceImpl implements AdminReviewService {
                 .productId(productItem.getId())
                 .productName(productItem.getName())
                 .image(productItem.getImage())
-                .rate(productItem.getRating())
-                .lastest(formatUtils.dateToString(reviewRepository.getLastestReviewByProduct(product.getId()).getCreateAt(), "dd-MM-yyyy"))
+                .rate(productItem.getRating() != null ? productItem.getRating() : 0)
+                .lastest(reviewRepository.getLastestReviewByProduct(product.getId()) != null ? formatUtils.dateToString(reviewRepository.getLastestReviewByProduct(product.getId()).getCreateAt(), "dd-MM-yyyy") : "")
                 .reviews(productItem.getReviews())
                 .commentNoRep(noRelpyReviews.size())
                 .build()
@@ -101,6 +106,50 @@ public class AdminReviewServiceImpl implements AdminReviewService {
         }
         
         return ApiResponse.builder().message("Successfully").status(200).errors(false).data(filterReviews).build();
+    }
+
+    @Override
+    public ApiResponse reviewDetails(String productId) {
+        
+        Product product = productRepository.findById(productId).orElse(null);
+
+        if(product == null) {
+
+        }
+
+        List<Review> reviews = product.getReviews();
+        // List<Review> noRelpyReviews = reviewRepository.getNoReplyReivewsByProduct(product.getId());
+        ProductItem productItem = takeActionServiceImpl.createProductTakeAction(product);
+        DetailRate detailRate = this.createDetailRate(reviews);
+        
+        List<ReviewItem> reviewItems = takeActionServiceImpl.getReviewItems(reviews, product);
+
+        ReviewDetailsResponse reviewResponse = ReviewDetailsResponse.builder()
+        .id(productId)
+        .name(productItem.getName())
+        .image(productItem.getImage())
+        .rate(productItem.getRating())
+        .detailRate(detailRate)
+        .totalRate(reviews.size())
+        .reviews(reviewItems)
+        .build();
+               
+        return ApiResponse.builder().message("Successfully").status(200).errors(false).data(reviewResponse).build();
+    }
+
+    private DetailRate createDetailRate(List<Review> reviews) {
+
+        return DetailRate.builder()
+        .one(getRateNumber(reviews, 1))
+        .two(getRateNumber(reviews, 2))
+        .three(getRateNumber(reviews, 3))
+        .four(getRateNumber(reviews, 4))
+        .five(getRateNumber(reviews, 5))
+        .build();
+    }
+
+    private Integer getRateNumber(List<Review> reviews, Integer rate) {
+        return reviews.stream().filter(review -> review.getRate() == rate).collect(Collectors.toList()).size();
     }
     
 }
