@@ -28,4 +28,7 @@ public interface ReviewRepository extends JpaRepository<Review,Integer>{
             "inner join product b on a.product_id = b.product_id " +
             "where product_name like %:name%")
     public List<Product> findReviewByProductName(String name);
+
+    @Query(nativeQuery = true, value = "select * from review where replied_id = :reviewId")
+    public List<Review> getReplyReviews(@Param("reviewId") Integer reviewId);
 }
