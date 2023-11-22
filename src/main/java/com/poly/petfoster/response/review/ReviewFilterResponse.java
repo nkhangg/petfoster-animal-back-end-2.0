@@ -21,7 +21,8 @@ public class ReviewFilterResponse {
 
     private Double rate;
 
-    private String lastest;
+    // private String lastest;
+    private Date lastest;
     
     private Integer reviews;
 
