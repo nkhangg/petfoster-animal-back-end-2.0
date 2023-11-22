@@ -523,8 +523,9 @@ public class OrderSeviceImpl implements OrderService {
                     .build();
         }
 
+        String updateStatus;
         try {
-            OrderStatus.valueOf(updateStatusRequest.getStatus().toUpperCase()).getValue();
+            updateStatus = OrderStatus.valueOf(updateStatusRequest.getStatus()).getValue();
         } catch (Exception e) {
             return ApiResponse.builder()
                     .message(updateStatusRequest.getStatus() + " doesn't exists in the enum")
@@ -533,7 +534,7 @@ public class OrderSeviceImpl implements OrderService {
                     .build();
         }
 
-        if(!updateStatusRequest.getStatus().equalsIgnoreCase(OrderStatus.CANCELLED.getValue())) {
+        if(!updateStatus.equalsIgnoreCase(OrderStatus.CANCELLED_BY_CUSTOMER.getValue())) {
             return ApiResponse.builder()
                     .message("You cannot update the order!!!")
                     .status(HttpStatus.FAILED_DEPENDENCY.value())
@@ -550,7 +551,7 @@ public class OrderSeviceImpl implements OrderService {
                     .build();
         }
 
-        order.setStatus(updateStatusRequest.getStatus());
+        order.setStatus(updateStatus);
         order.setDescriptions(updateStatusRequest.getReason() != null ? updateStatusRequest.getReason() : "");
         ordersRepository.save(order);
 

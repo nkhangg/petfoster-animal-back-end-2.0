@@ -8,7 +8,8 @@ public enum OrderStatus {
     PLACED("Placed"),
     SHIPPING("Shipping"),
     DELIVERED("Delivered"),
-    CANCELLED("Cancelled");
+    CANCELLED_BY_ADMIN("Cancelled By Admin"),
+    CANCELLED_BY_CUSTOMER("Cancelled By Customer");
 
     private final String state;
 

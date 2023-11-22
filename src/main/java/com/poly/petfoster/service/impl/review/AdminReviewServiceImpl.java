@@ -114,7 +114,11 @@ public class AdminReviewServiceImpl implements AdminReviewService {
         Product product = productRepository.findById(productId).orElse(null);
 
         if(product == null) {
-
+            return ApiResponse.builder()
+                    .message("Product not found")
+                    .status(404)
+                    .errors("Product not found")
+                    .build();
         }
 
         List<Review> reviews = product.getReviews();
