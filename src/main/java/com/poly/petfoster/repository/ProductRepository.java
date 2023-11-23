@@ -76,8 +76,8 @@ public interface ProductRepository extends JpaRepository<Product, String> {
         @Query("SELECT p FROM Product p " +
                         // "INNER JOIN p.productsRepo pr " +
                         "INNER JOIN p.brand " +
-                        "WHERE  (:keyword IS NULL OR p.id LIKE %:keyword%)" +
-                        "OR (:keyword IS NULL OR p.name LIKE %:keyword%) " +
+                        "WHERE  (:keyword IS NULL OR p.id LIKE %:keyword% OR p.name LIKE %:keyword%)" +
+                        // "OR (:keyword IS NULL OR p.name LIKE %:keyword%) " +
                         "AND (:typeName IS NULL OR p.productType.name = :typeName) " +
                         "AND (:brand IS NULL OR p.brand.brand = :brand) " +
                         "AND  (p.isActive = :isActive) " +
