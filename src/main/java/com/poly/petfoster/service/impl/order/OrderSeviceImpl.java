@@ -259,8 +259,11 @@ public class OrderSeviceImpl implements OrderService {
             List<OrderDetail> orderDetails = order.getOrderDetails();
             List<OrderProductItem> products = new ArrayList<>();
 
+            Boolean isTotalRate = true;
             for (OrderDetail orderDetail : orderDetails) {
-                products.add(createOrderProductItem(orderDetail));
+                OrderProductItem orderProductItem = createOrderProductItem(orderDetail);
+                products.add(orderProductItem);
+                isTotalRate = isTotalRate && orderProductItem.getIsRate();
             }
 
             OrderHistory orderHistory = OrderHistory.builder()
@@ -270,6 +273,7 @@ public class OrderSeviceImpl implements OrderService {
                     .stateMessage(order.getStatus())
                     .total(order.getTotal())
                     .products(products)
+                    .isTotalRate(isTotalRate)
                     .build();
 
             data.add(orderHistory);
