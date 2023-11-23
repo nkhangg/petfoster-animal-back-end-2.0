@@ -36,7 +36,9 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                     .build();
         }
 
-        if(order.getStatus().equalsIgnoreCase(OrderStatus.CANCELLED.getValue()) || order.getStatus().equalsIgnoreCase(OrderStatus.DELIVERED.getValue())) {
+        if(order.getStatus().equalsIgnoreCase(OrderStatus.CANCELLED_BY_ADMIN.getValue()) 
+            || order.getStatus().equalsIgnoreCase(OrderStatus.DELIVERED.getValue()) 
+            || order.getStatus().equalsIgnoreCase(OrderStatus.CANCELLED_BY_CUSTOMER.getValue())) {
             return ApiResponse.builder()
                     .message("Cannot update the order has been delivered or cancelled")
                     .status(HttpStatus.FAILED_DEPENDENCY.value())
@@ -46,7 +48,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
 
         String updateStatus;
         try {
-            updateStatus = OrderStatus.valueOf(updateStatusRequest.getStatus().toUpperCase()).getValue();
+            updateStatus = OrderStatus.valueOf(updateStatusRequest.getStatus()).getValue();
         } catch (Exception e) {
             return ApiResponse.builder()
                     .message(updateStatusRequest.getStatus() + " doesn't exists in the enum")
@@ -62,6 +64,23 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                     .errors("Cannot update back the status")
                     .build();
         }
+
+        if(updateStatus.equalsIgnoreCase(OrderStatus.DELIVERED.getValue()) && !order.getStatus().equalsIgnoreCase(OrderStatus.SHIPPING.getValue())) {
+            return ApiResponse.builder()
+                    .message("Please update this order to Shipping status first")
+                    .status(HttpStatus.CONFLICT.value())
+                    .errors("Cannot jump update the status")
+                    .build();
+        }
+
+        if(updateStatus.equalsIgnoreCase(OrderStatus.CANCELLED_BY_CUSTOMER.getValue())) {
+            return ApiResponse.builder()
+                    .message("Please choose Cancelled By Admin")
+                    .status(HttpStatus.CONFLICT.value())
+                    .errors("Admin cannot choose Cancelled By Customer")
+                    .build();
+        }
+       
 
         order.setStatus(updateStatus);
         order.setDescriptions(updateStatusRequest.getReason() != null ? updateStatusRequest.getReason() : "");
