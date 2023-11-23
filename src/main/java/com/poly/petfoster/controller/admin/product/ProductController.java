@@ -22,6 +22,7 @@ import com.poly.petfoster.request.product.ProductInfoRequest;
 import com.poly.petfoster.request.product.ProductRequest;
 import com.poly.petfoster.response.ApiResponse;
 import com.poly.petfoster.service.admin.product.ProductService;
+import com.poly.petfoster.service.product.ProductFilterService;
 
 @RestController
 @RequestMapping("/api/admin/product/")
@@ -29,7 +30,10 @@ public class ProductController {
     @Autowired
     ProductService productService;
 
-    @GetMapping("")
+    @Autowired
+    ProductFilterService productFilterService;
+
+    @GetMapping("getall")
     public ResponseEntity<ApiResponse> getAllProduct(@RequestParam("page") Optional<Integer> page) {
         return ResponseEntity.ok(productService.getAllProduct(page));
     }
@@ -68,5 +72,24 @@ public class ProductController {
             @RequestPart List<MultipartFile> images) {
         return ResponseEntity.ok(productService.createProduct(createProductRequest, images));
     }
+    
 
+    @GetMapping("")
+    public ResponseEntity<ApiResponse> filterAdminProducts(
+            @RequestParam("keyword") Optional<String> keyword,
+            @RequestParam("typeName") Optional<String> typeName,            
+            @RequestParam("brand") Optional<String> brand,
+            @RequestParam("sort") Optional<String> sort,
+            @RequestParam("page") Optional<Integer> page) {
+        return ResponseEntity.ok(productFilterService.filterAdminProducts(keyword,typeName, brand, sort, page,true));
+    }
+    @GetMapping("deleted")
+    public ResponseEntity<ApiResponse> filterAdminProductDeleted(
+            @RequestParam("keyword") Optional<String> keyword,
+            @RequestParam("typeName") Optional<String> typeName,            
+            @RequestParam("brand") Optional<String> brand,
+            @RequestParam("sort") Optional<String> sort,
+            @RequestParam("page") Optional<Integer> page) {
+        return ResponseEntity.ok(productFilterService.filterAdminProducts(keyword,typeName, brand, sort, page,false));
+    }
 }
