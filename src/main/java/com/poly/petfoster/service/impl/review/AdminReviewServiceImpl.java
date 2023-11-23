@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.poly.petfoster.constant.Constant;
 import com.poly.petfoster.entity.Product;
 import com.poly.petfoster.entity.Review;
 import com.poly.petfoster.repository.ProductRepository;
@@ -67,7 +68,7 @@ public class AdminReviewServiceImpl implements AdminReviewService {
                 .productName(productItem.getName())
                 .image(productItem.getImage())
                 .rate(productItem.getRating() != null ? productItem.getRating() : 0)
-                .lastest(reviewRepository.getLastestReviewByProduct(product.getId()) != null ? formatUtils.dateToString(reviewRepository.getLastestReviewByProduct(product.getId()).getCreateAt(), "dd-MM-yyyy") : "")
+                .lastest(reviewRepository.getLastestReviewByProduct(product.getId()) != null ? reviewRepository.getLastestReviewByProduct(product.getId()).getCreateAt() : null)
                 .reviews(productItem.getReviews())
                 .commentNoRep(noRelpyReviews.size())
                 .build()
@@ -100,6 +101,12 @@ public class AdminReviewServiceImpl implements AdminReviewService {
                 break;
             case "review-desc":
                 filterReviews.sort(Comparator.comparingDouble(ReviewFilterResponse::getReviews).reversed());
+                break;
+            case "latest-asc":
+                filterReviews.sort(Comparator.comparing(review -> review.getLastest() != null ? review.getLastest() : Constant.MIN_DATE));
+                break;
+            case "latest-desc":
+                filterReviews.sort(Comparator.comparing((ReviewFilterResponse review) -> review.getLastest() != null ? review.getLastest() : Constant.MIN_DATE).reversed());
                 break;
             default:
                 break;
