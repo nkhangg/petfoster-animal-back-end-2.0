@@ -72,7 +72,7 @@ public interface ProductRepository extends JpaRepository<Product, String> {
         public List<Product> getProductsReview();
         
         @Query(nativeQuery = true, value = "select * from product " + 
-                        "where product_name like %:name% and product_id in (select distinct product_id from review)")
+                        "where product_name like %:name%")
         public List<Product> getProductsByNameInReview(@Param("name") String name); 
 
 
