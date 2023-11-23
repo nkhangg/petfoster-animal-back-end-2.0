@@ -121,7 +121,7 @@ public class RecentViewServiceImpl implements RecentViewService {
         }
 
         return ApiResponse.builder().data(getRecentView(jwt).getData()).status(200)
-                .message("Put recentView Successfully!").build();
+                .message("Update recent view successfully!").build();
 
     }
 }
