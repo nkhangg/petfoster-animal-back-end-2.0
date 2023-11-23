@@ -31,8 +31,8 @@ public class AdminReviewController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse> reviewDetails(@PathVariable String id) {
-        return ResponseEntity.ok(reviewService.reviewDetails(id));
+    public ResponseEntity<ApiResponse> reviewDetails(@PathVariable String id, @RequestParam("notReply") Optional<Boolean> notReply) {
+        return ResponseEntity.ok(reviewService.reviewDetails(id, notReply));
     }
 
 }

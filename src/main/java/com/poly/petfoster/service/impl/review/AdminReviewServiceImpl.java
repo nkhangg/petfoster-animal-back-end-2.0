@@ -16,7 +16,6 @@ import com.poly.petfoster.repository.ProductRepository;
 import com.poly.petfoster.repository.ReviewRepository;
 import com.poly.petfoster.response.ApiResponse;
 import com.poly.petfoster.response.review.DetailRate;
-import com.poly.petfoster.response.review.HasReplyReviews;
 import com.poly.petfoster.response.review.ReviewDetailsResponse;
 import com.poly.petfoster.response.review.ReviewFilterResponse;
 import com.poly.petfoster.response.takeaction.ProductItem;
@@ -109,9 +108,10 @@ public class AdminReviewServiceImpl implements AdminReviewService {
     }
 
     @Override
-    public ApiResponse reviewDetails(String productId) {
+    public ApiResponse reviewDetails(String productId, Optional<Boolean> notReply) {
         
         Product product = productRepository.findById(productId).orElse(null);
+        Boolean notReplyYet = notReply.orElse(false);
 
         if(product == null) {
             return ApiResponse.builder()
@@ -121,11 +121,11 @@ public class AdminReviewServiceImpl implements AdminReviewService {
                     .build();
         }
 
-        List<Review> reviews = product.getReviews();
-        // List<Review> noRelpyReviews = reviewRepository.getNoReplyReivewsByProduct(product.getId());
+        List<Review> reviews = new ArrayList<>();
+        reviews = notReplyYet == true ? reviewRepository.getNoReplyReivewsByProduct(product.getId()) : product.getReviews();
+        
         ProductItem productItem = takeActionServiceImpl.createProductTakeAction(product);
         DetailRate detailRate = this.createDetailRate(reviews);
-        
         List<ReviewItem> reviewItems = takeActionServiceImpl.getReviewItems(reviews, product);
 
         ReviewDetailsResponse reviewResponse = ReviewDetailsResponse.builder()

@@ -8,6 +8,6 @@ public interface AdminReviewService {
 
     ApiResponse filterReviews(Optional<String> name, Optional<Integer> minStar, Optional<Integer> maxStar, Optional<String> sort);
 
-    ApiResponse reviewDetails(String productId);
+    ApiResponse reviewDetails(String productId, Optional<Boolean> notReply);
     
 }
