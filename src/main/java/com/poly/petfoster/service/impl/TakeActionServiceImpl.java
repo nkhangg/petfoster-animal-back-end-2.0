@@ -19,6 +19,7 @@ import com.poly.petfoster.entity.ProductRepo;
 import com.poly.petfoster.entity.Review;
 import com.poly.petfoster.repository.ProductRepoRepository;
 import com.poly.petfoster.repository.ProductRepository;
+import com.poly.petfoster.repository.ReviewRepository;
 import com.poly.petfoster.response.ApiResponse;
 import com.poly.petfoster.response.takeaction.BestSellersResponse;
 import com.poly.petfoster.response.takeaction.ProductItem;
@@ -42,6 +43,9 @@ public class TakeActionServiceImpl implements TakeActionService {
 
     @Autowired
     private ProductRepoRepository productRepoRepository;
+
+    @Autowired
+    private ReviewRepository reviewRepository;
 
     @Override
     public ApiResponse homePageTakeAction() {
@@ -112,35 +116,16 @@ public class TakeActionServiceImpl implements TakeActionService {
     public ProductItem createProductTakeAction(Product product) {
         String image = "";
         int discount = 8;
-        // int rating = 5;
 
         List<Review> reviews = product.getReviews();
         Double rating = reviews.stream().mapToDouble(Review::getRate).average().orElse(0.0);
-        List<ReviewItem> reviewItems = new ArrayList<>();
-
-        reviews.forEach(review -> {
-
-            List<Integer> sizes = new ArrayList<>();
-            List<OrderDetail> orderDetails = review.getOrder().getOrderDetails();
-            orderDetails.forEach(item -> {
-                sizes.add(item.getProductRepo().getSize());
-            });
-
-            reviewItems.add(ReviewItem.builder()
-                    .id(review.getId())
-                    .avatar(review.getUser().getAvatar() == null ? null
-                            : portUltil.getUrlImage(review.getUser().getAvatar()))
-                    .name(review.getUser().getUsername())
-                    .rating(review.getRate())
-                    .sizes(sizes)
-                    .comment(review.getComment())
-                    .createAt(formatUtils.dateToString(review.getCreateAt(), "MMM d, yyyy"))
-                    .build());
-        });
+        
 
         if (!product.getImgs().isEmpty()) {
             image = product.getImgs().get(0).getNameImg();
         }
+
+        List<ReviewItem> reviewItems = this.getReviewItems(reviews, product);
 
         List<Integer> sizes = productRepoRepository.findSizeByProduct(product.getId());
 
@@ -163,6 +148,53 @@ public class TakeActionServiceImpl implements TakeActionService {
                 .reviews(reviews.size())
                 .reviewItems(reviewItems)
                 .build();
+    }
+
+    public List<ReviewItem> getReviewItems(List<Review> reviews, Product product) {
+
+        List<ReviewItem> reviewItems = new ArrayList<>();
+
+        reviews.forEach(review -> {
+            List<Integer> sizes = new ArrayList<>();
+            List<OrderDetail> orderDetails = review.getOrder().getOrderDetails();
+            orderDetails.forEach(item -> {
+                if(product.getId().equalsIgnoreCase(item.getProductRepo().getProduct().getId())) {
+                    sizes.add(item.getProductRepo().getSize());
+                }
+            });
+
+            List<ReviewItem> replyReivewItems = new ArrayList<>();
+            List<Review> replyReviews = reviewRepository.getReplyReviews(review.getId());
+            replyReviews.forEach(item -> {
+                replyReivewItems.add(
+                    ReviewItem.builder()
+                    .id(item.getId())
+                    .name(item.getUser().getUsername())
+                    .rating(item.getRate())
+                    .sizes(null)
+                    .avatar(item.getUser().getAvatar() == null ? null
+                                : portUltil.getUrlImage(item.getUser().getAvatar()))
+                    .comment(item.getComment())
+                    .createAt(formatUtils.dateToString(item.getCreateAt(), "MMM d, yyyy"))
+                    .replayItems(null)
+                    .build()
+                );
+            });
+
+            reviewItems.add(ReviewItem.builder()
+                    .id(review.getId())
+                    .avatar(review.getUser().getAvatar() == null ? null
+                            : portUltil.getUrlImage(review.getUser().getAvatar()))
+                    .name(review.getUser().getUsername())
+                    .rating(review.getRate())
+                    .sizes(sizes)
+                    .comment(review.getComment())
+                    .createAt(formatUtils.dateToString(review.getCreateAt(), "MMM d, yyyy"))
+                    .replayItems(replyReivewItems)
+                    .build());
+        });
+
+        return reviewItems;
     }
 
 }

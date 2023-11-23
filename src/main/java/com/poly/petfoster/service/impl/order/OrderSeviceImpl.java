@@ -259,8 +259,11 @@ public class OrderSeviceImpl implements OrderService {
             List<OrderDetail> orderDetails = order.getOrderDetails();
             List<OrderProductItem> products = new ArrayList<>();
 
+            Boolean isTotalRate = true;
             for (OrderDetail orderDetail : orderDetails) {
-                products.add(createOrderProductItem(orderDetail));
+                OrderProductItem orderProductItem = createOrderProductItem(orderDetail);
+                products.add(orderProductItem);
+                isTotalRate = isTotalRate && orderProductItem.getIsRate();
             }
 
             OrderHistory orderHistory = OrderHistory.builder()
@@ -270,6 +273,7 @@ public class OrderSeviceImpl implements OrderService {
                     .stateMessage(order.getStatus())
                     .total(order.getTotal())
                     .products(products)
+                    .isTotalRate(isTotalRate)
                     .build();
 
             data.add(orderHistory);
@@ -523,25 +527,28 @@ public class OrderSeviceImpl implements OrderService {
                     .build();
         }
 
+        String updateStatus;
+        System.out.println(updateStatusRequest.getStatus().equals(OrderStatus.CANCELLED_BY_CUSTOMER.getValue()));
         try {
-            OrderStatus.valueOf(updateStatusRequest.getStatus().toUpperCase()).getValue();
+            updateStatus = OrderStatus.valueOf(updateStatusRequest.getStatus()).getValue();
         } catch (Exception e) {
             return ApiResponse.builder()
                     .message(updateStatusRequest.getStatus() + " doesn't exists in the enum")
                     .status(404)
-                    .errors(updateStatusRequest.getStatus() + " doesn't exists in the enum")
+                    .errors(true)
                     .build();
         }
 
-        if(!updateStatusRequest.getStatus().equalsIgnoreCase(OrderStatus.CANCELLED.getValue())) {
+        if (!updateStatus.equalsIgnoreCase(OrderStatus.CANCELLED_BY_CUSTOMER.getValue())) {
             return ApiResponse.builder()
                     .message("You cannot update the order!!!")
                     .status(HttpStatus.FAILED_DEPENDENCY.value())
-                    .errors("You cannot update the order!!!")
+                    .errors(true)
                     .build();
         }
 
-        if (order.getStatus().equalsIgnoreCase(OrderStatus.SHIPPING.getValue()) || order.getStatus().equalsIgnoreCase(OrderStatus.DELIVERED.getValue())) {
+        if (order.getStatus().equalsIgnoreCase(OrderStatus.SHIPPING.getValue())
+                || order.getStatus().equalsIgnoreCase(OrderStatus.DELIVERED.getValue())) {
             return ApiResponse.builder()
                     .message("Cannot cancel the order!!!")
                     .status(HttpStatus.FAILED_DEPENDENCY.value())
@@ -550,7 +557,7 @@ public class OrderSeviceImpl implements OrderService {
                     .build();
         }
 
-        order.setStatus(updateStatusRequest.getStatus());
+        order.setStatus(updateStatus);
         order.setDescriptions(updateStatusRequest.getReason() != null ? updateStatusRequest.getReason() : "");
         ordersRepository.save(order);
 

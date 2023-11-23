@@ -31,9 +31,10 @@ public class UsersController {
 
     @GetMapping("")
     public ResponseEntity<ApiResponse> getAllUser(@RequestHeader("Authorization") String jwt,
+            @RequestParam("keyword") Optional<String> keyword,
+            @RequestParam("sort") Optional<String> sort,
             @RequestParam("page") Optional<Integer> pages) {
-
-        return ResponseEntity.ok(userService.getAllUser(jwt, pages));
+        return ResponseEntity.ok(userService.getAllUser(jwt, keyword, sort, pages));
     }
 
     @GetMapping("/{id}")

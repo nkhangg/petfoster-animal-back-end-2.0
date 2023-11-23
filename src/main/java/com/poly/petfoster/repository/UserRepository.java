@@ -11,15 +11,27 @@ import com.poly.petfoster.entity.User;
 
 public interface UserRepository extends JpaRepository<User, String> {
 
-    
     Boolean existsByUsername(String username);
 
     Boolean existsByEmail(String email);
 
     Boolean existsByPhone(String phone);
 
-    @Query("select p from Users p where p.isActive = true")
-    public List<User> findAll();
+    @Query("SELECT u FROM Users u WHERE u.isActive = 1 " +
+            "AND (:keyword IS NULL OR u.username LIKE %:keyword% ) " +
+            "OR (:keyword IS NULL OR u.fullname LIKE %:keyword% ) " +
+            "OR (:keyword IS NULL OR u.email LIKE %:keyword%) " +
+            "ORDER BY " +
+            "CASE WHEN :sort = 'username-desc' THEN u.username END DESC, " +
+            "CASE WHEN :sort = 'username-asc' THEN u.username END ASC, " +
+            "CASE WHEN :sort = 'fullname-desc' THEN u.fullname END DESC, " +
+            "CASE WHEN :sort = 'fullname-asc' THEN u.fullname END ASC, " +
+            "CASE WHEN :sort = 'create-desc' THEN u.createAt END DESC, " +
+            "CASE WHEN :sort = 'create-asc' THEN u.createAt END ASC, " +
+            "CASE WHEN :sort = 'birthday-desc' THEN u.birthday END DESC, " +
+            "CASE WHEN :sort = 'birthday-asc' THEN u.birthday END ASC")
+    public List<User> findAll(@Param("keyword") String keyword,
+            @Param("sort") String sort);
 
     @Query("select u from Users u where u.email = :email")
     public Optional<User> findByEmail(@Param("email") String email);

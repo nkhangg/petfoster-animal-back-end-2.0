@@ -19,6 +19,10 @@ public interface ProductRepository extends JpaRepository<Product, String> {
         @Query("select p from Product p where p.isActive = true")
         public List<Product> findAll();
 
+        @Query("select p from Product p")
+        public List<Product> findAllNoActive();
+
+
         // @Query(nativeQuery = true, value = "select* from product p inner join
         // product_repo pr on pr.product_id= p.product_id
         // // where p.product_id ='PD0001'")
@@ -94,6 +98,15 @@ public interface ProductRepository extends JpaRepository<Product, String> {
                         @Param("brand") String brand,
                         @Param("sort") String sort,
                         @Param("isActive") Boolean isActive);
+  
+  
+        @Query(nativeQuery = true, value = "select * from product where product_id in (select distinct product_id from review)")
+        public List<Product> getProductsReview();
+        
+        @Query(nativeQuery = true, value = "select * from product " + 
+                        "where product_name like %:name%")
+        public List<Product> getProductsByNameInReview(@Param("name") String name); 
+
 
 
 }

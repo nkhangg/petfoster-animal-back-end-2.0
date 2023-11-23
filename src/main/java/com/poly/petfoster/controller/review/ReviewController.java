@@ -10,10 +10,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.poly.petfoster.request.order.OrderRequest;
 import com.poly.petfoster.request.review.ReviewRequest;
 import com.poly.petfoster.response.ApiResponse;
-import com.poly.petfoster.service.product.ProductDetailsService;
 import com.poly.petfoster.service.review.ReviewService;
 
 @RestController

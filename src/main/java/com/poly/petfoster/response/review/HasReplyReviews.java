@@ -1,8 +1,6 @@
-package com.poly.petfoster.response.takeaction;
+package com.poly.petfoster.response.review;
 
 import java.util.List;
-
-import com.poly.petfoster.entity.Review;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ReviewItem {
+public class HasReplyReviews {
     
     private Integer id;
 
@@ -28,7 +26,5 @@ public class ReviewItem {
     private String comment;
 
     private String createAt;
-
-    private List<ReviewItem> replayItems;
 
 }

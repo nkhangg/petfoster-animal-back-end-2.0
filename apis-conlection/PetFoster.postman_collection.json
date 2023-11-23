@@ -26,7 +26,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"username\": \"khangpn1\",\r\n    \"password\": \"123123\"\r\n}\r\n\r\n                    \r\n",
+							"raw": "{\r\n    \"username\": \"hantl111\",\r\n    \"password\": \"123456\"\r\n}\r\n\r\n                    \r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1653,7 +1653,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"addressId\": 1,\r\n    \"deliveryId\": 1,\r\n    \"methodId\": 2,\r\n    \"ship\": 20000,\r\n    \"orderItems\": [\r\n        {\r\n            \"productId\": \"PD0001\",\r\n            \"size\": 1000,\r\n            \"quantity\": 2\r\n        },\r\n        {\r\n            \"productId\": \"PD0001\",\r\n            \"size\": 500,\r\n            \"quantity\": 1\r\n        },\r\n        {\r\n            \"productId\": \"PD0002\",\r\n            \"size\": 500,\r\n            \"quantity\": 1\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"addressId\": 6,\r\n    \"deliveryId\": 1,\r\n    \"methodId\": 1,\r\n    \"ship\": 20000,\r\n    \"orderItems\": [\r\n        {\r\n            \"productId\": \"PD0001\",\r\n            \"size\": 1000,\r\n            \"quantity\": 2\r\n        },\r\n        {\r\n            \"productId\": \"PD0001\",\r\n            \"size\": 500,\r\n            \"quantity\": 1\r\n        },\r\n        {\r\n            \"productId\": \"PD0040\",\r\n            \"size\": 250,\r\n            \"quantity\": 1\r\n        },\r\n        {\r\n            \"productId\": \"PD0040\",\r\n            \"size\": 500,\r\n            \"quantity\": 1\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1785,6 +1785,149 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "[admin]Update Order Status",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE3MDAzMjE0NjAsImV4cCI6MTcwMDY4MTQ2MCwidXNlcm5hbWUiOiJoYW50bDExMSIsImF1dGhvcml0aWVzIjoiUk9MRV9BRE1JTiJ9.tx9RA_-PDcjBJ5FgcYWWwQQlroWNWW0RdLnSP0D6vLOk_qzYeo7FWK7tqBkzmq5zIGJiyfe8sHIyAG5MReHDSw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"status\": \"Delivered\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8019/api/admin/orders/status/46",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8019",
+							"path": [
+								"api",
+								"admin",
+								"orders",
+								"status",
+								"46"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[admin]Order Tracking",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE3MDAyODA2MjQsImV4cCI6MTcwMDY0MDYyNCwidXNlcm5hbWUiOiJoYW50bDExMSIsImF1dGhvcml0aWVzIjoiUk9MRV9BRE1JTiJ9.mv-Ynzlr6Vaq5oJUaVMRGY4TZJFgYVulDZtg1iYv_w23uh-M2fTkk6gX6wgXzD8OGrLlbwsqBh_zPZuvtwwrBw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8019/api/admin/orders/filter?username=khach&status=placed&sort=date-desc&maxDate=2023-11-17&minDate=2023-11-15",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8019",
+							"path": [
+								"api",
+								"admin",
+								"orders",
+								"filter"
+							],
+							"query": [
+								{
+									"key": "username",
+									"value": "khach"
+								},
+								{
+									"key": "status",
+									"value": "placed"
+								},
+								{
+									"key": "orderId",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "date-desc"
+								},
+								{
+									"key": "maxDate",
+									"value": "2023-11-17"
+								},
+								{
+									"key": "minDate",
+									"value": "2023-11-15"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[auth]Cancel Order",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE3MDAzMjQwODEsImV4cCI6MTcwMDY4NDA4MSwidXNlcm5hbWUiOiJoYW50bDExMSIsImF1dGhvcml0aWVzIjoiUk9MRV9BRE1JTiJ9.lMyzTh4kDPhSKMUXCG0qxvSi1MpSJLCHx-C1GLVZsAr_cX95n-fdDmo4EBElRqWU7SL2GjrSKIkkIiy8CnaA3A",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"status\": \"Cancelled\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8019/api/user/order/cancel/35",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8019",
+							"path": [
+								"api",
+								"user",
+								"order",
+								"cancel",
+								"35"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -1798,7 +1941,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"orderId\":\"42\",\r\n    \"productId\": \"PD0001\",\r\n    \"comment\": \"Good\",\r\n    \"rate\": 4\r\n}",
+							"raw": "{\r\n    \"orderId\":\"47\",\r\n    \"productId\": \"PD0001\",\r\n    \"comment\": \"Bad\",\r\n    \"rate\": 3\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1816,6 +1959,28 @@
 								"api",
 								"user",
 								"reviews"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Filter Reviews",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8019/api/admin/reviews/filter",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8019",
+							"path": [
+								"api",
+								"admin",
+								"reviews",
+								"filter"
 							]
 						}
 					},
@@ -1855,7 +2020,7 @@
 		"bearer": [
 			{
 				"key": "token",
-				"value": "eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE3MDA0MDk1MTAsImV4cCI6MTcwMDc2OTUxMCwidXNlcm5hbWUiOiJoYW50bDExMSIsImF1dGhvcml0aWVzIjoiUk9MRV9BRE1JTiJ9.MjANKIkmKQ9ZGVEz0BeO4bC4fEdiSDynZPTI5KkDkiJ-wjmqJgaSEvEphFM2D2q1cDg0ZtL4rKdqGJexlI3F6A",
+				"value": "eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE3MDA0OTk0MDgsImV4cCI6MTcwMDg1OTQwOCwidXNlcm5hbWUiOiJoYW50bDExMSIsImF1dGhvcml0aWVzIjoiUk9MRV9BRE1JTiJ9.3CJuWeffXCvmbbDGGc4iKHwX0_opsS8jSkm--n8koZYbO5x4v-FlocwOPWajCqPd2oY4n6FpZvck9KnbVk0t4A",
 				"type": "string"
 			}
 		]

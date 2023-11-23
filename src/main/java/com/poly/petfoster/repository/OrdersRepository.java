@@ -67,35 +67,34 @@ public interface OrdersRepository extends JpaRepository<Orders, Integer> {
 
         @Query(nativeQuery = true, value = "select * from orders o " +
                         "inner join shipping_info si on si.id = o.shipping_info_id " +
-                        "where [user_id] = :userId and o.[status] like %:status%")
+                        "where [user_id] = :userId and o.[status] like %:status% " +
+                        "order by " +
+                        "create_at desc")
         public List<Orders> orderHistory(@Param("userId") String userId, @Param("status") String status);
 
         @Query(nativeQuery = true, value = "select * from orders " +
                         "where [user_id] = :userId")
         public List<Orders> getOrderListByUserID(@Param("userId") String userId);
 
-
-    @Query("SELECT o FROM Orders o " +
-                "WHERE (:username IS NULL OR o.user.username like %:username%) " +
-                "AND (:orderId IS NULL OR o.id = :orderId) " +
-                "AND (:status IS NULL OR o.status like %:status%) " +
-                "AND ((:minDate IS NULL AND :maxDate IS NULL) OR (convert(date, o.createAt) BETWEEN :minDate AND :maxDate)) " +
-                "ORDER BY " +
-                "CASE WHEN :sort = 'total-desc' THEN o.total END DESC, " +
-                "CASE WHEN :sort = 'total-asc' THEN o.total END ASC, " +
-                "CASE WHEN :sort = 'id-desc' THEN o.id END DESC, " +
-                "CASE WHEN :sort = 'id-asc' THEN o.id END ASC, " +
-                "CASE WHEN :sort = 'date-desc' THEN o.createAt END DESC, " +
-                "CASE WHEN :sort = 'date-asc' THEN o.createAt END ASC"
-        )
+        @Query("SELECT o FROM Orders o " +
+                        "WHERE (:username IS NULL OR o.user.username like %:username%) " +
+                        "AND (:orderId IS NULL OR o.id = :orderId) " +
+                        "AND (:status IS NULL OR o.status like %:status%) " +
+                        "AND ((:minDate IS NULL AND :maxDate IS NULL) OR (convert(date, o.createAt) BETWEEN :minDate AND :maxDate)) "
+                        +
+                        "ORDER BY " +
+                        "CASE WHEN :sort = 'total-desc' THEN o.total END DESC, " +
+                        "CASE WHEN :sort = 'total-asc' THEN o.total END ASC, " +
+                        "CASE WHEN :sort = 'id-desc' THEN o.id END DESC, " +
+                        "CASE WHEN :sort = 'id-asc' THEN o.id END ASC, " +
+                        "CASE WHEN :sort = 'date-desc' THEN o.createAt END DESC, " +
+                        "CASE WHEN :sort = 'date-asc' THEN o.createAt END ASC")
         List<Orders> filterOrders(
                         @Param("username") String username,
                         @Param("orderId") Integer orderId,
                         @Param("status") String status,
                         @Param("minDate") Date minDate,
                         @Param("maxDate") Date maxDate,
-                        @Param("sort") String sort
-        );
-
+                        @Param("sort") String sort);
 
 }

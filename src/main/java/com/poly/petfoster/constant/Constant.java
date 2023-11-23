@@ -1,5 +1,7 @@
 package com.poly.petfoster.constant;
 
+import java.util.Date;
+
 public class Constant {
 
     public static final String CLIENT_URL = "http://localhost:3000/";
@@ -15,4 +17,6 @@ public class Constant {
     public static String VNP_TMN_CODE = "EWMX8UAJ";
     public static String VNP_SECRET_KEY = "YGFMMZSPJSYYKBXRJPBPOSOEWZUEGKPF";
     public static String VNP_API_ARL = "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction";
+
+    public static Date MIN_DATE = new Date(0);
 }
