@@ -37,28 +37,32 @@ public class ProductFilterServiceImpl implements ProductFilterService {
     TakeActionServiceImpl takeActionServiceImpl;
 
     @Autowired
-        private ProductRepoRepository productRepoRepository;
+    private ProductRepoRepository productRepoRepository;
 
-        @Autowired
-        private PortUltil portUltil;
+    @Autowired
+    private PortUltil portUltil;
 
     @Override
-    public ApiResponse filterProducts(Optional<String> typeName, Optional<Double> minPrice, Optional<Double> maxPrice, Optional<Boolean> stock, Optional<String> brand, Optional<String> productName, Optional<String> sort, Optional<Integer> page) {
+    public ApiResponse filterProducts(Optional<String> typeName, Optional<Double> minPrice, Optional<Double> maxPrice,
+            Optional<Boolean> stock, Optional<String> brand, Optional<String> productName, Optional<String> sort,
+            Optional<Integer> page) {
 
         List<ProductItem> productItems = new ArrayList<>();
-        List<Product> filterProducts =  productRepository.filterProducts(typeName.orElse(null), minPrice.orElse(null), maxPrice.orElse(null), stock.orElse(null), brand.orElse(null), productName.orElse(null), sort.orElse(null));
+        List<Product> filterProducts = productRepository.filterProducts(typeName.orElse(null), minPrice.orElse(null),
+                maxPrice.orElse(null), stock.orElse(null), brand.orElse(null), productName.orElse(null),
+                sort.orElse(null));
         Pageable pageable = PageRequest.of(page.orElse(0), 9);
 
         int startIndex = (int) pageable.getOffset();
         int endIndex = Math.min(startIndex + pageable.getPageSize(), filterProducts.size());
 
-        if(startIndex >= endIndex){
+        if (startIndex >= endIndex) {
             return ApiResponse.builder()
-            .message(RespMessage.NOT_FOUND.getValue())
-            .data(null)
-            .errors(true)
-            .status(HttpStatus.NOT_FOUND.value())
-            .build();
+                    .message(RespMessage.NOT_FOUND.getValue())
+                    .data(null)
+                    .errors(true)
+                    .status(HttpStatus.NOT_FOUND.value())
+                    .build();
         }
 
         List<Product> visibleProducts = filterProducts.subList(startIndex, endIndex);
@@ -69,56 +73,59 @@ public class ProductFilterServiceImpl implements ProductFilterService {
         });
 
         return ApiResponse.builder().message("Successfully!")
-                                    .status(200)
-                                    .errors(false)
-                                    .data(
-                                        ProductFilterResponse.builder().filterProducts(productItems)
-                                        .pages(pagination.getTotalPages())
-                                        .build()
-                                    ).build();
+                .status(200)
+                .errors(false)
+                .data(
+                        ProductFilterResponse.builder().filterProducts(productItems)
+                                .pages(pagination.getTotalPages())
+                                .build())
+                .build();
     }
-    public ApiResponse filterAdminProducts(Optional<String> keyword, Optional<String> typeName,  Optional<String> brand, Optional<String> sort, Optional<Integer> page, Boolean isActive){
+
+    public ApiResponse filterAdminProducts(Optional<String> keyword, Optional<String> typeName, Optional<String> brand,
+            Optional<String> sort, Optional<Integer> page, Boolean isActive) {
         List<ProductManageResponse> productItems = new ArrayList<>();
-        
-                List<Product> products = productRepository.filterAdminProducts(keyword.orElse(null), typeName.orElse(null), brand.orElse(null), sort.orElse(null), isActive);
 
-                Pageable pageable = PageRequest.of(page.orElse(0), 10);
-                int startIndex = (int) pageable.getOffset();
-                int endIndex = Math.min(startIndex + pageable.getPageSize(), products.size());
+        List<Product> products = productRepository.filterAdminProducts(keyword.orElse(null), typeName.orElse(null),
+                brand.orElse(null), sort.orElse(null), isActive);
 
-                if (startIndex >= endIndex) {
-                        return ApiResponse.builder()
-                                        .message(RespMessage.NOT_FOUND.getValue())
-                                        .data(null)
-                                        .errors(true)
-                                        .status(HttpStatus.NOT_FOUND.value())
-                                        .build();
-                }
+        Pageable pageable = PageRequest.of(page.orElse(0), 10);
+        int startIndex = (int) pageable.getOffset();
+        int endIndex = Math.min(startIndex + pageable.getPageSize(), products.size());
 
-                List<Product> visibleProducts = products.subList(startIndex, endIndex);
+        if (startIndex >= endIndex) {
+            return ApiResponse.builder()
+                    .message(RespMessage.NOT_FOUND.getValue())
+                    .data(PagiantionResponse.builder().data(new ArrayList<>())
+                            .pages(0).build())
+                    .errors(true)
+                    .status(HttpStatus.NOT_FOUND.value())
+                    .build();
+        }
 
-                visibleProducts.stream().forEach(product -> {
-                        productItems.add(ProductManageResponse.builder()
-                                        .id(product.getId())
-                                        .image(portUltil.getUrlImage(product.getImgs().get(0).getNameImg()))
-                                        .brand(product.getBrand().getBrand())
-                                        .name(product.getName())
-                                        .type(product.getProductType().getName())
-                                        .repo(productRepoRepository.findByProduct(product))
-                                        .build());
-                });
+        List<Product> visibleProducts = products.subList(startIndex, endIndex);
 
-                Page<ProductManageResponse> pagination = new PageImpl<ProductManageResponse>(productItems, pageable,
-                                products.size());
+        visibleProducts.stream().forEach(product -> {
+            productItems.add(ProductManageResponse.builder()
+                    .id(product.getId())
+                    .image(portUltil.getUrlImage(product.getImgs().get(0).getNameImg()))
+                    .brand(product.getBrand().getBrand())
+                    .name(product.getName())
+                    .type(product.getProductType().getName())
+                    .repo(productRepoRepository.findByProduct(product))
+                    .build());
+        });
 
-                return ApiResponse.builder()
-                                .message("Query product Successfully")
-                                .status(HttpStatus.OK.value())
-                                .errors(false)
-                                .data(PagiantionResponse.builder().data(pagination.getContent())
-                                .pages(pagination.getTotalPages()).build())
-                                .build();
+        Page<ProductManageResponse> pagination = new PageImpl<ProductManageResponse>(productItems, pageable,
+                products.size());
+
+        return ApiResponse.builder()
+                .message("Query product Successfully")
+                .status(HttpStatus.OK.value())
+                .errors(false)
+                .data(PagiantionResponse.builder().data(pagination.getContent())
+                        .pages(pagination.getTotalPages()).build())
+                .build();
     };
 
 }
-        
