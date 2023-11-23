@@ -528,25 +528,27 @@ public class OrderSeviceImpl implements OrderService {
         }
 
         String updateStatus;
+        System.out.println(updateStatusRequest.getStatus().equals(OrderStatus.CANCELLED_BY_CUSTOMER.getValue()));
         try {
             updateStatus = OrderStatus.valueOf(updateStatusRequest.getStatus()).getValue();
         } catch (Exception e) {
             return ApiResponse.builder()
                     .message(updateStatusRequest.getStatus() + " doesn't exists in the enum")
                     .status(404)
-                    .errors(updateStatusRequest.getStatus() + " doesn't exists in the enum")
+                    .errors(true)
                     .build();
         }
 
-        if(!updateStatus.equalsIgnoreCase(OrderStatus.CANCELLED_BY_CUSTOMER.getValue())) {
+        if (!updateStatus.equalsIgnoreCase(OrderStatus.CANCELLED_BY_CUSTOMER.getValue())) {
             return ApiResponse.builder()
                     .message("You cannot update the order!!!")
                     .status(HttpStatus.FAILED_DEPENDENCY.value())
-                    .errors("You cannot update the order!!!")
+                    .errors(true)
                     .build();
         }
 
-        if (order.getStatus().equalsIgnoreCase(OrderStatus.SHIPPING.getValue()) || order.getStatus().equalsIgnoreCase(OrderStatus.DELIVERED.getValue())) {
+        if (order.getStatus().equalsIgnoreCase(OrderStatus.SHIPPING.getValue())
+                || order.getStatus().equalsIgnoreCase(OrderStatus.DELIVERED.getValue())) {
             return ApiResponse.builder()
                     .message("Cannot cancel the order!!!")
                     .status(HttpStatus.FAILED_DEPENDENCY.value())
