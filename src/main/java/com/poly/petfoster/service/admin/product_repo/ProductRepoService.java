@@ -6,7 +6,7 @@ import com.poly.petfoster.response.ApiResponse;
 
 public interface ProductRepoService {
 
-    ApiResponse updateOrCreateRepo(Integer id, UpdateRepoRequest updateRepoRequest);
+    ApiResponse updateOrCreateRepo(Integer id, UpdateRepoRequest updateRepoRequest, String token);
 
     ApiResponse deleteProductRepo(Integer id);
 
