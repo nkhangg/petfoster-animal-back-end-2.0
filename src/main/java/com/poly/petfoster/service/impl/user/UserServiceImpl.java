@@ -111,10 +111,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ApiResponse getAllUser(String jwt, Optional<String> keyword, Optional<String> sort,
+    public ApiResponse getAllUser(String jwt, Optional<String> keyword, Optional<String> sort, Optional<String> role,
             Optional<Integer> pages) {
 
-        List<User> users = userRepository.findAll(keyword.orElse(null), sort.orElse(null));
+        List<User> users = userRepository.findAll(keyword.orElse(null), role.orElse(null), sort.orElse(null));
 
         if (users.isEmpty()) {
             return ApiResponse.builder().message("No data!")
@@ -145,9 +145,9 @@ public class UserServiceImpl implements UserService {
         visibleUsers.forEach((user) -> {
             // find role by user
             List<Authorities> roles = authoritiesRepository.findByUser(user);
-            Role role = null;
+            Role rolee = null;
             if (roles.size() > 0) {
-                role = roles.get(0).getRole();
+                rolee = roles.get(0).getRole();
             }
             UserProfileResponse userProfile = UserProfileResponse.builder()
                     .id(user.getId())
@@ -158,7 +158,7 @@ public class UserServiceImpl implements UserService {
                     .phone(user.getPhone())
                     .email(user.getEmail())
                     .avatar(user.getAvatar() == null ? null : portUltil.getUrlImage(user.getAvatar()))
-                    .role(role == null ? null : role.getRole())
+                    .role(rolee == null ? null : rolee.getRole())
                     .createAt(user.getCreateAt())
                     .build();
 
