@@ -19,6 +19,7 @@ public interface UserService {
 
     public ApiResponse getAllUser(String jwt, Optional<String> keyword,
             Optional<String> sort,
+            Optional<String> role,
             Optional<Integer> pages);
 
     public ApiResponse updateUser(UpdateUserRequest updateUserRequest);
