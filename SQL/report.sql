@@ -32,7 +32,7 @@ LEFT JOIN (
 ) AS order_status ON od.order_id = order_status.id
 WHERE
     (order_year.order_year = @year OR order_year.order_year IS NULL)
-    AND (COALESCE(order_status.[status], 'default_status') NOT IN ('cancelled', 'waiting'))
+    AND (COALESCE(order_status.[status], 'default_status') NOT IN ('Cancelled By Customer', 'Cancelled By Admin', 'Waiting'))
 GROUP BY
     pt.product_type_name;
 END
@@ -70,7 +70,7 @@ WITH AllMonths AS (
 )
 SELECT COALESCE(SUM(o.total), 0)
 FROM AllMonths am
-LEFT JOIN orders o ON am.Month = MONTH(o.create_at) AND YEAR(o.create_at) = @year and o.[status] != 'cancelled' and o.[status] != 'waiting'
+LEFT JOIN orders o ON am.Month = MONTH(o.create_at) AND YEAR(o.create_at) = @year and o.[status] != 'Cancelled By Admin' and o.[status] != 'waiting' and o.[status] != 'Cancelled By Customer'
 GROUP BY am.Month
 END
 

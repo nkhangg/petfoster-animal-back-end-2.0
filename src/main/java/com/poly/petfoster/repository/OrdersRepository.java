@@ -21,22 +21,22 @@ public interface OrdersRepository extends JpaRepository<Orders, Integer> {
         // @Query("select sum(o.total) from Orders o where MONTH(o.createAt) = :month")
         // public Double getRevenueByMonth(@Param("month") Integer month);
 
-        @Query(nativeQuery = true, value = "select sum(total) from orders where convert(date, create_at) = convert(date, getdate()) and [status] != 'cancelled' and [status] != 'waiting'")
+        @Query(nativeQuery = true, value = "select sum(total) from orders where convert(date, create_at) = convert(date, getdate()) and [status] not in ('Cancelled By Customer', 'Cancelled By Admin', 'Waiting')")
         public Integer getDailyRevenue();
 
-        @Query(nativeQuery = true, value = "select sum(total) from orders where convert(date, create_at) = convert(date, getdate() - 1) and [status] != 'cancelled' and [status] != 'waiting'")
+        @Query(nativeQuery = true, value = "select sum(total) from orders where convert(date, create_at) = convert(date, getdate() - 1) and [status] not in ('Cancelled By Customer', 'Cancelled By Admin', 'Waiting')")
         public Integer getYesterdayRevenue();
 
-        @Query(nativeQuery = true, value = "select count(*) from orders where convert(date, create_at) = convert(date, getdate()) and [status] != 'cancelled' and [status] != 'waiting'")
+        @Query(nativeQuery = true, value = "select count(*) from orders where convert(date, create_at) = convert(date, getdate()) and [status] not in ('Cancelled By Customer', 'Cancelled By Admin', 'Waiting')")
         public Integer getDailyOrder();
 
-        @Query(nativeQuery = true, value = "select count(*) from orders where convert(date, create_at) = convert(date, getdate() - 1) and [status] != 'cancelled' and [status] != 'waiting'")
+        @Query(nativeQuery = true, value = "select count(*) from orders where convert(date, create_at) = convert(date, getdate() - 1) and [status] not in ('Cancelled By Customer', 'Cancelled By Admin', 'Waiting')")
         public Integer getYesterdayOrder();
 
         @Procedure(name = "GetRevenueByYear")
         List<Integer> getRevenueByYear(@Param("year") Integer year);
 
-        @Query(nativeQuery = true, value = "select sum(total) from orders where year(create_at) = :year and [status] != 'cancelled' and [status] != 'waiting'")
+        @Query(nativeQuery = true, value = "select sum(total) from orders where year(create_at) = :year and [status] not in ('Cancelled By Customer', 'Cancelled By Admin', 'Waiting')")
         public Integer getTotalRevenueByYear(@Param("year") Integer year);
 
         @Procedure(name = "GetProductTypeRevenueByYear")
