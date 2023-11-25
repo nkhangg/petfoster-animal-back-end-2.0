@@ -10,11 +10,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.poly.petfoster.config.JwtProvider;
 import com.poly.petfoster.constant.Constant;
 import com.poly.petfoster.entity.Product;
 import com.poly.petfoster.entity.Review;
+import com.poly.petfoster.entity.User;
 import com.poly.petfoster.repository.ProductRepository;
 import com.poly.petfoster.repository.ReviewRepository;
+import com.poly.petfoster.repository.UserRepository;
+import com.poly.petfoster.request.review.ReviewReplayRequest;
 import com.poly.petfoster.response.ApiResponse;
 import com.poly.petfoster.response.review.DetailRate;
 import com.poly.petfoster.response.review.ReviewDetailsResponse;
@@ -40,9 +44,16 @@ public class AdminReviewServiceImpl implements AdminReviewService {
     @Autowired
     FormatUtils formatUtils;
 
+    @Autowired
+    JwtProvider jwtProvider;
+
+    @Autowired
+    UserRepository userRepository;
+
     @Override
-    public ApiResponse filterReviews(Optional<String> productName, Optional<Integer> minStar, Optional<Integer> maxStar, Optional<String> sort) {
-        
+    public ApiResponse filterReviews(Optional<String> productName, Optional<Integer> minStar, Optional<Integer> maxStar,
+            Optional<String> sort) {
+
         String name = productName.orElse(null);
         Integer min = minStar.orElse(0);
         Integer max = maxStar.orElse(5);
@@ -50,8 +61,8 @@ public class AdminReviewServiceImpl implements AdminReviewService {
 
         // List<Product> products = productRepository.getProductsReview();
         List<Product> products = productRepository.findAll();
-       
-        if(name != null) {
+
+        if (name != null) {
             products = productRepository.getProductsByNameInReview(name);
         }
 
@@ -60,22 +71,23 @@ public class AdminReviewServiceImpl implements AdminReviewService {
 
             List<Review> noRelpyReviews = reviewRepository.getNoReplyReivewsByProduct(product.getId());
             ProductItem productItem = takeActionServiceImpl.createProductTakeAction(product);
-            
+
             reviews.add(
-                ReviewFilterResponse.builder()
-                .productId(productItem.getId())
-                .productName(productItem.getName())
-                .image(productItem.getImage())
-                .rate(productItem.getRating() != null ? productItem.getRating() : 0)
-                .lastest(reviewRepository.getLastestReviewByProduct(product.getId()) != null ? reviewRepository.getLastestReviewByProduct(product.getId()).getCreateAt() : null)
-                .reviews(productItem.getReviews())
-                .commentNoRep(noRelpyReviews.size())
-                .build()
-            );
-            
+                    ReviewFilterResponse.builder()
+                            .productId(productItem.getId())
+                            .productName(productItem.getName())
+                            .image(productItem.getImage())
+                            .rate(productItem.getRating() != null ? productItem.getRating() : 0)
+                            .lastest(reviewRepository.getLastestReviewByProduct(product.getId()) != null
+                                    ? reviewRepository.getLastestReviewByProduct(product.getId()).getCreateAt()
+                                    : null)
+                            .reviews(productItem.getReviews())
+                            .commentNoRep(noRelpyReviews.size())
+                            .build());
+
         });
 
-        if(min >= max) {
+        if (min >= max) {
             return ApiResponse.builder()
                     .message("Max star must larger than Min star")
                     .status(HttpStatus.FAILED_DEPENDENCY.value())
@@ -102,24 +114,28 @@ public class AdminReviewServiceImpl implements AdminReviewService {
                 filterReviews.sort(Comparator.comparingDouble(ReviewFilterResponse::getReviews).reversed());
                 break;
             case "latest-asc":
-                filterReviews.sort(Comparator.comparing(review -> review.getLastest() != null ? review.getLastest() : Constant.MIN_DATE));
+                filterReviews.sort(Comparator
+                        .comparing(review -> review.getLastest() != null ? review.getLastest() : Constant.MIN_DATE));
                 break;
             case "latest-desc":
-                filterReviews.sort(Comparator.comparing((ReviewFilterResponse review) -> review.getLastest() != null ? review.getLastest() : Constant.MIN_DATE).reversed());
+                filterReviews.sort(Comparator
+                        .comparing((ReviewFilterResponse review) -> review.getLastest() != null ? review.getLastest()
+                                : Constant.MIN_DATE)
+                        .reversed());
                 break;
             default:
                 break;
         }
-        
+
         return ApiResponse.builder().message("Successfully").status(200).errors(false).data(filterReviews).build();
     }
 
     @Override
     public ApiResponse reviewDetails(String productId) {
-        
+
         Product product = productRepository.findById(productId).orElse(null);
 
-        if(product == null) {
+        if (product == null) {
             return ApiResponse.builder()
                     .message("Product not found")
                     .status(404)
@@ -128,31 +144,31 @@ public class AdminReviewServiceImpl implements AdminReviewService {
         }
 
         List<Review> reviews = product.getReviews();
-        
+
         ProductItem productItem = takeActionServiceImpl.createProductTakeAction(product);
         DetailRate detailRate = this.createDetailRate(reviews);
         List<ReviewItem> reviewItems = takeActionServiceImpl.getReviewItems(reviews, product);
 
         ReviewDetailsResponse reviewResponse = ReviewDetailsResponse.builder()
-        .id(productId)
-        .name(productItem.getName())
-        .image(productItem.getImage())
-        .rate(productItem.getRating())
-        .detailRate(detailRate)
-        .totalRate(reviews.size())
-        .reviews(reviewItems)
-        .build();
-               
+                .id(productId)
+                .name(productItem.getName())
+                .image(productItem.getImage())
+                .rate(productItem.getRating())
+                .detailRate(detailRate)
+                .totalRate(reviews.size())
+                .reviews(reviewItems)
+                .build();
+
         return ApiResponse.builder().message("Successfully").status(200).errors(false).data(reviewResponse).build();
     }
 
     @Override
     public ApiResponse reviewDetailsFilter(String productId, Optional<Boolean> notReply) {
-        
+
         Product product = productRepository.findById(productId).orElse(null);
         Boolean notReplyYet = notReply.orElse(false);
 
-        if(product == null) {
+        if (product == null) {
             return ApiResponse.builder()
                     .message("Product not found")
                     .status(404)
@@ -161,32 +177,79 @@ public class AdminReviewServiceImpl implements AdminReviewService {
         }
 
         List<Review> reviews = new ArrayList<>();
-        reviews = notReplyYet == true ? reviewRepository.getNoReplyReivewsByProduct(product.getId()) : product.getReviews();
-        
-        // ProductItem productItem = takeActionServiceImpl.createProductTakeAction(product);
+        reviews = notReplyYet == true ? reviewRepository.getNoReplyReivewsByProduct(product.getId())
+                : product.getReviews();
+
+        // ProductItem productItem =
+        // takeActionServiceImpl.createProductTakeAction(product);
         // DetailRate detailRate = this.createDetailRate(reviews);
         List<ReviewItem> reviewItems = takeActionServiceImpl.getReviewItems(reviews, product);
 
-        ReviewDetailsResponse reviewResponse = ReviewDetailsResponse.builder()
-        .reviews(reviewItems)
-        .build();
-               
-        return ApiResponse.builder().message("Successfully").status(200).errors(false).data(reviewResponse).build();
+        return ApiResponse.builder().message("Successfully").status(200).errors(false).data(reviewItems).build();
     }
 
     private DetailRate createDetailRate(List<Review> reviews) {
 
         return DetailRate.builder()
-        .one(getRateNumber(reviews, 1))
-        .two(getRateNumber(reviews, 2))
-        .three(getRateNumber(reviews, 3))
-        .four(getRateNumber(reviews, 4))
-        .five(getRateNumber(reviews, 5))
-        .build();
+                .one(getRateNumber(reviews, 1))
+                .two(getRateNumber(reviews, 2))
+                .three(getRateNumber(reviews, 3))
+                .four(getRateNumber(reviews, 4))
+                .five(getRateNumber(reviews, 5))
+                .build();
     }
 
     private Integer getRateNumber(List<Review> reviews, Integer rate) {
         return reviews.stream().filter(review -> review.getRate() == rate).collect(Collectors.toList()).size();
     }
-    
+
+    @Override
+    public ApiResponse replay(String token, ReviewReplayRequest replayRequest) {
+
+        String username = jwtProvider.getUsernameFromToken(token);
+
+        if (username == null) {
+            return ApiResponse.builder().message("Username invalid").status(404).errors(true).data(null).build();
+        }
+
+        User user = userRepository.findByUsername(username).orElse(null);
+
+        if (user == null) {
+            return ApiResponse.builder().message("User not found").status(404).errors(true).data(null).build();
+        }
+
+        Review review = Review.builder()
+                .comment(replayRequest.getComment())
+                .user(user)
+                .repliedId(replayRequest.getIdReplay())
+                .build();
+
+        reviewRepository.save(review);
+
+        return ApiResponse.builder().message("Successfully").status(200).errors(false)
+                .data(reviewRepository.save(review)).build();
+
+    }
+
+    @Override
+    public ApiResponse delete(Integer id) {
+
+        Review curReview = reviewRepository.findById(id).orElse(null);
+
+        if (curReview == null) {
+            return ApiResponse.builder().message("Review not found").status(404).errors(true).data(null).build();
+        }
+
+        List<Review> lReviews = reviewRepository.getReplyReviews(curReview.getId());
+
+        if (!lReviews.isEmpty()) {
+            reviewRepository.deleteAll(lReviews);
+        }
+
+        reviewRepository.delete(curReview);
+
+        return ApiResponse.builder().message("Successfully").status(201).errors(false)
+                .data(curReview).build();
+    }
+
 }
