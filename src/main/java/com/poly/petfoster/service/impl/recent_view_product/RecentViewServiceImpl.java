@@ -23,6 +23,7 @@ import com.poly.petfoster.repository.UserRepository;
 import com.poly.petfoster.response.ApiResponse;
 import com.poly.petfoster.response.recent_view_product.RecentViewReponse;
 import com.poly.petfoster.service.recent_view_products.RecentViewService;
+import com.poly.petfoster.ultils.PortUltil;
 
 @Service
 public class RecentViewServiceImpl implements RecentViewService {
@@ -36,6 +37,9 @@ public class RecentViewServiceImpl implements RecentViewService {
     RecentViewRepository recentViewRepository;
     @Autowired
     ReviewRepository reviewRepository;
+
+    @Autowired
+    PortUltil portUltil;
 
     @Override
     public ApiResponse getRecentView(String jwt) {
@@ -63,11 +67,11 @@ public class RecentViewServiceImpl implements RecentViewService {
 
             List<Review> reviews = reviewRepository.findReviewByUserAndProductID(user.getId(),
                     recentView.getProduct().getId());
-            RecentViewReponse recentViewReponse = RecentViewReponse.builder().id(recentView.getId())
+            RecentViewReponse recentViewReponse = RecentViewReponse.builder().id(recentView.getProduct().getId())
                     .brand(recentView.getProduct().getBrand().getBrand())
                     .size(sizes)
                     .discount(10)
-                    .image(recentView.getProduct().getImgs().get(0).getNameImg())
+                    .image(portUltil.getUrlImage(recentView.getProduct().getImgs().get(0).getNameImg()))
                     .name(recentView.getProduct().getName())
                     .oldPrice(recentView.getProduct().getProductsRepo().get(0).getInPrice())
                     .price(recentView.getProduct().getProductsRepo().get(0).getInPrice())

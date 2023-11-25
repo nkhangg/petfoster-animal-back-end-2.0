@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class RecentViewReponse {
-    Integer id;
+    String id;
     String brand;
     Integer[] size;
     Integer discount;
