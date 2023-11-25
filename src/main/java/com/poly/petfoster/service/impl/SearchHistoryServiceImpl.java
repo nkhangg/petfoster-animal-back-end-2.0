@@ -42,7 +42,7 @@ public class SearchHistoryServiceImpl implements SearchHistoryService {
         List<searchHistoryResponse> listReponse = getListReponse(user.getId());
 
         return ApiResponse.builder()
-                .message("Query product Successfully")
+                .message("Successfully")
                 .status(HttpStatus.OK.value())
                 .errors(null)
                 .data(listReponse)
@@ -59,13 +59,13 @@ public class SearchHistoryServiceImpl implements SearchHistoryService {
                     .status(HttpStatus.UNAUTHORIZED.value())
                     .errors(errorsMap).build();
         }
-        if(keyword.isBlank()){
+        if (keyword.isBlank()) {
             return ApiResponse.builder()
-                .message("Query product Successfully")
-                .status(HttpStatus.OK.value())
-                .errors(null)
-                .data(getListReponse(user.getId()))
-                .build();
+                    .message("Query product Successfully")
+                    .status(HttpStatus.OK.value())
+                    .errors(null)
+                    .data(getListReponse(user.getId()))
+                    .build();
         }
         List<SearchHistory> listSearch = searchHistoryRepository.FindByUserId(user.getId()).orElse(null);
         SearchHistory newSearch = SearchHistory.builder().keyword(keyword).user(user).build();
@@ -103,9 +103,10 @@ public class SearchHistoryServiceImpl implements SearchHistoryService {
                     .status(HttpStatus.UNAUTHORIZED.value())
                     .errors(errorsMap).build();
         }
-        List<SearchHistory> listSearch = searchHistoryRepository.FindByUserIdAndKeyword(user.getId(),keyword).orElse(null);
+        List<SearchHistory> listSearch = searchHistoryRepository.FindByUserIdAndKeyword(user.getId(), keyword)
+                .orElse(null);
         searchHistoryRepository.deleteAll(listSearch);
-        
+
         List<searchHistoryResponse> listReponse = getListReponse(user.getId());
 
         return ApiResponse.builder()

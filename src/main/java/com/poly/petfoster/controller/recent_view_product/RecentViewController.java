@@ -7,14 +7,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.poly.petfoster.response.ApiResponse;
 import com.poly.petfoster.service.recent_view_products.RecentViewService;
 
 @RestController
-@RequestMapping("/api/user/recent-views/")
+@RequestMapping("/api/user/recent-views")
 public class RecentViewController {
     @Autowired
     RecentViewService recentViewService;
@@ -24,7 +23,7 @@ public class RecentViewController {
         return ResponseEntity.ok(recentViewService.getRecentView(jwt));
     }
 
-    @PutMapping("/put/{productId}")
+    @PutMapping("/{productId}")
     public ResponseEntity<ApiResponse> putRecentView(@RequestHeader("Authorization") String jwt,
             @PathVariable("productId") String productId) {
         return ResponseEntity.ok(recentViewService.putRecentView(jwt, productId));
