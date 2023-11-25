@@ -17,7 +17,6 @@ import com.poly.petfoster.repository.ProductRepository;
 import com.poly.petfoster.repository.ReviewRepository;
 import com.poly.petfoster.response.ApiResponse;
 import com.poly.petfoster.response.review.DetailRate;
-import com.poly.petfoster.response.review.HasReplyReviews;
 import com.poly.petfoster.response.review.ReviewDetailsResponse;
 import com.poly.petfoster.response.review.ReviewFilterResponse;
 import com.poly.petfoster.response.takeaction.ProductItem;
@@ -129,10 +128,9 @@ public class AdminReviewServiceImpl implements AdminReviewService {
         }
 
         List<Review> reviews = product.getReviews();
-        // List<Review> noRelpyReviews = reviewRepository.getNoReplyReivewsByProduct(product.getId());
+        
         ProductItem productItem = takeActionServiceImpl.createProductTakeAction(product);
         DetailRate detailRate = this.createDetailRate(reviews);
-        
         List<ReviewItem> reviewItems = takeActionServiceImpl.getReviewItems(reviews, product);
 
         ReviewDetailsResponse reviewResponse = ReviewDetailsResponse.builder()
@@ -142,6 +140,34 @@ public class AdminReviewServiceImpl implements AdminReviewService {
         .rate(productItem.getRating())
         .detailRate(detailRate)
         .totalRate(reviews.size())
+        .reviews(reviewItems)
+        .build();
+               
+        return ApiResponse.builder().message("Successfully").status(200).errors(false).data(reviewResponse).build();
+    }
+
+    @Override
+    public ApiResponse reviewDetailsFilter(String productId, Optional<Boolean> notReply) {
+        
+        Product product = productRepository.findById(productId).orElse(null);
+        Boolean notReplyYet = notReply.orElse(false);
+
+        if(product == null) {
+            return ApiResponse.builder()
+                    .message("Product not found")
+                    .status(404)
+                    .errors("Product not found")
+                    .build();
+        }
+
+        List<Review> reviews = new ArrayList<>();
+        reviews = notReplyYet == true ? reviewRepository.getNoReplyReivewsByProduct(product.getId()) : product.getReviews();
+        
+        // ProductItem productItem = takeActionServiceImpl.createProductTakeAction(product);
+        // DetailRate detailRate = this.createDetailRate(reviews);
+        List<ReviewItem> reviewItems = takeActionServiceImpl.getReviewItems(reviews, product);
+
+        ReviewDetailsResponse reviewResponse = ReviewDetailsResponse.builder()
         .reviews(reviewItems)
         .build();
                

@@ -1,6 +1,5 @@
 package com.poly.petfoster.controller.admin.review;
 
-import java.util.Date;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,4 +34,9 @@ public class AdminReviewController {
         return ResponseEntity.ok(reviewService.reviewDetails(id));
     }
 
+    @GetMapping("/details")
+    public ResponseEntity<ApiResponse> reviewDetailsFilter(@RequestParam("id") String id, @RequestParam("notReply") Optional<Boolean> notReply) {
+        return ResponseEntity.ok(reviewService.reviewDetailsFilter(id, notReply));
+    }
+    
 }
