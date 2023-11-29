@@ -26,11 +26,13 @@ import org.springframework.stereotype.Service;
 
 import com.poly.petfoster.config.JwtProvider;
 import com.poly.petfoster.constant.RespMessage;
+import com.poly.petfoster.entity.Addresses;
 import com.poly.petfoster.entity.Authorities;
 import com.poly.petfoster.entity.Product;
 import com.poly.petfoster.entity.Role;
 import com.poly.petfoster.entity.User;
 import com.poly.petfoster.random.RandomPassword;
+import com.poly.petfoster.repository.AddressRepository;
 import com.poly.petfoster.repository.AuthoritiesRepository;
 import com.poly.petfoster.repository.RoleRepository;
 import com.poly.petfoster.repository.UserRepository;
@@ -40,6 +42,7 @@ import com.poly.petfoster.request.users.UpdateUserRequest;
 import com.poly.petfoster.response.ApiResponse;
 import com.poly.petfoster.response.common.PagiantionResponse;
 import com.poly.petfoster.response.users.UserManageResponse;
+import com.poly.petfoster.response.users.UserProfileMessageResponse;
 import com.poly.petfoster.response.users.UserProfileResponse;
 import com.poly.petfoster.service.user.UserService;
 import com.poly.petfoster.ultils.ImageUtils;
@@ -72,6 +75,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     RoleRepository roleRepository;
+
+    @Autowired
+    AddressRepository addressRepository;
 
     @Override
     public UserDetails findByUsername(String username) throws UsernameNotFoundException {
@@ -399,6 +405,52 @@ public class UserServiceImpl implements UserService {
                 .status(HttpStatus.OK.value())
                 .data(userRepository.save(newUser))
                 .build();
+    }
+
+    @Override
+    public ApiResponse getUserWithUsername(String username) {
+        User user = userRepository.findByUsername(username).orElse(null);
+
+        if (user == null) {
+            return ApiResponse.builder()
+                    .message("User not found !")
+                    .errors(true)
+                    .status(HttpStatus.NOT_FOUND.value())
+                    .data(null)
+                    .build();
+        }
+
+        Addresses addresses = addressRepository.findByIsDefaultWithUser(username);
+
+        if (addresses == null) {
+            if (user.getAddresses().size() > 0) {
+                addresses = user.getAddresses().get(0);
+            }
+        }
+
+        UserProfileMessageResponse userManageResponse = UserProfileMessageResponse.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .phone(user.getPhone())
+                .avatar(portUltil.getUrlImage(user.getAvatar()))
+                .address(buildAddress(addresses))
+                .fullname(user.getFullname()).build();
+
+        return ApiResponse.builder()
+                .message("Get user success!")
+                .errors(false)
+                .status(HttpStatus.OK.value())
+                .data(userManageResponse)
+                .build();
+    }
+
+    private String buildAddress(Addresses addresses) {
+        if (addresses == null)
+            return null;
+
+        return addresses.getAddress() + ", " + addresses.getWard() + ", " + addresses.getDistrict() + ", "
+                + addresses.getProvince();
     }
 
 }

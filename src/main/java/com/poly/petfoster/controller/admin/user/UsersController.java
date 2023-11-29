@@ -43,6 +43,11 @@ public class UsersController {
         return ResponseEntity.ok(userService.getUser(id));
     }
 
+    @GetMapping("/username/{username}")
+    public ResponseEntity<ApiResponse> getUserWithUsername(@PathVariable("username") String username) {
+        return ResponseEntity.ok(userService.getUserWithUsername(username));
+    }
+
     @PostMapping("")
     public ResponseEntity<ApiResponse> createUser(
             @ModelAttribute("user") CreateaUserManageRequest createaUserManageRequest) {
