@@ -42,8 +42,9 @@ public class AdminOrderController {
             @RequestParam("status") Optional<String> status,
             @RequestParam("minDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> minDate,
             @RequestParam("maxDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> maxDate,
-            @RequestParam("sort") Optional<String> sort) {
-        return ResponseEntity.ok(orderFilterService.filterOrders(username, orderId, status, minDate, maxDate, sort));
+            @RequestParam("sort") Optional<String> sort,
+            @RequestParam("page") Optional<Integer> page) {
+        return ResponseEntity.ok(orderFilterService.filterOrders(username, orderId, status, minDate, maxDate, sort, page));
     }
 
     @GetMapping("/details/{id}")

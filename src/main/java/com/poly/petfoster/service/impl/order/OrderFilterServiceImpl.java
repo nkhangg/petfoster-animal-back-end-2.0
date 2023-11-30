@@ -6,18 +6,25 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.poly.petfoster.constant.RespMessage;
 import com.poly.petfoster.entity.OrderDetail;
 import com.poly.petfoster.entity.Orders;
 import com.poly.petfoster.entity.Payment;
+import com.poly.petfoster.entity.Product;
 import com.poly.petfoster.entity.ShippingInfo;
 import com.poly.petfoster.repository.OrdersRepository;
 import com.poly.petfoster.response.ApiResponse;
 import com.poly.petfoster.response.order_history.OrderDetailsResponse;
 import com.poly.petfoster.response.order_history.OrderFilterResponse;
 import com.poly.petfoster.response.order_history.OrderProductItem;
+import com.poly.petfoster.response.order_history.OrdersFilterResponse;
 import com.poly.petfoster.service.admin.order.OrderFilterService;
 import com.poly.petfoster.ultils.FormatUtils;
 
@@ -35,7 +42,7 @@ public class OrderFilterServiceImpl implements OrderFilterService {
 
     @Override
     public ApiResponse filterOrders(Optional<String> username, Optional<Integer> orderId, Optional<String> status,
-            Optional<Date> minDate, Optional<Date> maxDate, Optional<String> sort) {
+            Optional<Date> minDate, Optional<Date> maxDate, Optional<String> sort, Optional<Integer> page) {
 
         Date minDateValue = minDate.orElse(null);
         Date maxDateValue = maxDate.orElse(null);
@@ -61,24 +68,40 @@ public class OrderFilterServiceImpl implements OrderFilterService {
         List<Orders> orders = ordersRepository.filterOrders(username.orElse(null), orderId.orElse(null),
                 status.orElse(""), minDateValue, maxDateValue, sort.orElse(null));
 
-        List<OrderFilterResponse> orderFilters = new ArrayList<>();
+        Pageable pageable = PageRequest.of(page.orElse(0), 10);
 
-        orders.forEach(order -> {
+        int startIndex = (int) pageable.getOffset();
+        int endIndex = Math.min(startIndex + pageable.getPageSize(), orders.size());
+
+        if (startIndex > endIndex) {
+            return ApiResponse.builder()
+                    .message(RespMessage.NOT_FOUND.getValue())
+                    .data(null)
+                    .errors(true)
+                    .status(HttpStatus.NOT_FOUND.value())
+                    .build();
+        }
+
+        List<Orders> visibleOrders = orders.subList(startIndex, endIndex);
+        Page<Orders> pagination = new PageImpl<Orders>(visibleOrders, pageable, orders.size());
+
+        List<OrderFilterResponse> orderFilters = new ArrayList<>();
+        pagination.getContent().stream().forEach((order) -> {
             orderFilters.add(
-                    OrderFilterResponse.builder()
-                            .orderId(order.getId())
-                            .username(order.getUser().getUsername())
-                            .total(order.getTotal().intValue())
-                            .placedDate(formatUtils.dateToString(order.getCreateAt(), "yyyy-MM-dd"))
-                            .status(order.getStatus())
-                            .build());
+                OrderFilterResponse.builder()
+                    .orderId(order.getId())
+                    .username(order.getUser().getUsername())
+                    .total(order.getTotal().intValue())
+                    .placedDate(formatUtils.dateToString(order.getCreateAt(), "yyyy-MM-dd"))
+                    .status(order.getStatus())
+                    .build());
         });
 
         return ApiResponse.builder()
                 .message("Successfully!!!")
                 .status(200)
                 .errors(false)
-                .data(orderFilters)
+                .data(OrdersFilterResponse.builder().orderFilters(orderFilters).pages(pagination.getTotalPages()).build())
                 .build();
     }
 
