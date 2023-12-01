@@ -35,6 +35,7 @@ public class AppConfig {
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(Authorize -> Authorize
                         .antMatchers("/api/admin/report/**").hasAnyRole("ADMIN", "SUPER")
+                        .antMatchers("/api/admin/authorities/**").hasRole("SUPER")
                         .antMatchers("/api/admin/**").hasAnyRole("ADMIN", "SUPER", "STAFF")
                         .antMatchers("/api/user/**").authenticated()
                         .anyRequest().permitAll())
