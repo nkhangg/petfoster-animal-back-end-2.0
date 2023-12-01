@@ -17,6 +17,7 @@ public class UserManageResponse {
     private String id;
     private String username;
     private String fullname;
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date birthday;
     private boolean gender;
     private String phone;
