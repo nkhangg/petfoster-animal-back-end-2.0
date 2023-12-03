@@ -30,8 +30,9 @@ public class AdminReviewController {
             @RequestParam("productName") Optional<String> productName,
             @RequestParam("minStar") Optional<Integer> minStar,
             @RequestParam("maxStar") Optional<Integer> maxStar,
-            @RequestParam("sort") Optional<String> sort) {
-        return ResponseEntity.ok(reviewService.filterReviews(productName, minStar, maxStar, sort));
+            @RequestParam("sort") Optional<String> sort,
+            @RequestParam("page") Optional<Integer> page) {
+        return ResponseEntity.ok(reviewService.filterReviews(productName, minStar, maxStar, sort, page));
     }
 
     @GetMapping("/{id}")
