@@ -8,7 +8,7 @@ import com.poly.petfoster.response.ApiResponse;
 public interface AdminReviewService {
 
     ApiResponse filterReviews(Optional<String> name, Optional<Integer> minStar, Optional<Integer> maxStar,
-            Optional<String> sort);
+            Optional<String> sort, Optional<Integer> page);
 
     ApiResponse reviewDetails(String productId);
 

@@ -7,11 +7,16 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.poly.petfoster.config.JwtProvider;
 import com.poly.petfoster.constant.Constant;
+import com.poly.petfoster.constant.RespMessage;
 import com.poly.petfoster.entity.Product;
 import com.poly.petfoster.entity.Review;
 import com.poly.petfoster.entity.User;
@@ -20,6 +25,8 @@ import com.poly.petfoster.repository.ReviewRepository;
 import com.poly.petfoster.repository.UserRepository;
 import com.poly.petfoster.request.review.ReviewReplayRequest;
 import com.poly.petfoster.response.ApiResponse;
+import com.poly.petfoster.response.common.PagiantionResponse;
+import com.poly.petfoster.response.product_manage.ProductManageResponse;
 import com.poly.petfoster.response.review.DetailRate;
 import com.poly.petfoster.response.review.ReviewDetailsResponse;
 import com.poly.petfoster.response.review.ReviewFilterResponse;
@@ -52,7 +59,7 @@ public class AdminReviewServiceImpl implements AdminReviewService {
 
     @Override
     public ApiResponse filterReviews(Optional<String> productName, Optional<Integer> minStar, Optional<Integer> maxStar,
-            Optional<String> sort) {
+            Optional<String> sort, Optional<Integer> page) {
 
         String name = productName.orElse(null);
         Integer min = minStar.orElse(0);
@@ -127,7 +134,28 @@ public class AdminReviewServiceImpl implements AdminReviewService {
                 break;
         }
 
-        return ApiResponse.builder().message("Successfully").status(200).errors(false).data(filterReviews).build();
+        // add pagination
+        Pageable pageable = PageRequest.of(page.orElse(0), 10);
+        int startIndex = (int) pageable.getOffset();
+        int endIndex = Math.min(startIndex + pageable.getPageSize(), filterReviews.size());
+
+        if (startIndex >= endIndex) {
+            return ApiResponse.builder()
+                    .message(RespMessage.NOT_FOUND.getValue())
+                    .data(PagiantionResponse.builder().data(new ArrayList<>()).pages(0).build())
+                    .errors(true)
+                    .status(HttpStatus.NOT_FOUND.value())
+                    .build();
+        }
+
+        List<ReviewFilterResponse> visibleReviews = filterReviews.subList(startIndex, endIndex);
+
+        Page<ReviewFilterResponse> pagination = new PageImpl<ReviewFilterResponse>(visibleReviews, pageable,
+                filterReviews.size());
+
+        return ApiResponse.builder().message("Successfully").status(200).errors(false)
+                .data(PagiantionResponse.builder().data(visibleReviews).pages(pagination.getTotalPages()).build())
+                .build();
     }
 
     @Override
