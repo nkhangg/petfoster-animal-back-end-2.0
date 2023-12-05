@@ -57,6 +57,7 @@ import com.poly.petfoster.response.order_history.OrderProductItem;
 import com.poly.petfoster.service.impl.TakeActionServiceImpl;
 import com.poly.petfoster.service.order.OrderService;
 import com.poly.petfoster.ultils.FormatUtils;
+import com.poly.petfoster.ultils.GiaoHangNhanhUltils;
 import com.poly.petfoster.ultils.PortUltil;
 import com.poly.petfoster.ultils.VnpayUltils;
 
@@ -190,6 +191,9 @@ public class OrderSeviceImpl implements OrderService {
         order.setTotal(total);
         order.setOrderDetails(orderDetails);
         ordersRepository.save(order);
+
+         GiaoHangNhanhUltils test = new GiaoHangNhanhUltils();
+         test.create(order);
 
         payment.setAmount(order.getTotal() + shippingInfo.getShipFee());
         paymentRepository.save(payment);
