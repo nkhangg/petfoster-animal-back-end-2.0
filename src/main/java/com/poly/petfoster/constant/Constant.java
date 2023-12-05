@@ -19,4 +19,14 @@ public class Constant {
     public static String VNP_API_ARL = "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction";
 
     public static Date MIN_DATE = new Date(0);
+    
+    // Giao hang nhanh
+    public static String GHN_TOKEN = "539096b5-8f95-11ee-a6e6-e60958111f48";
+    public static String GHN_SHOPID = "190419";
+    public static String GHN_CREATE = "https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/create";
+    public static String GHN_GETPROVINCE = "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/province";
+    public static String GHN_GETDISCTRICT = "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district";
+    public static String GHN_GETWARD = "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward?district_id";
+
+
 }

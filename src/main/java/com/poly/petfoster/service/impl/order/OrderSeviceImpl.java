@@ -57,6 +57,7 @@ import com.poly.petfoster.response.order_history.OrderProductItem;
 import com.poly.petfoster.service.impl.TakeActionServiceImpl;
 import com.poly.petfoster.service.order.OrderService;
 import com.poly.petfoster.ultils.FormatUtils;
+import com.poly.petfoster.ultils.GiaoHangNhanhUltils;
 import com.poly.petfoster.ultils.PortUltil;
 import com.poly.petfoster.ultils.VnpayUltils;
 
@@ -114,6 +115,9 @@ public class OrderSeviceImpl implements OrderService {
     @Autowired
     ReviewRepository reviewRepository;
 
+    @Autowired
+    GiaoHangNhanhUltils giaoHangNhanhUltils;
+
     @Override
     public ApiResponse order(String jwt, OrderRequest orderRequest) {
 
@@ -147,6 +151,15 @@ public class OrderSeviceImpl implements OrderService {
         }
 
         ShippingInfo shippingInfo = this.createShippingInfo(address, orderRequest);
+
+        DeliveryCompany deliveryCompany = deliveryCompanyRepository.findById(orderRequest.getDeliveryId()).orElse(null);
+        if (deliveryCompany == null) {
+            errorsMap.put("Delivery method", "Delivery method not found");
+            return ApiResponse.builder()
+                    .message("Delivery method not found")
+                    .status(404)
+                    .errors(errorsMap).build();
+        }
 
         PaymentMethod paymentMethod = paymentMethodRepository.findById(orderRequest.getMethodId()).orElse(null);
         if (paymentMethod == null) {
@@ -195,12 +208,20 @@ public class OrderSeviceImpl implements OrderService {
         paymentRepository.save(payment);
 
         String paymentUrl;
+
         if (orderRequest.getMethodId() == 1) {
             order.setStatus(OrderStatus.PLACED.getValue());
 
             for (OrderDetail orderDetail : orderDetails) {
                 ProductRepo productRepo = orderDetail.getProductRepo();
                 this.updateQuantity(productRepo, orderDetail.getQuantity());
+            }
+
+            if(deliveryCompany.getId() == 2) {
+                ApiResponse apiResponse = giaoHangNhanhUltils.create(order);
+                if(apiResponse.getErrors().equals(true)) {
+                    return apiResponse;
+                }
             }
 
             return ApiResponse.builder()
@@ -347,6 +368,13 @@ public class OrderSeviceImpl implements OrderService {
                 this.updateQuantity(productRepo, orderDetail.getQuantity());
             }
 
+            if(order.getShippingInfo().getDeliveryCompany().getId() == 2) {
+                ApiResponse apiResponse = giaoHangNhanhUltils.create(order);
+                if(apiResponse.getErrors().equals(true)) {
+                    return apiResponse;
+                }
+            }
+
             return ApiResponse.builder()
                     .message("order successfuly!!!")
                     .status(200)
@@ -400,7 +428,6 @@ public class OrderSeviceImpl implements OrderService {
         });
 
         OrderDetailsResponse orderDetails = OrderDetailsResponse.builder()
-
                 .id(id)
                 .address(this.getAddress(shippingInfo.getAddress(), shippingInfo.getWard(), shippingInfo.getDistrict(),
                         shippingInfo.getProvince()))
@@ -414,6 +441,7 @@ public class OrderSeviceImpl implements OrderService {
                 .subTotal(order.getTotal().intValue())
                 .total(order.getTotal().intValue() + shippingInfo.getShipFee())
                 .state(order.getStatus())
+                .expectedTime(order.getExpectedDeliveryTime())
                 .build();
 
         return ApiResponse.builder()

@@ -1,6 +1,9 @@
 package com.poly.petfoster.response.order_history;
 
+import java.util.Date;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -40,5 +43,7 @@ public class OrderDetailsResponse {
     private Integer total;
 
     private String state;
+
+    private String expectedTime;
 
 }

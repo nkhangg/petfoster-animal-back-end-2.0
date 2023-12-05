@@ -48,6 +48,10 @@ public class Orders {
     @Nationalized
     private String status;
 
+    private String ghnCode;
+
+    private String expectedDeliveryTime;
+
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<OrderDetail> orderDetails;
