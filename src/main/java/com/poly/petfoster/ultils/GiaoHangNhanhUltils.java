@@ -16,10 +16,12 @@ import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -146,7 +148,7 @@ public class GiaoHangNhanhUltils {
 
         // create a map for post parameters
         Map<String, Object> map = new HashMap<>();
-        map.put("provinceName", provinceName);
+        map.put("ProvinceName", provinceName);
         // build the request
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(map, headers);
 
@@ -159,28 +161,38 @@ public class GiaoHangNhanhUltils {
             //  root = mapper.readTree(response.getBody());
             // String data = root.path("data").toString();
 
-            JSONObject jsonObject = new JSONObject(response);
-            // ObjectMapper map2 = new ObjectMapper();
-            System.out.println("jsonObject");
-            System.out.println(jsonObject);
-            List<Province> list = mapper.readValue(jsonObject.getJSONObject("body").getJSONArray("data").toString(), mapper.getTypeFactory().constructCollectionType(List.class, Province.class));
-            System.out.println("list");
-            System.out.println(list);
-            for (Province item : list) {
-                if(item.getProvinceName().equals(provinceName)){
-                    System.out.println("ID");
-                    System.out.println(item.getProvinceID());
-                    return item.getProvinceID();
-                }
+            String responseBody = response.getBody();
+            JSONObject jsonObject = null;
+            if (responseBody != null) {
+                jsonObject = new JSONObject(responseBody);
             }
-           
-        } catch (JsonMappingException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (JsonProcessingException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+
+            // ObjectMapper map2 = new ObjectMapper();
+            // System.out.println("jsonObject");
+            // System.out.println(jsonObject);
+            org.json.JSONArray dataArray = jsonObject.getJSONArray("data");
+            // List<Province> list = mapper.readValue(dataArray.toString(), mapper.getTypeFactory().constructCollectionType(List.class, Province.class));
+            // List<Province> list = mapper.readValue(jsonObject.getJSONObject("body").getJSONArray("data").toString(), mapper.getTypeFactory().constructCollectionType(List.class, Province.class));
+            // System.out.println("list");
+            // System.out.println(list);
+                for (int i = 0; i < dataArray.length(); i++) {
+            JSONObject districtObject = dataArray.getJSONObject(i);
+            if (districtObject.getString("ProvinceName").equals(provinceName)) {
+                return districtObject.getInt("ProvinceID");
+            }
         }
+            // for (Province item : list) {
+            //     if(item.getProvinceName().equalsIgnoreCase(provinceName)){
+            //         System.out.println("ID");
+            //         System.out.println(item.getProvinceID());
+            //         return item.getProvinceID();
+            //     }
+            // }
+           
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } 
 
         // check response
         if (response.getStatusCode() == HttpStatus.OK) {
@@ -201,5 +213,7 @@ public class GiaoHangNhanhUltils {
 
         return null;
     }
+
+
 
 }

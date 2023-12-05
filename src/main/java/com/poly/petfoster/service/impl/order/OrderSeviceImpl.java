@@ -192,8 +192,8 @@ public class OrderSeviceImpl implements OrderService {
         order.setOrderDetails(orderDetails);
         ordersRepository.save(order);
 
-         GiaoHangNhanhUltils test = new GiaoHangNhanhUltils();
-         test.create(order);
+        GiaoHangNhanhUltils test = new GiaoHangNhanhUltils();
+        test.create(order);
 
         payment.setAmount(order.getTotal() + shippingInfo.getShipFee());
         paymentRepository.save(payment);
