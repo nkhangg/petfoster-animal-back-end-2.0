@@ -152,6 +152,15 @@ public class OrderSeviceImpl implements OrderService {
 
         ShippingInfo shippingInfo = this.createShippingInfo(address, orderRequest);
 
+        DeliveryCompany deliveryCompany = deliveryCompanyRepository.findById(orderRequest.getDeliveryId()).orElse(null);
+        if (deliveryCompany == null) {
+            errorsMap.put("Delivery method", "Delivery method not found");
+            return ApiResponse.builder()
+                    .message("Delivery method not found")
+                    .status(404)
+                    .errors(errorsMap).build();
+        }
+
         PaymentMethod paymentMethod = paymentMethodRepository.findById(orderRequest.getMethodId()).orElse(null);
         if (paymentMethod == null) {
             errorsMap.put("payment method", "payment method not found");
@@ -199,6 +208,7 @@ public class OrderSeviceImpl implements OrderService {
         paymentRepository.save(payment);
 
         String paymentUrl;
+
         if (orderRequest.getMethodId() == 1) {
             order.setStatus(OrderStatus.PLACED.getValue());
 
@@ -207,9 +217,11 @@ public class OrderSeviceImpl implements OrderService {
                 this.updateQuantity(productRepo, orderDetail.getQuantity());
             }
 
-            ApiResponse apiResponse = giaoHangNhanhUltils.create(order);
-            if(apiResponse.getErrors().equals(true)) {
-                return apiResponse;
+            if(deliveryCompany.getId() == 2) {
+                ApiResponse apiResponse = giaoHangNhanhUltils.create(order);
+                if(apiResponse.getErrors().equals(true)) {
+                    return apiResponse;
+                }
             }
 
             return ApiResponse.builder()
@@ -346,11 +358,6 @@ public class OrderSeviceImpl implements OrderService {
             payment.setTransactionNumber(paymentRequest.getTransactionNumber().toString());
             paymentRepository.save(payment);
 
-            ApiResponse apiResponse = giaoHangNhanhUltils.create(order);
-            if(apiResponse.getErrors().equals(true)) {
-                return apiResponse;
-            }
-
             order.setStatus(OrderStatus.PLACED.getValue());
 
             ordersRepository.save(order);
@@ -359,6 +366,13 @@ public class OrderSeviceImpl implements OrderService {
             for (OrderDetail orderDetail : orderDetails) {
                 ProductRepo productRepo = orderDetail.getProductRepo();
                 this.updateQuantity(productRepo, orderDetail.getQuantity());
+            }
+
+            if(order.getShippingInfo().getDeliveryCompany().getId() == 2) {
+                ApiResponse apiResponse = giaoHangNhanhUltils.create(order);
+                if(apiResponse.getErrors().equals(true)) {
+                    return apiResponse;
+                }
             }
 
             return ApiResponse.builder()
