@@ -84,7 +84,7 @@ public class GiaoHangNhanhUltils {
             return ApiResponse.builder().message("District name not found").status(404).errors(true).build();
         }
         
-        Integer wardId = this.getWardId(shippingInfo.getWard(), districtId);
+        String wardId = this.getWardId(shippingInfo.getWard(), districtId);
         if(wardId == null) {
             return ApiResponse.builder().message("Ward name not found").status(404).errors(true).build();
         }
@@ -94,7 +94,7 @@ public class GiaoHangNhanhUltils {
                 .to_name(shippingInfo.getFullName())
                 .to_phone(shippingInfo.getPhone())
                 .to_address(shippingInfo.getAddress())
-                .to_ward_code(wardId + "")
+                .to_ward_code(wardId)
                 .to_district_id(districtId)
                 .payment_type_id(orderRequest.getPayment().getId() == 2 ? 1 : 2)
                 .cod_amount(orderRequest.getPayment().getId() == 2 ? 0 : orderRequest.getTotal().intValue())
@@ -182,7 +182,7 @@ public class GiaoHangNhanhUltils {
         return null;
     }
 
-    public Integer getWardId(String wardName, Integer districtId) {
+    public String getWardId(String wardName, Integer districtId) {
 
         //build a request
         HttpEntity<Map<String, Object>> request = this.createRequest("district_id", districtId);
@@ -200,7 +200,7 @@ public class GiaoHangNhanhUltils {
 
             for (Object name : names) {
                 if(name.toString().contains(wardName)) {
-                    return object.getInt("WardCode");
+                    return object.getString("WardCode");
                  }
                  
             }
