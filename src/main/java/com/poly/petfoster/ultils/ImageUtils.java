@@ -8,8 +8,7 @@ import java.util.zip.Inflater;
 
 public class ImageUtils {
 
-
-    public static byte[] compressImage(byte[] data){
+    public static byte[] compressImage(byte[] data) {
         Deflater deflater = new Deflater();
         deflater.setLevel(Deflater.BEST_COMPRESSION);
         deflater.setInput(data);
@@ -17,10 +16,10 @@ public class ImageUtils {
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
 
-        byte[] tmp = new byte[4*1024];
+        byte[] tmp = new byte[4 * 1024];
 
-        while(!deflater.finished()){
-            int size =  deflater.deflate(tmp);
+        while (!deflater.finished()) {
+            int size = deflater.deflate(tmp);
             outputStream.write(tmp, 0, size);
 
         }
@@ -33,15 +32,14 @@ public class ImageUtils {
         return outputStream.toByteArray();
     }
 
-
-    public static byte[] decompressImage(byte[] data){
+    public static byte[] decompressImage(byte[] data) {
         Inflater inflater = new Inflater();
 
         inflater.setInput(data);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
-        byte[] tmp = new byte[4*1024];
+        byte[] tmp = new byte[4 * 1024];
         try {
-            while(!inflater.finished()){
+            while (!inflater.finished()) {
                 int conut = inflater.inflate(tmp);
                 outputStream.write(tmp, 0, conut);
             }
@@ -53,19 +51,26 @@ public class ImageUtils {
         return outputStream.toByteArray();
     }
 
-    public static File createFileImage () {
+    public static File createFileImage() {
         UUID uuid = UUID.randomUUID();
-        return new File("images\\" + uuid.toString() +".jpg");
+        return new File("images\\" + uuid.toString() + ".jpg");
     }
 
-    // public static String getURLImage(String nameImage, TypeFileImage typeFileImage){
-    //     HttpServletRequest request = 
-    //     ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes())
-    //             .getRequest();
+    public static File createFileImage(String path) {
+        UUID uuid = UUID.randomUUID();
+        return new File("images\\" + path + uuid.toString() + ".jpg");
+    }
 
-    //     String domain = request.getHeader("Host").contains("http://") ? request.getHeader("Host") : "http://" + request.getHeader("Host");
-    //     String prefixImageUrl = domain + "/images/" + typeFileImage.value() + "/";
+    // public static String getURLImage(String nameImage, TypeFileImage
+    // typeFileImage){
+    // HttpServletRequest request =
+    // ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes())
+    // .getRequest();
 
-	// 	return prefixImageUrl + nameImage;
+    // String domain = request.getHeader("Host").contains("http://") ?
+    // request.getHeader("Host") : "http://" + request.getHeader("Host");
+    // String prefixImageUrl = domain + "/images/" + typeFileImage.value() + "/";
+
+    // return prefixImageUrl + nameImage;
     // }
 }

@@ -224,4 +224,58 @@ public class ImagesServiceImpl implements ImagesService {
                 .data(imgsRepository.saveAll(newListImages))
                 .build();
     }
+
+    @Override
+    public ApiResponse uploadImages(List<MultipartFile> images) {
+
+        if (images.isEmpty()) {
+            return ApiResponse.builder()
+                    .message("Data invalid")
+                    .status(HttpStatus.BAD_REQUEST.value())
+                    .errors(true)
+                    .data(null)
+                    .build();
+        }
+
+        List<String> newListImages = images.stream().map((image) -> {
+
+            try {
+                File file = ImageUtils.createFileImage("messages\\");
+
+                image.transferTo(new File(file.getAbsolutePath()));
+
+                return portUltil.getUrlImage(file.getName(), "messages");
+
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                return null;
+
+            }
+        }).toList();
+
+        return ApiResponse.builder()
+                .message("Add images successfuly")
+                .status(HttpStatus.OK.value())
+                .errors(false)
+                .data(newListImages)
+                .build();
+    }
+
+    @Override
+    public byte[] getImage(String fileName, String pathName) {
+        String filePath = "images/" + pathName + "/" + fileName;
+
+        byte[] images;
+        try {
+            images = Files.readAllBytes(new File(filePath).toPath());
+        } catch (IOException e) {
+            try {
+                images = Files.readAllBytes(new File("images/no-product-image.jpg").toPath());
+            } catch (IOException e1) {
+                System.out.println("Error in getImage" + e.getMessage());
+                images = null;
+            }
+        }
+        return images;
+    }
 }
