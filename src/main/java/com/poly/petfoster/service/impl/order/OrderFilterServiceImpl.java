@@ -143,6 +143,7 @@ public class OrderFilterServiceImpl implements OrderFilterService {
                 .description(order.getDescriptions() == null ? "" : order.getDescriptions())
                 .total(order.getTotal().intValue() + shippingInfo.getShipFee())
                 .state(order.getStatus())
+                .expectedTime(order.getExpectedDeliveryTime())
                 .build();
 
         return ApiResponse.builder()

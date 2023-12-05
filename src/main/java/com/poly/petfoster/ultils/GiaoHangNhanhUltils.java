@@ -138,11 +138,11 @@ public class GiaoHangNhanhUltils {
     }
 
     public Integer getProvinceID(String provinceName) {
+
         RestTemplate restTemplate = new RestTemplate();
         HttpEntity<Map<String, Object>> request = this.createRequest("ProvinceName", provinceName);
 
-        // send POST request
-        ResponseEntity<String> response = restTemplate.exchange(Constant.GHN_GETPROVINCE, HttpMethod.POST, request, String.class);
+        ResponseEntity<String> response = restTemplate.exchange(Constant.GHN_GETPROVINCE, HttpMethod.GET, request, String.class);
 
         org.json.JSONArray dataArray = this.getData(response);
         for (int i = 0; i < dataArray.length(); i++) {
@@ -150,7 +150,7 @@ public class GiaoHangNhanhUltils {
             List<Object> names = object.getJSONArray("NameExtension").toList();
 
             for (Object name : names) {
-                 if(name.toString().contains(provinceName)) {
+                 if(new String(name.toString()).contains(provinceName)) {
                      return object.getInt("ProvinceID");
                  }
             }

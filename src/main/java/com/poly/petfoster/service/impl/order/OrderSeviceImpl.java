@@ -414,7 +414,6 @@ public class OrderSeviceImpl implements OrderService {
         });
 
         OrderDetailsResponse orderDetails = OrderDetailsResponse.builder()
-
                 .id(id)
                 .address(this.getAddress(shippingInfo.getAddress(), shippingInfo.getWard(), shippingInfo.getDistrict(),
                         shippingInfo.getProvince()))
@@ -428,6 +427,7 @@ public class OrderSeviceImpl implements OrderService {
                 .subTotal(order.getTotal().intValue())
                 .total(order.getTotal().intValue() + shippingInfo.getShipFee())
                 .state(order.getStatus())
+                .expectedTime(order.getExpectedDeliveryTime())
                 .build();
 
         return ApiResponse.builder()
