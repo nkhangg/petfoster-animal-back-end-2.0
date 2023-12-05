@@ -210,9 +210,6 @@ public class OrderSeviceImpl implements OrderService {
             ApiResponse apiResponse = giaoHangNhanhUltils.create(order);
             if(apiResponse.getErrors().equals(true)) {
                 return apiResponse;
-            }else {
-                // System.out.println(apiResponse.getData());
-                // order.setExpectedDeliveryTime(apiResponse.getData());
             }
 
             return ApiResponse.builder()

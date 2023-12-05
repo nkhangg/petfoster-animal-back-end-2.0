@@ -134,7 +134,6 @@ public class GiaoHangNhanhUltils {
             e.getMessage();
         }
 
-        // orderRequest.setExpectedDeliveryTime(response.getBody());
         return ApiResponse.builder().message("Successfully").status(200).errors(false).data(response).build();
     }
 
@@ -151,8 +150,9 @@ public class GiaoHangNhanhUltils {
             List<Object> names = object.getJSONArray("NameExtension").toList();
 
             for (Object name : names) {
-                 name.toString().contains(provinceName);
-                 return object.getInt("ProvinceID");
+                 if(name.toString().contains(provinceName)) {
+                     return object.getInt("ProvinceID");
+                 }
             }
         }
 
@@ -173,8 +173,9 @@ public class GiaoHangNhanhUltils {
             List<Object> names = object.getJSONArray("NameExtension").toList();
 
             for (Object name : names) {
-                 name.toString().contains(districtName);
-                 return object.getInt("DistrictID");
+                if(name.toString().contains(districtName)) {
+                     return object.getInt("DistrictID");
+                 }
             }
         }
 
@@ -198,8 +199,10 @@ public class GiaoHangNhanhUltils {
             List<Object> names = object.getJSONArray("NameExtension").toList();
 
             for (Object name : names) {
-                 name.toString().contains(wardName);
-                 return object.getInt("WardCode");
+                if(name.toString().contains(wardName)) {
+                    return object.getInt("WardCode");
+                 }
+                 
             }
         }
        
