@@ -50,7 +50,7 @@ public class Orders {
 
     private String ghnCode;
 
-    private Date expectedDeliveryTime;
+    private String expectedDeliveryTime;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     @JsonIgnore

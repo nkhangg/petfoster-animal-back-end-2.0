@@ -115,6 +115,9 @@ public class OrderSeviceImpl implements OrderService {
     @Autowired
     ReviewRepository reviewRepository;
 
+    @Autowired
+    GiaoHangNhanhUltils giaoHangNhanhUltils;
+
     @Override
     public ApiResponse order(String jwt, OrderRequest orderRequest) {
 
@@ -192,9 +195,6 @@ public class OrderSeviceImpl implements OrderService {
         order.setOrderDetails(orderDetails);
         ordersRepository.save(order);
 
-        GiaoHangNhanhUltils test = new GiaoHangNhanhUltils();
-        test.create(order);
-
         payment.setAmount(order.getTotal() + shippingInfo.getShipFee());
         paymentRepository.save(payment);
 
@@ -205,6 +205,14 @@ public class OrderSeviceImpl implements OrderService {
             for (OrderDetail orderDetail : orderDetails) {
                 ProductRepo productRepo = orderDetail.getProductRepo();
                 this.updateQuantity(productRepo, orderDetail.getQuantity());
+            }
+
+            ApiResponse apiResponse = giaoHangNhanhUltils.create(order);
+            if(apiResponse.getErrors().equals(true)) {
+                return apiResponse;
+            }else {
+                // System.out.println(apiResponse.getData());
+                // order.setExpectedDeliveryTime(apiResponse.getData());
             }
 
             return ApiResponse.builder()
@@ -340,6 +348,11 @@ public class OrderSeviceImpl implements OrderService {
 
             payment.setTransactionNumber(paymentRequest.getTransactionNumber().toString());
             paymentRepository.save(payment);
+
+            ApiResponse apiResponse = giaoHangNhanhUltils.create(order);
+            if(apiResponse.getErrors().equals(true)) {
+                return apiResponse;
+            }
 
             order.setStatus(OrderStatus.PLACED.getValue());
 

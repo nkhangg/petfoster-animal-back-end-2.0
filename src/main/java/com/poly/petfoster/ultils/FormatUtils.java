@@ -20,6 +20,20 @@ public class FormatUtils {
         return dateString.format(date);
     }
 
+    public Date stringToDate(String dateString, String pattern) {
+
+        SimpleDateFormat format = null;
+        Date date = null;
+        try {
+            format = new SimpleDateFormat(pattern);
+            date = format.parse(dateString);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return date;
+    }
+
     public Date convertMilisecondsToDate(String miliString) throws NumberFormatException {
         Long miliseconds = Long.parseLong(miliString);
         return new Date(miliseconds);

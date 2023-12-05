@@ -16,41 +16,38 @@ import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.poly.petfoster.config.JwtProvider;
 import com.poly.petfoster.constant.Constant;
-import com.poly.petfoster.entity.Addresses;
 import com.poly.petfoster.entity.OrderDetail;
 import com.poly.petfoster.entity.Orders;
 import com.poly.petfoster.entity.ShippingInfo;
-import com.poly.petfoster.entity.Shipping.Province;
 import com.poly.petfoster.repository.AddressRepository;
 import com.poly.petfoster.repository.OrdersRepository;
 import com.poly.petfoster.repository.ShippingInfoRepository;
-import com.poly.petfoster.request.order.OrderItem;
-import com.poly.petfoster.request.order.OrderRequest;
 import com.poly.petfoster.request.shipping.GHNPostRequest;
 import com.poly.petfoster.request.shipping.ShippingProductRequest;
 import com.poly.petfoster.response.ApiResponse;
 
-import net.minidev.json.JSONArray;
-
+@Component
 public class GiaoHangNhanhUltils {
+
+    @Autowired
+    FormatUtils formatUtils;
+
     @Autowired
     JwtProvider jwtProvider;
     @Autowired
@@ -62,15 +59,6 @@ public class GiaoHangNhanhUltils {
 
     public ApiResponse create(Orders orderRequest) {
 
-        // HttpRequest postRequest = HttpRequest.newBuilder()
-        // .uri(new URI(Constant.GHN_CREATE))
-        // .setHeader("Token", Constant.GHN_TOKEN)
-        // // .POST(BodyPublishers.ofString("{\"a\" : \"abc\"}"))
-        // .build();
-        // HttpClient httpClient = HttpClient.newHttpClient();
-        // HttpResponse<String> postResponse =HttpClient.send(postRequest,
-        // BodyHandlers.ofString());
-
         ShippingInfo shippingInfo = orderRequest.getShippingInfo();
 
         // create a items object
@@ -80,25 +68,38 @@ public class GiaoHangNhanhUltils {
                     .name(item.getProductRepo().getProduct().getName())
                     .code(item.getProductRepo().getProduct().getId())
                     .quantity(item.getQuantity())
+                    .weight(item.getProductRepo().getSize())
                     .price(item.getPrice().intValue())
-                    .build());
+                    .build()
+            );
         }
-        Integer provinceID = getProvinceID(shippingInfo.getProvince());
-        System.out.println("Province ID");
+        
+        Integer provinceId = getProvinceID(shippingInfo.getProvince());
+        if(provinceId == null) {
+            return ApiResponse.builder().message("Province name not found").status(404).errors(true).build();
+        }
 
-        System.out.println(provinceID);
+        Integer districtId = this.getDistrictId(provinceId, shippingInfo.getDistrict());
+        if(districtId == null) {
+            return ApiResponse.builder().message("District name not found").status(404).errors(true).build();
+        }
+        
+        Integer wardId = this.getWardId(shippingInfo.getWard(), districtId);
+        if(wardId == null) {
+            return ApiResponse.builder().message("Ward name not found").status(404).errors(true).build();
+        }
+      
         // create a post object
         GHNPostRequest post = GHNPostRequest.builder()
                 .to_name(shippingInfo.getFullName())
                 .to_phone(shippingInfo.getPhone())
                 .to_address(shippingInfo.getAddress())
-                .to_ward_code("20308")
-                .to_district_id(1444)
-                .cod_amount(orderRequest.getTotal().intValue())
+                .to_ward_code(wardId + "")
+                .to_district_id(districtId)
+                .payment_type_id(orderRequest.getPayment().getId() == 2 ? 1 : 2)
+                .cod_amount(orderRequest.getPayment().getId() == 2 ? 0 : orderRequest.getTotal().intValue())
                 .items(list)
                 .build();
-
-        System.out.println(post);
 
         // request url
         String url = Constant.GHN_CREATE;
@@ -117,103 +118,117 @@ public class GiaoHangNhanhUltils {
         HttpEntity<GHNPostRequest> request = new HttpEntity<>(post, headers);
 
         // send POST request
-        ResponseEntity<GHNPostRequest> response = restTemplate.postForEntity(url,
-        request, GHNPostRequest.class);
+        ResponseEntity<String> response = restTemplate.postForEntity(url,
+        request, String.class);
 
-        // check response
-        if (response.getStatusCode() == HttpStatus.OK) {
-        System.out.println("Post Created");
-        System.out.println(response.getBody());
-        } else {
-        System.out.println("Request Failed");
-        System.out.println(response.getStatusCode());
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            JsonNode jsonNode = objectMapper.readTree(response.getBody());
+            String expectedDeliveryTime = jsonNode.path("data").path("expected_delivery_time").asText();
+            String ghnCode = jsonNode.path("data").path("order_code").asText();
+
+            orderRequest.setExpectedDeliveryTime(expectedDeliveryTime);
+            orderRequest.setGhnCode(ghnCode);
+            ordersRepository.save(orderRequest);
+        } catch (Exception e) {
+            e.getMessage();
+        }
+
+        // orderRequest.setExpectedDeliveryTime(response.getBody());
+        return ApiResponse.builder().message("Successfully").status(200).errors(false).data(response).build();
+    }
+
+    public Integer getProvinceID(String provinceName) {
+        RestTemplate restTemplate = new RestTemplate();
+        HttpEntity<Map<String, Object>> request = this.createRequest("ProvinceName", provinceName);
+
+        // send POST request
+        ResponseEntity<String> response = restTemplate.exchange(Constant.GHN_GETPROVINCE, HttpMethod.POST, request, String.class);
+
+        org.json.JSONArray dataArray = this.getData(response);
+        for (int i = 0; i < dataArray.length(); i++) {
+            JSONObject object = dataArray.getJSONObject(i);
+            List<Object> names = object.getJSONArray("NameExtension").toList();
+
+            if( names.contains(provinceName)) {
+                return object.getInt("ProvinceID");
+            }
         }
 
         return null;
     }
 
-    public Integer getProvinceID(String provinceName) {
-        // request url
-        String url = Constant.GHN_GETPROVINCE;
+    
+    public Integer getDistrictId(Integer provinceId, String districtName) {
 
-        // create an instance of RestTemplate
         RestTemplate restTemplate = new RestTemplate();
 
-        // create headers
+        HttpEntity<Map<String, Object>> request = this.createRequest("province_id", provinceId);
+        ResponseEntity<String> response = restTemplate.exchange(Constant.GHN_GETDISCTRICT, HttpMethod.POST, request, String.class);
+
+        org.json.JSONArray dataArray = this.getData(response);
+        for (int i = 0; i < dataArray.length(); i++) {
+            JSONObject object = dataArray.getJSONObject(i);
+            List<Object> names = object.getJSONArray("NameExtension").toList();
+
+            if( names.contains(districtName)) {
+                return object.getInt("DistrictID");
+            }
+        }
+
+        return null;
+    }
+
+    public Integer getWardId(String wardName, Integer districtId) {
+
+        //build a request
+        HttpEntity<Map<String, Object>> request = this.createRequest("district_id", districtId);
+
+        RestTemplate restTemplate = new RestTemplate();
+
+        //send request
+        ResponseEntity<String> response = restTemplate.exchange(Constant.GHN_GETWARD, HttpMethod.POST, request, String.class);
+
+        //get data
+        org.json.JSONArray data = this.getData(response);
+        for (int i = 0; i < data.length(); i++) {
+            JSONObject object = data.getJSONObject(i);
+            List<Object> names = object.getJSONArray("NameExtension").toList();
+
+            if( names.contains(wardName)) {
+                return object.getInt("WardCode");
+            }
+
+        }
+       
+        return null;
+    }
+
+    public HttpEntity<Map<String, Object>> createRequest(String key, Object value) {
+        
+        //create header
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
         headers.set("Token", Constant.GHN_TOKEN);
         headers.set("ShopId", Constant.GHN_SHOPID);
 
-        // create a map for post parameters
+       // create a map for post parameters
         Map<String, Object> map = new HashMap<>();
-        map.put("ProvinceName", provinceName);
-        // build the request
-        HttpEntity<Map<String, Object>> request = new HttpEntity<>(map, headers);
-
-        // send POST request
-        ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
-
-        ObjectMapper mapper = new ObjectMapper();
-        // JsonNode root;
-        try {
-            //  root = mapper.readTree(response.getBody());
-            // String data = root.path("data").toString();
-
-            String responseBody = response.getBody();
-            JSONObject jsonObject = null;
-            if (responseBody != null) {
-                jsonObject = new JSONObject(responseBody);
-            }
-
-            // ObjectMapper map2 = new ObjectMapper();
-            // System.out.println("jsonObject");
-            // System.out.println(jsonObject);
-            org.json.JSONArray dataArray = jsonObject.getJSONArray("data");
-            // List<Province> list = mapper.readValue(dataArray.toString(), mapper.getTypeFactory().constructCollectionType(List.class, Province.class));
-            // List<Province> list = mapper.readValue(jsonObject.getJSONObject("body").getJSONArray("data").toString(), mapper.getTypeFactory().constructCollectionType(List.class, Province.class));
-            // System.out.println("list");
-            // System.out.println(list);
-                for (int i = 0; i < dataArray.length(); i++) {
-            JSONObject districtObject = dataArray.getJSONObject(i);
-            if (districtObject.getString("ProvinceName").equals(provinceName)) {
-                return districtObject.getInt("ProvinceID");
-            }
-        }
-            // for (Province item : list) {
-            //     if(item.getProvinceName().equalsIgnoreCase(provinceName)){
-            //         System.out.println("ID");
-            //         System.out.println(item.getProvinceID());
-            //         return item.getProvinceID();
-            //     }
-            // }
-           
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } 
-
-        // check response
-        if (response.getStatusCode() == HttpStatus.OK) {
-            System.out.println("Get Province");
-            // System.out.println(response.getBody());
-
-            // Province[] listProvince = restTemplate.getForObject(url, Province[].class);
-            // System.out.println(listProvince);
-            // for (Province item : listProvince) {
-            // if(item.getProvinceName().equalsIgnoreCase(provinceName)){
-            // return item.getProvinceID();
-            // }
-            // }
-        } else {
-            System.out.println("Request Failed");
-            System.out.println(response.getStatusCode());
-        }
-
-        return null;
+        map.put(key, value);
+        
+        return new HttpEntity<>(map, headers);
     }
 
+    public org.json.JSONArray getData(ResponseEntity<String> response) {
 
+        String responseBody = response.getBody();
+        JSONObject jsonObject = null;
+        if (responseBody != null) {
+            jsonObject = new JSONObject(responseBody);
+        }
+
+        return jsonObject.getJSONArray("data");
+    }
 
 }
