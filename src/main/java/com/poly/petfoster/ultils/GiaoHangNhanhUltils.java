@@ -150,8 +150,9 @@ public class GiaoHangNhanhUltils {
             JSONObject object = dataArray.getJSONObject(i);
             List<Object> names = object.getJSONArray("NameExtension").toList();
 
-            if( names.contains(provinceName)) {
-                return object.getInt("ProvinceID");
+            for (Object name : names) {
+                 name.toString().contains(provinceName);
+                 return object.getInt("ProvinceID");
             }
         }
 
@@ -171,8 +172,9 @@ public class GiaoHangNhanhUltils {
             JSONObject object = dataArray.getJSONObject(i);
             List<Object> names = object.getJSONArray("NameExtension").toList();
 
-            if( names.contains(districtName)) {
-                return object.getInt("DistrictID");
+            for (Object name : names) {
+                 name.toString().contains(districtName);
+                 return object.getInt("DistrictID");
             }
         }
 
@@ -195,10 +197,10 @@ public class GiaoHangNhanhUltils {
             JSONObject object = data.getJSONObject(i);
             List<Object> names = object.getJSONArray("NameExtension").toList();
 
-            if( names.contains(wardName)) {
-                return object.getInt("WardCode");
+            for (Object name : names) {
+                 name.toString().contains(wardName);
+                 return object.getInt("WardCode");
             }
-
         }
        
         return null;
