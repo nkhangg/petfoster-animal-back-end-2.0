@@ -6,11 +6,9 @@ import org.springframework.stereotype.Component;
 
 import java.net.InetAddress;
 
-
 @Component
 public class PortUltil {
 
-    
     @Autowired
     private Environment environment;
 
@@ -22,7 +20,8 @@ public class PortUltil {
      * @return
      */
     public String getPort() {
-        if (port == null) port = environment.getProperty("local.server.port");
+        if (port == null)
+            port = environment.getProperty("local.server.port");
         return port;
     }
 
@@ -31,8 +30,11 @@ public class PortUltil {
     }
 
     public String getUrlImage(String name) {
-        return getServerUrlPrefi()  + "/images/" + name;
+        return getServerUrlPrefi() + "/images/" + name;
     }
 
-    
+    public String getUrlImage(String name, String pathName) {
+        return getServerUrlPrefi() + "/images/" + pathName + "/" + name;
+    }
+
 }
