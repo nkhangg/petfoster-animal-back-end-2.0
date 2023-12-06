@@ -63,6 +63,7 @@ public class GiaoHangNhanhUltils {
 
         // create a items object
         ArrayList<ShippingProductRequest> list = new ArrayList<>();
+        Integer totalWeight = 0;
         for (OrderDetail item : orderRequest.getOrderDetails()) {
             list.add(ShippingProductRequest.builder()
                     .name(item.getProductRepo().getProduct().getName())
@@ -72,6 +73,8 @@ public class GiaoHangNhanhUltils {
                     .price(item.getPrice().intValue())
                     .build()
             );
+
+            totalWeight += item.getQuantity() * item.getProductRepo().getSize();
         }
         
         Integer provinceId = getProvinceID(shippingInfo.getProvince());
@@ -99,6 +102,7 @@ public class GiaoHangNhanhUltils {
                 .payment_type_id(orderRequest.getPayment().getId() == 2 ? 1 : 2)
                 .cod_amount(orderRequest.getPayment().getId() == 2 ? 0 : orderRequest.getTotal().intValue())
                 .items(list)
+                .weight(totalWeight)
                 .build();
 
         // request url

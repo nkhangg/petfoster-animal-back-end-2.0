@@ -56,12 +56,12 @@ public class GHNPostRequest {
     private String content = "Pet Foster";
     @Builder.Default
     private Integer weight = 200;
-    @Builder.Default
-    private Integer length = 20;
-    @Builder.Default
-    private Integer width = 20;
-    @Builder.Default
-    private Integer height = 20;
+    // @Builder.Default
+    // private Integer length = 20;
+    // @Builder.Default
+    // private Integer width = 20;
+    // @Builder.Default
+    // private Integer height = 20;
     @Builder.Default
     private Integer pick_station_id = 1444;
     @Builder.Default
