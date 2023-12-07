@@ -104,7 +104,7 @@ public class AdminReviewServiceImpl implements AdminReviewService {
 
         List<ReviewFilterResponse> filterReviews = new ArrayList<>();
         filterReviews = reviews.stream()
-                .filter(review -> review.getRate() >= min && review.getRate() <= max)
+                .filter(review -> review.getRate() > min && review.getRate() <= max)
                 .collect(Collectors.toList());
 
         switch (customSort) {
