@@ -217,9 +217,9 @@ public class OrderSeviceImpl implements OrderService {
                 this.updateQuantity(productRepo, orderDetail.getQuantity());
             }
 
-            if(deliveryCompany.getId() == 2) {
+            if (deliveryCompany.getId() == 2) {
                 ApiResponse apiResponse = giaoHangNhanhUltils.create(order);
-                if(apiResponse.getErrors().equals(true)) {
+                if (apiResponse.getErrors().equals(true)) {
                     return apiResponse;
                 }
             }
@@ -292,7 +292,7 @@ public class OrderSeviceImpl implements OrderService {
                     .datePlace(formatUtils.dateToString(order.getCreateAt(), "MMM d, yyyy"))
                     .state(order.getStatus())
                     .stateMessage(order.getStatus())
-                    .total(order.getTotal())
+                    .total(order.getTotal() + order.getShippingInfo().getShipFee())
                     .products(products)
                     .isTotalRate(isTotalRate)
                     .build();
@@ -368,9 +368,9 @@ public class OrderSeviceImpl implements OrderService {
                 this.updateQuantity(productRepo, orderDetail.getQuantity());
             }
 
-            if(order.getShippingInfo().getDeliveryCompany().getId() == 2) {
+            if (order.getShippingInfo().getDeliveryCompany().getId() == 2) {
                 ApiResponse apiResponse = giaoHangNhanhUltils.create(order);
-                if(apiResponse.getErrors().equals(true)) {
+                if (apiResponse.getErrors().equals(true)) {
                     return apiResponse;
                 }
             }
