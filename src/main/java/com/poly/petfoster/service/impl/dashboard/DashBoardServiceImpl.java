@@ -93,7 +93,7 @@ public class DashBoardServiceImpl implements DashBoardService {
         if (maxDateValue == null && minDateValue == null) {
             // minDateValue = ordersRepository.getMinDate();
             // maxDateValue = ordersRepository.getMaxDate();
-            
+
             minDateValue = formatUtils.dateToDateFormat(new Date(), "yyyy-MM-dd");
             maxDateValue = formatUtils.dateToDateFormat(new Date(), "yyyy-MM-dd");
         }
@@ -103,7 +103,7 @@ public class DashBoardServiceImpl implements DashBoardService {
                     .message("Invalid date data")
                     .status(400)
                     .errors("Invalid date data")
-                    .data(null)
+                    .data(new ArrayList<>())
                     .build();
             return errorResponse;
         }

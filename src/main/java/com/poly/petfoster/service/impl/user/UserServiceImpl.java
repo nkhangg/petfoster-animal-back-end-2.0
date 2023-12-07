@@ -126,7 +126,7 @@ public class UserServiceImpl implements UserService {
             return ApiResponse.builder().message("No data!")
                     .status(400)
                     .errors(false)
-                    .data(PagiantionResponse.builder().data(null)
+                    .data(PagiantionResponse.builder().data(new ArrayList<>())
                             .build())
                     .build();
         }
