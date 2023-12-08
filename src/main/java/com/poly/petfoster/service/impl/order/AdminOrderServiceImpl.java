@@ -1,11 +1,18 @@
 package com.poly.petfoster.service.impl.order;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
+import com.poly.petfoster.constant.Constant;
 import com.poly.petfoster.constant.OrderStatus;
 import com.poly.petfoster.entity.Orders;
 import com.poly.petfoster.entity.Payment;
@@ -14,6 +21,7 @@ import com.poly.petfoster.repository.PaymentRepository;
 import com.poly.petfoster.request.order.UpdateStatusRequest;
 import com.poly.petfoster.response.ApiResponse;
 import com.poly.petfoster.service.order.AdminOrderService;
+import com.poly.petfoster.ultils.GiaoHangNhanhUltils;
 
 @Service
 public class AdminOrderServiceImpl implements AdminOrderService {
@@ -23,6 +31,9 @@ public class AdminOrderServiceImpl implements AdminOrderService {
 
     @Autowired
     PaymentRepository paymentRepository;
+
+    @Autowired
+    GiaoHangNhanhUltils giaoHangNhanhUltils;
 
     @Override
     public ApiResponse updateOrderStatus(Integer id, UpdateStatusRequest updateStatusRequest) {
@@ -93,6 +104,13 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                 payment.setPayAt(new Date());
                 paymentRepository.save(order.getPayment());
             }
+        }
+
+        if(updateStatus.equalsIgnoreCase(OrderStatus.CANCELLED_BY_ADMIN.getValue())) {
+            List<String> order_codes = new ArrayList<>();
+            RestTemplate restTemplate = new RestTemplate();
+            HttpEntity<Map<String, Object>> request = giaoHangNhanhUltils.createRequest("order_codes", order_codes.add(order.getGhnCode()));
+            ResponseEntity<String> response = restTemplate.postForEntity(Constant.GHN_CANCEL, request, String.class);
         }
 
         return ApiResponse.builder()

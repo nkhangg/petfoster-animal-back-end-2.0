@@ -27,6 +27,6 @@ public class Constant {
     public static String GHN_GETPROVINCE = "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/province";
     public static String GHN_GETDISCTRICT = "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district";
     public static String GHN_GETWARD = "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward?district_id";
-
+    public static String GHN_CANCEL = "https://dev-online-gateway.ghn.vn/shiip/public-api/v2/switch-status/cancel";
 
 }

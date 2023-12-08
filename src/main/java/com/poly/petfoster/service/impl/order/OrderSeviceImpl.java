@@ -14,11 +14,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import com.nimbusds.openid.connect.sdk.claims.Address;
 import com.poly.petfoster.config.JwtProvider;
+import com.poly.petfoster.constant.Constant;
 import com.poly.petfoster.constant.OrderStatus;
 import com.poly.petfoster.constant.PatternExpression;
 import com.poly.petfoster.constant.RespMessage;
@@ -588,6 +592,11 @@ public class OrderSeviceImpl implements OrderService {
         order.setStatus(updateStatus);
         order.setDescriptions(updateStatusRequest.getReason() != null ? updateStatusRequest.getReason() : "");
         ordersRepository.save(order);
+
+        List<String> order_codes = new ArrayList<>();
+        RestTemplate restTemplate = new RestTemplate();
+        HttpEntity<Map<String, Object>> request = giaoHangNhanhUltils.createRequest("order_codes", order_codes.add(order.getGhnCode()));
+        ResponseEntity<String> response = restTemplate.postForEntity(Constant.GHN_CANCEL, request, String.class);
 
         return ApiResponse.builder()
                 .message("Successfully!!!")
