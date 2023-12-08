@@ -71,27 +71,26 @@ public class GiaoHangNhanhUltils {
                     .quantity(item.getQuantity())
                     .weight(item.getProductRepo().getSize())
                     .price(item.getPrice().intValue())
-                    .build()
-            );
+                    .build());
 
             totalWeight += item.getQuantity() * item.getProductRepo().getSize();
         }
-        
+
         Integer provinceId = getProvinceID(shippingInfo.getProvince());
-        if(provinceId == null) {
+        if (provinceId == null) {
             return ApiResponse.builder().message("Province name not found").status(404).errors(true).build();
         }
 
         Integer districtId = this.getDistrictId(provinceId, shippingInfo.getDistrict());
-        if(districtId == null) {
+        if (districtId == null) {
             return ApiResponse.builder().message("District name not found").status(404).errors(true).build();
         }
-        
+
         String wardId = this.getWardId(shippingInfo.getWard(), districtId);
-        if(wardId == null) {
+        if (wardId == null) {
             return ApiResponse.builder().message("Ward name not found").status(404).errors(true).build();
         }
-      
+
         // create a post object
         GHNPostRequest post = GHNPostRequest.builder()
                 .to_name(shippingInfo.getFullName())
@@ -123,7 +122,7 @@ public class GiaoHangNhanhUltils {
 
         // send POST request
         ResponseEntity<String> response = restTemplate.postForEntity(url,
-        request, String.class);
+                request, String.class);
 
         ObjectMapper objectMapper = new ObjectMapper();
         try {
@@ -146,7 +145,8 @@ public class GiaoHangNhanhUltils {
         RestTemplate restTemplate = new RestTemplate();
         HttpEntity<Map<String, Object>> request = this.createRequest("ProvinceName", provinceName);
 
-        ResponseEntity<String> response = restTemplate.exchange(Constant.GHN_GETPROVINCE, HttpMethod.GET, request, String.class);
+        ResponseEntity<String> response = restTemplate.exchange(Constant.GHN_GETPROVINCE, HttpMethod.GET, request,
+                String.class);
 
         org.json.JSONArray dataArray = this.getData(response);
         for (int i = 0; i < dataArray.length(); i++) {
@@ -154,22 +154,22 @@ public class GiaoHangNhanhUltils {
             List<Object> names = object.getJSONArray("NameExtension").toList();
 
             for (Object name : names) {
-                 if(new String(name.toString()).contains(provinceName)) {
-                     return object.getInt("ProvinceID");
-                 }
+                if (new String(name.toString()).contains(provinceName)) {
+                    return object.getInt("ProvinceID");
+                }
             }
         }
 
         return null;
     }
 
-    
     public Integer getDistrictId(Integer provinceId, String districtName) {
 
         RestTemplate restTemplate = new RestTemplate();
 
         HttpEntity<Map<String, Object>> request = this.createRequest("province_id", provinceId);
-        ResponseEntity<String> response = restTemplate.exchange(Constant.GHN_GETDISCTRICT, HttpMethod.POST, request, String.class);
+        ResponseEntity<String> response = restTemplate.exchange(Constant.GHN_GETDISCTRICT, HttpMethod.POST, request,
+                String.class);
 
         org.json.JSONArray dataArray = this.getData(response);
         for (int i = 0; i < dataArray.length(); i++) {
@@ -177,9 +177,9 @@ public class GiaoHangNhanhUltils {
             List<Object> names = object.getJSONArray("NameExtension").toList();
 
             for (Object name : names) {
-                if(name.toString().contains(districtName)) {
-                     return object.getInt("DistrictID");
-                 }
+                if (name.toString().contains(districtName)) {
+                    return object.getInt("DistrictID");
+                }
             }
         }
 
@@ -188,44 +188,45 @@ public class GiaoHangNhanhUltils {
 
     public String getWardId(String wardName, Integer districtId) {
 
-        //build a request
+        // build a request
         HttpEntity<Map<String, Object>> request = this.createRequest("district_id", districtId);
 
         RestTemplate restTemplate = new RestTemplate();
 
-        //send request
-        ResponseEntity<String> response = restTemplate.exchange(Constant.GHN_GETWARD, HttpMethod.POST, request, String.class);
+        // send request
+        ResponseEntity<String> response = restTemplate.exchange(Constant.GHN_GETWARD, HttpMethod.POST, request,
+                String.class);
 
-        //get data
+        // get data
         org.json.JSONArray data = this.getData(response);
         for (int i = 0; i < data.length(); i++) {
             JSONObject object = data.getJSONObject(i);
             List<Object> names = object.getJSONArray("NameExtension").toList();
 
             for (Object name : names) {
-                if(name.toString().contains(wardName)) {
+                if (name.toString().contains(wardName)) {
                     return object.getString("WardCode");
-                 }
-                 
+                }
+
             }
         }
-       
+
         return null;
     }
 
     public HttpEntity<Map<String, Object>> createRequest(String key, Object value) {
-        
-        //create header
+
+        // create header
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
         headers.set("Token", Constant.GHN_TOKEN);
         headers.set("ShopId", Constant.GHN_SHOPID);
 
-       // create a map for post parameters
+        // create a map for post parameters
         Map<String, Object> map = new HashMap<>();
         map.put(key, value);
-        
+
         return new HttpEntity<>(map, headers);
     }
 

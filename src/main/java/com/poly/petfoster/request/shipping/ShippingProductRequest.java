@@ -20,12 +20,12 @@ public class ShippingProductRequest {
     private Integer quantity = 1;
     @Builder.Default
     private Integer price = 0;
-    @Builder.Default
-    private Integer length = 12;
-    @Builder.Default
-    private Integer width = 12;
-    @Builder.Default
-    private Integer height = 12;
+    // @Builder.Default
+    // private Integer length = 12;
+    // @Builder.Default
+    // private Integer width = 12;
+    // @Builder.Default
+    // private Integer height = 12;
     @Builder.Default
     private Integer weight = 1200;
 }

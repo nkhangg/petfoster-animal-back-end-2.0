@@ -76,5 +76,6 @@ public class GHNPostRequest {
     private String coupon = null;
     @Builder.Default
     private ArrayList<String> pick_shift = new ArrayList<>(2);
+
     private ArrayList<ShippingProductRequest> items;
 }
