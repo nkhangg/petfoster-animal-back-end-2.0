@@ -109,7 +109,8 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         if(updateStatus.equalsIgnoreCase(OrderStatus.CANCELLED_BY_ADMIN.getValue())) {
             List<String> order_codes = new ArrayList<>();
             RestTemplate restTemplate = new RestTemplate();
-            HttpEntity<Map<String, Object>> request = giaoHangNhanhUltils.createRequest("order_codes", order_codes.add(order.getGhnCode()));
+            order_codes.add(order.getGhnCode());
+            HttpEntity<Map<String, Object>> request = giaoHangNhanhUltils.createRequest("order_codes", order_codes);
             ResponseEntity<String> response = restTemplate.postForEntity(Constant.GHN_CANCEL, request, String.class);
         }
 

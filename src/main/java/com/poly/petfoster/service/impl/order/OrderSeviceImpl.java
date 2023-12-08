@@ -595,7 +595,10 @@ public class OrderSeviceImpl implements OrderService {
 
         List<String> order_codes = new ArrayList<>();
         RestTemplate restTemplate = new RestTemplate();
-        HttpEntity<Map<String, Object>> request = giaoHangNhanhUltils.createRequest("order_codes", order_codes.add(order.getGhnCode()));
+        order_codes.add(order.getGhnCode());
+
+        System.out.println(order_codes.toString());
+        HttpEntity<Map<String, Object>> request = giaoHangNhanhUltils.createRequest("order_codes", order_codes);
         ResponseEntity<String> response = restTemplate.postForEntity(Constant.GHN_CANCEL, request, String.class);
 
         return ApiResponse.builder()
