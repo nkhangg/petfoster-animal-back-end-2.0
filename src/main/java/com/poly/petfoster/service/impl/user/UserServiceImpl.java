@@ -100,18 +100,42 @@ public class UserServiceImpl implements UserService {
     @Override
     public ApiResponse updatePassword(ResetPasswordRequest resetPasswordRequest) {
 
+        // start validate
+        // check exist user
         User existsUser = userRepository.findByEmail(resetPasswordRequest.getEmail()).orElse(null);
         if (existsUser == null) {
-            return ApiResponse.builder().data(null).message("User is not exist").status(404)
+            return ApiResponse.builder().data("").message("User is not exist").status(404)
                     .errors(false).build();
         }
+
+        // check active user
+        if (existsUser.getIsActive() == false) {
+            return ApiResponse.builder().data("").message("User is not active").status(404)
+                    .errors(false).build();
+        }
+
+        // check email verification
+        if (existsUser.getIsEmailVerified() == false) {
+            return ApiResponse.builder().data("").message("Email has not been verified").status(404)
+                    .errors(false).build();
+        }
+
+        // end validate
+
+        // random new password
         String newPassword = randomPassword.randomPassword();
-        System.out.println(newPassword);
-        existsUser.setPassword(passwordEncoder.encode(newPassword));
+        String newPasswordEncode = passwordEncoder.encode(newPassword);
+        existsUser.setPassword(newPasswordEncode);
+
+        // save to database
         userRepository.save(existsUser);
 
-        // Send password to mail
-        mailUtils.sendEmail(resetPasswordRequest.getEmail(), "Reset password", "Your new password is " + newPassword);
+        // send password to mail
+        String toEmail = resetPasswordRequest.getEmail();
+        String subject = "Reset password!";
+        String body = "Hello " + existsUser.getFullname() +
+                "\n You are performing a password update, your new password is " + newPassword;
+        mailUtils.sendEmail(toEmail, subject, body);
         return ApiResponse.builder().data(existsUser).message("Successfully!").status(200)
                 .errors(false).build();
     }
@@ -120,8 +144,11 @@ public class UserServiceImpl implements UserService {
     public ApiResponse getAllUser(String jwt, Optional<String> keyword, Optional<String> sort, Optional<String> role,
             Optional<Integer> pages) {
 
+        // find all user
+
         List<User> users = userRepository.findAll(keyword.orElse(null), role.orElse(null), sort.orElse(null));
 
+        // check empty
         if (users.isEmpty()) {
             return ApiResponse.builder().message("No data!")
                     .status(400)
@@ -130,6 +157,8 @@ public class UserServiceImpl implements UserService {
                             .build())
                     .build();
         }
+
+        // pagination
 
         Pageable pageable = PageRequest.of(pages.orElse(0), 10);
         int startIndex = (int) pageable.getOffset();

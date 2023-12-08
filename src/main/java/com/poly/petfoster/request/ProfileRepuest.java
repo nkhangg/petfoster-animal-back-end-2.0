@@ -40,6 +40,9 @@ public class ProfileRepuest {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Optional<Date> birthday;
 
+    @NotNull(message = RespMessage.NOT_EMPTY)
+    private String password;
+
     private MultipartFile avartar;
 
 }
