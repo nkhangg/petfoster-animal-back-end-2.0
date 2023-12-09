@@ -226,6 +226,10 @@ public class OrderSeviceImpl implements OrderService {
                 if (apiResponse.getErrors().equals(true)) {
                     return apiResponse;
                 }
+
+                if (apiResponse.getStatus() == 400) {
+                    return apiResponse;
+                }
             }
 
             return ApiResponse.builder()
