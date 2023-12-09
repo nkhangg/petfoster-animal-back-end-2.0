@@ -109,6 +109,14 @@ public class ProfileServiceImpl implements ProfileService {
       errorsMap.put("email", "Can't update email !");
     }
 
+    // check for same passwords
+    // String oldPassword = user.getPassword();
+    // String newPassword = profileRepuest.getPassword();
+    // if (oldPassword.equals(newPassword)) {
+    // errorsMap.put("samePassword", "The new password cannot be the same as the old
+    // password !");
+    // }
+
     if (profileRepuest.getFullname().isEmpty()) {
       errorsMap.put("fullname", "Fullname can't be blank");
     }
@@ -210,6 +218,13 @@ public class ProfileServiceImpl implements ProfileService {
           .status(HttpStatus.BAD_REQUEST.value())
           .data(null)
           .build();
+    }
+
+    // check for same passwords
+    String oldPassword = user.getPassword();
+    String newPassword = changePasswordRequest.getPassword();
+    if (oldPassword.equals(newPassword)) {
+      errorsMap.put("samePassword", "The new password cannot be the same as the old password !");
     }
 
     // all good

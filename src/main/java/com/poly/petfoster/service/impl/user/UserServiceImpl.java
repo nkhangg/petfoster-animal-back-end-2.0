@@ -7,7 +7,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +29,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.poly.petfoster.config.JwtProvider;
+import com.poly.petfoster.constant.Constant;
 import com.poly.petfoster.constant.RespMessage;
 import com.poly.petfoster.entity.Addresses;
 import com.poly.petfoster.entity.Authorities;
@@ -44,6 +49,8 @@ import com.poly.petfoster.response.common.PagiantionResponse;
 import com.poly.petfoster.response.users.UserManageResponse;
 import com.poly.petfoster.response.users.UserProfileMessageResponse;
 import com.poly.petfoster.response.users.UserProfileResponse;
+import com.poly.petfoster.service.impl.AuthServiceImpl;
+import com.poly.petfoster.service.impl.EmailServiceImpl;
 import com.poly.petfoster.service.user.UserService;
 import com.poly.petfoster.ultils.ImageUtils;
 import com.poly.petfoster.ultils.MailUtils;
@@ -79,6 +86,18 @@ public class UserServiceImpl implements UserService {
     @Autowired
     AddressRepository addressRepository;
 
+    @Autowired
+    EmailServiceImpl emailServiceImpl;
+
+    @Autowired
+    HttpServletResponse response;
+
+    public UUID sendToken(HttpServletRequest req, String email) {
+        UUID token = UUID.randomUUID();
+        emailServiceImpl.sendConfirmationEmail(req, email, token);
+        return token;
+    }
+
     @Override
     public UserDetails findByUsername(String username) throws UsernameNotFoundException {
 
@@ -97,30 +116,60 @@ public class UserServiceImpl implements UserService {
 
     }
 
-    @Override
-    public ApiResponse updatePassword(ResetPasswordRequest resetPasswordRequest) {
-
+    public ApiResponse sendCodeForResetPassword(HttpServletRequest req, ResetPasswordRequest resetPasswordRequest) {
         // start validate
         // check exist user
         User existsUser = userRepository.findByEmail(resetPasswordRequest.getEmail()).orElse(null);
         if (existsUser == null) {
-            return ApiResponse.builder().data("").message("User is not exist").status(404)
+            return ApiResponse.builder().data("").message("user is not exist").status(404)
                     .errors(false).build();
         }
 
         // check active user
         if (existsUser.getIsActive() == false) {
-            return ApiResponse.builder().data("").message("User is not active").status(404)
+            return ApiResponse.builder().data("").message("user is not active").status(404)
                     .errors(false).build();
         }
 
         // check email verification
         if (existsUser.getIsEmailVerified() == false) {
-            return ApiResponse.builder().data("").message("Email has not been verified").status(404)
+            return ApiResponse.builder().data("").message("email has not been verified").status(404)
                     .errors(false).build();
         }
 
         // end validate
+
+        // verify code to email
+        String email = existsUser.getEmail();
+        String token = sendToken(req, email).toString();
+        existsUser.setToken(token);
+        userRepository.save(existsUser);
+        return ApiResponse.builder().data("the reset password code has been sent via email !").message("Successfully!")
+                .status(200)
+                .errors(true).build();
+    }
+
+    @Override
+    public ApiResponse verifyConfirmResetPasswordEmail(String token) {
+
+        User existsUser = userRepository.findByToken(token);
+
+        if (existsUser == null) {
+            return ApiResponse.builder()
+                    .message("Token is not exists")
+                    .status(404)
+                    .errors(true)
+                    .build();
+        }
+
+        // if (new Date().getTime() - existsUser.getTokenCreateAt().getTime() >
+        // Constant.TOKEN_EXPIRE_LIMIT) {
+        // return ApiResponse.builder()
+        // .message("Token is expired")
+        // .status(HttpStatus.BANDWIDTH_LIMIT_EXCEEDED.value())
+        // .errors(true)
+        // .build();
+        // }
 
         // random new password
         String newPassword = randomPassword.randomPassword();
@@ -131,13 +180,15 @@ public class UserServiceImpl implements UserService {
         userRepository.save(existsUser);
 
         // send password to mail
-        String toEmail = resetPasswordRequest.getEmail();
+        String toEmail = existsUser.getEmail();
         String subject = "Reset password!";
         String body = "Hello " + existsUser.getFullname() +
                 "\n You are performing a password update, your new password is " + newPassword;
         mailUtils.sendEmail(toEmail, subject, body);
-        return ApiResponse.builder().data(existsUser).message("Successfully!").status(200)
+        return ApiResponse.builder().data(existsUser).message("Your password has been reset! Please check email!")
+                .status(200)
                 .errors(false).build();
+
     }
 
     @Override

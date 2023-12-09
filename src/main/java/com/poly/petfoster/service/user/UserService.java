@@ -2,6 +2,8 @@ package com.poly.petfoster.service.user;
 
 import java.util.Optional;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.poly.petfoster.request.ResetPasswordRequest;
@@ -17,7 +19,9 @@ public interface UserService {
 
     public ApiResponse getUserWithUsername(String username);
 
-    public ApiResponse updatePassword(ResetPasswordRequest resetPasswordRequest);
+    public ApiResponse sendCodeForResetPassword(HttpServletRequest req, ResetPasswordRequest resetPasswordRequest);
+
+    public ApiResponse verifyConfirmResetPasswordEmail(String token);
 
     public ApiResponse getAllUser(String jwt, Optional<String> keyword,
             Optional<String> sort,
