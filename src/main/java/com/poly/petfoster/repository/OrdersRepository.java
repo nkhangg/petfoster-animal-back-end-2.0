@@ -88,7 +88,8 @@ public interface OrdersRepository extends JpaRepository<Orders, Integer> {
                         "CASE WHEN :sort = 'id-desc' THEN o.id END DESC, " +
                         "CASE WHEN :sort = 'id-asc' THEN o.id END ASC, " +
                         "CASE WHEN :sort = 'date-desc' THEN o.createAt END DESC, " +
-                        "CASE WHEN :sort = 'date-asc' THEN o.createAt END ASC")
+                        "CASE WHEN :sort = 'date-asc' THEN o.createAt END ASC, " +
+                        "o.createAt DESC")
         List<Orders> filterOrders(
                         @Param("username") String username,
                         @Param("orderId") Integer orderId,

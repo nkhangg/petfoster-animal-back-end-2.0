@@ -526,6 +526,11 @@ public class OrderSeviceImpl implements OrderService {
         return productRepoRepository.save(productRepo);
     }
 
+    public ProductRepo returnQuantity(ProductRepo productRepo, Integer quantity) {
+        productRepo.setQuantity(productRepo.getQuantity() + quantity);
+        return productRepoRepository.save(productRepo);
+    }
+
     public String getAddress(String street, String ward, String district, String province) {
         return String.join(", ", street, ward, district, province);
     }
@@ -564,7 +569,6 @@ public class OrderSeviceImpl implements OrderService {
         }
 
         String updateStatus;
-        System.out.println(updateStatusRequest.getStatus().equals(OrderStatus.CANCELLED_BY_CUSTOMER.getValue()));
         try {
             updateStatus = OrderStatus.valueOf(updateStatusRequest.getStatus()).getValue();
         } catch (Exception e) {
@@ -600,6 +604,10 @@ public class OrderSeviceImpl implements OrderService {
         List<String> order_codes = new ArrayList<>();
         RestTemplate restTemplate = new RestTemplate();
         order_codes.add(order.getGhnCode());
+
+        for (OrderDetail orderDetail : order.getOrderDetails()) {
+            this.returnQuantity(orderDetail.getProductRepo(), orderDetail.getQuantity());
+        }
 
         System.out.println(order_codes.toString());
         HttpEntity<Map<String, Object>> request = giaoHangNhanhUltils.createRequest("order_codes", order_codes);

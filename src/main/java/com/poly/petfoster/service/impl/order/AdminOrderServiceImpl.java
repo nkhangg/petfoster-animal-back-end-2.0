@@ -14,6 +14,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.poly.petfoster.constant.Constant;
 import com.poly.petfoster.constant.OrderStatus;
+import com.poly.petfoster.entity.OrderDetail;
 import com.poly.petfoster.entity.Orders;
 import com.poly.petfoster.entity.Payment;
 import com.poly.petfoster.repository.OrdersRepository;
@@ -34,6 +35,9 @@ public class AdminOrderServiceImpl implements AdminOrderService {
 
     @Autowired
     GiaoHangNhanhUltils giaoHangNhanhUltils;
+
+    @Autowired
+    OrderSeviceImpl orderSeviceImpl;
 
     @Override
     public ApiResponse updateOrderStatus(Integer id, UpdateStatusRequest updateStatusRequest) {
@@ -107,11 +111,18 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         }
 
         if(updateStatus.equalsIgnoreCase(OrderStatus.CANCELLED_BY_ADMIN.getValue())) {
+
             List<String> order_codes = new ArrayList<>();
             RestTemplate restTemplate = new RestTemplate();
+
             order_codes.add(order.getGhnCode());
             HttpEntity<Map<String, Object>> request = giaoHangNhanhUltils.createRequest("order_codes", order_codes);
             ResponseEntity<String> response = restTemplate.postForEntity(Constant.GHN_CANCEL, request, String.class);
+
+            //return quantity
+            for (OrderDetail orderDetail : order.getOrderDetails()) {
+                orderSeviceImpl.returnQuantity(orderDetail.getProductRepo(), orderDetail.getQuantity());
+            }
         }
 
         return ApiResponse.builder()
