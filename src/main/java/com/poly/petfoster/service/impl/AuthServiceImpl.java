@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -223,7 +224,7 @@ public class AuthServiceImpl implements AuthService {
     public UUID sendToken(HttpServletRequest req, String email) {
 
         UUID token = UUID.randomUUID();
-        emailServiceImpl.sendVerificationEmail(req, email, token);
+        CompletableFuture.runAsync(() -> emailServiceImpl.sendVerificationEmail(req, email, token));
 
         return token;
     }

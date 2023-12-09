@@ -23,9 +23,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -120,15 +122,28 @@ public class GiaoHangNhanhUltils {
         // build the request
         HttpEntity<GHNPostRequest> request = new HttpEntity<>(post, headers);
 
-        // send POST request
-        ResponseEntity<String> response = restTemplate.postForEntity(url,
-                request, String.class);
+        ResponseEntity<String> response = null;
+        try {
+                // send POST request
+            response = restTemplate.postForEntity(url,
+                    request, String.class);
+        } catch (HttpClientErrorException.BadRequest e) {
+            return ApiResponse.builder().message("This province is not support").status(400).errors(true).build();
+        } catch (HttpClientErrorException e) {
+            // Handle other HttpClientErrorException types if needed
+            System.out.println("Caught an HttpClientErrorException: " + e.getMessage());
+        } catch (Exception e) {
+            // Handle other types of exceptions
+            System.out.println("Caught an exception: " + e.getMessage());
+        }
 
         ObjectMapper objectMapper = new ObjectMapper();
+        Integer code = null; 
         try {
             JsonNode jsonNode = objectMapper.readTree(response.getBody());
             String expectedDeliveryTime = jsonNode.path("data").path("expected_delivery_time").asText();
             String ghnCode = jsonNode.path("data").path("order_code").asText();
+            // code = jsonNode.path("data").path("code").asInt();
 
             orderRequest.setExpectedDeliveryTime(expectedDeliveryTime);
             orderRequest.setGhnCode(ghnCode);
@@ -137,7 +152,7 @@ public class GiaoHangNhanhUltils {
             e.getMessage();
         }
 
-        return ApiResponse.builder().message("Successfully").status(200).errors(false).data(response).build();
+        return ApiResponse.builder().message("Successfully").status(200).errors(false).data(code).build();
     }
 
     public Integer getProvinceID(String provinceName) {
@@ -151,10 +166,20 @@ public class GiaoHangNhanhUltils {
         org.json.JSONArray dataArray = this.getData(response);
         for (int i = 0; i < dataArray.length(); i++) {
             JSONObject object = dataArray.getJSONObject(i);
-            List<Object> names = object.getJSONArray("NameExtension").toList();
 
-            for (Object name : names) {
-                if (new String(name.toString()).contains(provinceName)) {
+            List<Object> names;
+            try {
+                names = object.getJSONArray("NameExtension").toList();
+            } catch (Exception e) {
+                continue;
+            }
+            
+            if(object.getString("ProvinceName").equalsIgnoreCase(provinceName)) {
+                return object.getInt("ProvinceID");
+            }
+            
+            for(Object name : names) {
+                if(name.toString().equalsIgnoreCase(provinceName)) {
                     return object.getInt("ProvinceID");
                 }
             }
@@ -164,7 +189,7 @@ public class GiaoHangNhanhUltils {
     }
 
     public Integer getDistrictId(Integer provinceId, String districtName) {
-
+        
         RestTemplate restTemplate = new RestTemplate();
 
         HttpEntity<Map<String, Object>> request = this.createRequest("province_id", provinceId);
@@ -172,12 +197,23 @@ public class GiaoHangNhanhUltils {
                 String.class);
 
         org.json.JSONArray dataArray = this.getData(response);
+        
         for (int i = 0; i < dataArray.length(); i++) {
             JSONObject object = dataArray.getJSONObject(i);
-            List<Object> names = object.getJSONArray("NameExtension").toList();
+            
+            List<Object> names;
+            try {
+                names = object.getJSONArray("NameExtension").toList();
+            } catch (Exception e) {
+                continue;
+            }
 
-            for (Object name : names) {
-                if (name.toString().contains(districtName)) {
+            if(object.getString("DistrictName").equalsIgnoreCase(districtName)) {
+                return object.getInt("DistrictID");
+            }
+            
+           for(Object name : names) {
+                if(name.toString().equalsIgnoreCase(districtName)) {
                     return object.getInt("DistrictID");
                 }
             }
@@ -201,13 +237,22 @@ public class GiaoHangNhanhUltils {
         org.json.JSONArray data = this.getData(response);
         for (int i = 0; i < data.length(); i++) {
             JSONObject object = data.getJSONObject(i);
-            List<Object> names = object.getJSONArray("NameExtension").toList();
 
-            for (Object name : names) {
-                if (name.toString().contains(wardName)) {
+            List<Object> names;
+            try {
+                names = object.getJSONArray("NameExtension").toList();
+            } catch (Exception e) {
+                continue;
+            }
+
+            if(object.getString("WardName").equalsIgnoreCase(wardName)) {
+                return object.getString("WardCode");
+            }
+
+            for(Object name : names) {
+                if(name.toString().equalsIgnoreCase(wardName)) {
                     return object.getString("WardCode");
                 }
-
             }
         }
 
