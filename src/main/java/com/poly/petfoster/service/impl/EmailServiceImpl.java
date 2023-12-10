@@ -18,13 +18,22 @@ public class EmailServiceImpl implements EmailService {
     MailUtils mailUtils;
 
     @Override
-    public void sendVerificationEmail(HttpServletRequest req ,String email, UUID token) {
-        
+    public void sendVerificationEmail(HttpServletRequest req, String email, UUID token) {
+
         String verificationLink = Constant.BASE_URL + "verify?code=" + token;
-        String body = "Please click the following link to verify your email: " + verificationLink; 
+        String body = "Please click the following link to verify your email: " + verificationLink;
 
         mailUtils.sendEmail(email, "Email Verification", body);
 
+    }
+
+    @Override
+    public void sendConfirmationEmail(HttpServletRequest req, String email, UUID token) {
+        // create link
+        String verificationLink = Constant.CLIENT_BASE_URL + "reset-password?code=" + token;
+        String body = "Please click the following link to verify reset your password: " + verificationLink;
+        // send link to email
+        mailUtils.sendEmail(email, "Reset Password Verification", body);
     }
 
 }
