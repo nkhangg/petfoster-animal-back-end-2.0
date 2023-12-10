@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 
 import com.poly.petfoster.request.ResetPasswordRequest;
 import com.poly.petfoster.response.ApiResponse;
@@ -19,7 +20,7 @@ import com.poly.petfoster.service.user.ForgotPasswordService;
 @Controller
 @RequestMapping("/api/")
 public class ForgotPasswordController {
-     @Autowired
+    @Autowired
     ForgotPasswordService forgotPasswordService;
 
     @PostMapping("forgot-password")
@@ -28,8 +29,8 @@ public class ForgotPasswordController {
         return ResponseEntity.ok(forgotPasswordService.sendCodeForResetPassword(req, resetPasswordRequest));
     }
 
-    @GetMapping("verify-forgot")
-    public ResponseEntity<ApiResponse> verifyForgot(@RequestParam("code") String code) {
+    @PostMapping("verify-forgot")
+    public ResponseEntity<ApiResponse> verifyForgot(@RequestPart("code") String code) {
         return ResponseEntity.ok(forgotPasswordService.verifyConfirmResetPasswordEmail(code));
     }
 }

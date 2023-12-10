@@ -27,10 +27,10 @@ public class EmailServiceImpl implements EmailService {
 
     }
 
-     @Override
+    @Override
     public void sendConfirmationEmail(HttpServletRequest req, String email, UUID token) {
         // create link
-        String verificationLink = Constant.BASE_URL + "verify-forgot?code=" + token;
+        String verificationLink = Constant.CLIENT_BASE_URL + "reset-password?code=" + token;
         String body = "Please click the following link to verify reset your password: " + verificationLink;
         // send link to email
         mailUtils.sendEmail(email, "Reset Password Verification", body);
