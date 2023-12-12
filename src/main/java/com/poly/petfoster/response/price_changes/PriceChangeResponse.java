@@ -20,7 +20,7 @@ public class PriceChangeResponse {
     private Double newOutPrice;
     private Double oldInPrice;
     private Double oldOutPrice;
-    @JsonFormat(pattern = "HH:ss dd/MM/yyyy")
+    @JsonFormat(pattern = "HH:mm:ss dd/MM/yyyy")
     private Date updateAt;
     private Integer size;
     private Object user;
