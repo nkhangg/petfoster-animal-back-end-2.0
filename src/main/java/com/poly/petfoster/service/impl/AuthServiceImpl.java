@@ -29,16 +29,18 @@ import com.poly.petfoster.repository.RoleRepository;
 import com.poly.petfoster.repository.UserRepository;
 import com.poly.petfoster.request.LoginRequest;
 import com.poly.petfoster.request.RegisterRequest;
+import com.poly.petfoster.request.auth.LoginWithFacebookResquest;
+import com.poly.petfoster.request.auth.LoginWithGoogleResquest;
 import com.poly.petfoster.response.ApiResponse;
 import com.poly.petfoster.response.AuthResponse;
 import com.poly.petfoster.service.AuthService;
 import com.poly.petfoster.service.user.UserService;
+import com.poly.petfoster.ultils.FormatUtils;
 
 @Service
 public class AuthServiceImpl implements AuthService {
 
-
-     @Autowired
+    @Autowired
     UserService userService;
 
     @Autowired
@@ -55,6 +57,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Autowired
     RoleRepository roleRepository;
+
+    @Autowired
+    FormatUtils formatUtils;
 
     @Override
     public AuthResponse login(LoginRequest loginReq) {
@@ -143,6 +148,7 @@ public class AuthServiceImpl implements AuthService {
 
         User newUser = User.builder()
                 .username(registerReq.getUsername())
+                .displayName(registerReq.getUsername())
                 .email(registerReq.getEmail())
                 .password(passwordEncoder.encode(registerReq.getPassword()))
                 .gender(registerReq.getGender())
@@ -211,7 +217,6 @@ public class AuthServiceImpl implements AuthService {
                 .build();
 
     }
-    
 
     @Override
     public Authentication authenticate(String username, String password) {
@@ -229,7 +234,6 @@ public class AuthServiceImpl implements AuthService {
         return token;
     }
 
-
     @Override
     public ApiResponse refreshCode(HttpServletRequest httpServletRequest, String oldCode) {
 
@@ -242,6 +246,110 @@ public class AuthServiceImpl implements AuthService {
         userRepository.save(user);
 
         return ApiResponse.builder().message("Successfully").status(200).errors(false).build();
+    }
+
+    @Override
+    public AuthResponse loginWithFacebook(LoginWithFacebookResquest loginWithFacebook) {
+
+        if (userRepository.findByUuid(loginWithFacebook.getUuid()) != null) {
+
+            Authentication authentication = authenticate(loginWithFacebook.getUuid(), "");
+
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            String token = jwtProvider.generateToken(authentication);
+
+            return AuthResponse.builder()
+                    .message("Login with facebook success")
+                    .token(token)
+                    .build();
+        }
+
+        User newUser = User.builder()
+                .username(loginWithFacebook.getUuid())
+                .gender(true)
+                .fullname(loginWithFacebook.getUsername())
+                .displayName(loginWithFacebook.getUsername())
+                .createAt(new Date())
+                .isActive(true)
+                .isEmailVerified(true)
+                .avatar(loginWithFacebook.getAvartar())
+                .password("")
+                .uuid(loginWithFacebook.getUuid())
+                .provider("facebook")
+                .build();
+
+        List<Authorities> authoritiesList = new ArrayList<>();
+        Authorities authorities = Authorities.builder().user(newUser).role(roleRepository.getRoleUser()).build();
+        authoritiesList.add(authorities);
+
+        newUser.setAuthorities(authoritiesList);
+        userRepository.save(newUser);
+
+        Authentication authentication = authenticate(newUser.getUsername(),
+                newUser.getPassword());
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        String token = jwtProvider.generateToken(authentication);
+
+        return AuthResponse.builder()
+                .message("Login with facebook success")
+                .token(token)
+                .build();
+    }
+
+    @Override
+    public AuthResponse loginWithGoogle(LoginWithGoogleResquest loginWithGoogleResquest) {
+        if (userRepository.findByUuid(loginWithGoogleResquest.getUuid()) != null
+                && userRepository.existsByEmail(loginWithGoogleResquest.getEmail())) {
+
+            Authentication authentication = authenticate(
+                    loginWithGoogleResquest.getUuid(),
+                    "");
+
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            String token = jwtProvider.generateToken(authentication);
+
+            return AuthResponse.builder()
+                    .message("Login with facebook success")
+                    .token(token)
+                    .build();
+        }
+
+        User newUser = User.builder()
+                .username(loginWithGoogleResquest.getUuid())
+                .gender(true)
+                .fullname(loginWithGoogleResquest.getUsername())
+                .displayName(loginWithGoogleResquest.getUsername())
+                .createAt(new Date())
+                .isActive(true)
+                .isEmailVerified(true)
+                .avatar(loginWithGoogleResquest.getAvartar())
+                .password("")
+                .uuid(loginWithGoogleResquest.getUuid())
+                .email(loginWithGoogleResquest.getEmail())
+                .provider("google")
+                .build();
+
+        List<Authorities> authoritiesList = new ArrayList<>();
+        Authorities authorities = Authorities.builder().user(newUser).role(roleRepository.getRoleUser()).build();
+        authoritiesList.add(authorities);
+
+        newUser.setAuthorities(authoritiesList);
+        userRepository.save(newUser);
+
+        Authentication authentication = authenticate(newUser.getUsername(), newUser.getPassword());
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        String token = jwtProvider.generateToken(authentication);
+
+        return AuthResponse.builder()
+                .message("Login with google success")
+                .token(token)
+                .build();
     }
 
 }

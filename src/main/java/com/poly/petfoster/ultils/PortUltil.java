@@ -30,6 +30,12 @@ public class PortUltil {
     }
 
     public String getUrlImage(String name) {
+
+        // check if name is url return name
+        if (Validate.isUrl(name)) {
+            return name;
+        }
+
         return getServerUrlPrefi() + "/images/" + name;
     }
 

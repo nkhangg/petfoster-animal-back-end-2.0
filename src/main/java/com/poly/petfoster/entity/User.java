@@ -72,6 +72,17 @@ public class User {
 	@CreationTimestamp
 	private Date tokenCreateAt;
 
+	@JsonIgnore
+	@Column(name = "uuid")
+	private String uuid;
+
+	@Column(name = "provider")
+	private String provider;
+
+	@Nationalized
+	@Column(name = "display_name")
+	private String displayName;
+
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	@JsonIgnore
 	private List<Adopt> adopts;

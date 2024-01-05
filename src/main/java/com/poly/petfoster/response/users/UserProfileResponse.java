@@ -25,6 +25,8 @@ public class UserProfileResponse {
     private String email;
     private String avatar;
     private String role;
+    private String displayName;
+    private String provider;
     private Date createAt;
 
 }
