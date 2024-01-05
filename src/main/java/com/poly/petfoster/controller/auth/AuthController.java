@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.poly.petfoster.request.LoginRequest;
 import com.poly.petfoster.request.RegisterRequest;
+import com.poly.petfoster.request.auth.LoginWithFacebookResquest;
+import com.poly.petfoster.request.auth.LoginWithGoogleResquest;
 import com.poly.petfoster.response.ApiResponse;
 import com.poly.petfoster.response.AuthResponse;
 import com.poly.petfoster.service.AuthService;
@@ -21,7 +23,7 @@ import com.poly.petfoster.service.AuthService;
 @RestController
 @RequestMapping("/api/")
 public class AuthController {
-    
+
     @Autowired
     HttpServletRequest httpServletRequest;
 
@@ -31,6 +33,18 @@ public class AuthController {
     @PostMapping("login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
         return ResponseEntity.ok(authService.login(loginRequest));
+    }
+
+    @PostMapping("login-facebook")
+    public ResponseEntity<AuthResponse> loginWithFacebook(
+            @Valid @RequestBody LoginWithFacebookResquest loginWithFacebookResquest) {
+        return ResponseEntity.ok(authService.loginWithFacebook(loginWithFacebookResquest));
+    }
+
+    @PostMapping("login-google")
+    public ResponseEntity<AuthResponse> loginWithGoogle(
+            @Valid @RequestBody LoginWithGoogleResquest loginWithGoogleResquest) {
+        return ResponseEntity.ok(authService.loginWithGoogle(loginWithGoogleResquest));
     }
 
     @PostMapping("register")
@@ -45,7 +59,8 @@ public class AuthController {
     }
 
     @GetMapping("/refresh-code")
-    public ResponseEntity<ApiResponse> refreshCode(HttpServletRequest httpServletRequest, @RequestParam("code") String oldCode) {
+    public ResponseEntity<ApiResponse> refreshCode(HttpServletRequest httpServletRequest,
+            @RequestParam("code") String oldCode) {
         return ResponseEntity.ok(authService.refreshCode(httpServletRequest, oldCode));
     }
 

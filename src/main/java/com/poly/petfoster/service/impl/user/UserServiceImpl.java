@@ -163,6 +163,9 @@ public class UserServiceImpl implements UserService {
                     .gender(user.getGender() == null ? false : true)
                     .phone(user.getPhone())
                     .email(user.getEmail())
+                    // add 3/1/2023
+                    .displayName(user.getDisplayName())
+                    .provider(user.getProvider())
                     .avatar(user.getAvatar() == null ? null : portUltil.getUrlImage(user.getAvatar()))
                     .role(rolee == null ? null : rolee.getRole())
                     .createAt(user.getCreateAt())

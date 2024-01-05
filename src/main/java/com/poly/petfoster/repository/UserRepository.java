@@ -17,6 +17,8 @@ public interface UserRepository extends JpaRepository<User, String> {
 
         Boolean existsByPhone(String phone);
 
+        User findByUuid(String uuid);
+
         @Query(nativeQuery = true, value = "SELECT * FROM Users u join authorities a on u.[user_id] = a.[user_id] join [role] r on r.id = a.role_id WHERE u.is_active = 1 AND ((:keyword IS NULL OR u.username LIKE %:keyword% ) OR (:keyword IS NULL OR u.fullname LIKE %:keyword% ) OR (:keyword IS NULL OR u.email LIKE %:keyword%)) "
                         +
                         "AND (:role IS NULL OR r.[role_desc] like %:role% ) " +

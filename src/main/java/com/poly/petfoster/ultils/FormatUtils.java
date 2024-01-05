@@ -1,7 +1,9 @@
 package com.poly.petfoster.ultils;
 
+import java.text.Normalizer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.regex.Pattern;
 
 import org.springframework.stereotype.Component;
 
@@ -51,6 +53,12 @@ public class FormatUtils {
         }
 
         return formattedDate;
+    }
+
+    public String removeAccent(String s) {
+        String temp = Normalizer.normalize(s, Normalizer.Form.NFD);
+        Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
+        return pattern.matcher(temp).replaceAll("");
     }
 
 }

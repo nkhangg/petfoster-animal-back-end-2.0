@@ -21,7 +21,6 @@ import com.poly.petfoster.repository.UserRepository;
 import com.poly.petfoster.request.ProfileRepuest;
 import com.poly.petfoster.request.users.ChangePasswordRequest;
 import com.poly.petfoster.response.ApiResponse;
-import com.poly.petfoster.response.AuthResponse;
 import com.poly.petfoster.response.users.UserProfileResponse;
 import com.poly.petfoster.service.user.ProfileService;
 import com.poly.petfoster.ultils.ImageUtils;
@@ -79,6 +78,8 @@ public class ProfileServiceImpl implements ProfileService {
         .email(user.getEmail())
         .avatar(user.getAvatar() == null ? null : portUltil.getUrlImage(user.getAvatar()))
         .role(role.getRole())
+        .displayName(user.getDisplayName())
+        .provider(user.getProvider())
         .createAt(user.getCreateAt())
         .build();
 
@@ -104,9 +105,10 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     // start validate
-
-    if (!user.getEmail().equals(profileRepuest.getEmail())) {
-      errorsMap.put("email", "Can't update email !");
+    if (user.getProvider() == null || !user.getProvider().equals("facebook")) {
+      if (!user.getEmail().equals(profileRepuest.getEmail()) && user.getUuid() == null) {
+        errorsMap.put("email", "Can't update email !");
+      }
     }
 
     if (profileRepuest.getFullname().isEmpty()) {
@@ -173,6 +175,15 @@ public class ProfileServiceImpl implements ProfileService {
     user.setFullname(profileRepuest.getFullname());
     user.setGender(profileRepuest.getGender());
     user.setPhone(profileRepuest.getPhone());
+
+    // can update email of user when this user login by facebook
+    if (user.getProvider() != null) {
+      if (user.getUuid() != null && user.getProvider().equals("facebook") &&
+          user.getEmail() == null) {
+        // do save email
+        user.setEmail(profileRepuest.getEmail());
+      }
+    }
 
     User newUser = userRepository.save(user);
 
