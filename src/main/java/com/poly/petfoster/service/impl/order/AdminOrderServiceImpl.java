@@ -110,7 +110,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
             }
         }
 
-        if(updateStatus.equalsIgnoreCase(OrderStatus.CANCELLED_BY_ADMIN.getValue())) {
+        if(updateStatus.equalsIgnoreCase(OrderStatus.CANCELLED_BY_ADMIN.getValue()) && order.getGhnCode() != null) {
 
             List<String> order_codes = new ArrayList<>();
             RestTemplate restTemplate = new RestTemplate();

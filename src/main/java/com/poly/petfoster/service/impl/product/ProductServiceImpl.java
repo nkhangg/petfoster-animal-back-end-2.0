@@ -353,7 +353,7 @@ public class ProductServiceImpl implements ProductService {
         @Override
         public ApiResponse createProduct(CreateProductRequest createProductRequest, List<MultipartFile> images) {
 
-                List<Product> products = productRepository.findAll();
+                List<Product> products = productRepository.findAllNoActive();
 
                 // find brand
                 Brand brand = brandRepository.findById(createProductRequest.getBrand()).orElse(null);
@@ -379,7 +379,6 @@ public class ProductServiceImpl implements ProductService {
                 productRepository.save(product);
 
                 ProductType productType = productTypeRepository.findById(createProductRequest.getType()).orElse(null);
-
                 if (productType == null) {
                         return ApiResponse.builder().message("Type id is not exists").status(404)
                                         .errors("PRODUCT_TYPE_NOT_FOUND").data(null).build();

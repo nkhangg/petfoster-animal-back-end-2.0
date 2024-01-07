@@ -601,17 +601,17 @@ public class OrderSeviceImpl implements OrderService {
         order.setDescriptions(updateStatusRequest.getReason() != null ? updateStatusRequest.getReason() : "");
         ordersRepository.save(order);
 
-        List<String> order_codes = new ArrayList<>();
-        RestTemplate restTemplate = new RestTemplate();
-        order_codes.add(order.getGhnCode());
+        if(order.getGhnCode() != null) {
+            List<String> order_codes = new ArrayList<>();
+            RestTemplate restTemplate = new RestTemplate();
+            order_codes.add(order.getGhnCode());
+            HttpEntity<Map<String, Object>> request = giaoHangNhanhUltils.createRequest("order_codes", order_codes);
+            ResponseEntity<String> response = restTemplate.postForEntity(Constant.GHN_CANCEL, request, String.class);
+        }
 
         for (OrderDetail orderDetail : order.getOrderDetails()) {
             this.returnQuantity(orderDetail.getProductRepo(), orderDetail.getQuantity());
         }
-
-        System.out.println(order_codes.toString());
-        HttpEntity<Map<String, Object>> request = giaoHangNhanhUltils.createRequest("order_codes", order_codes);
-        ResponseEntity<String> response = restTemplate.postForEntity(Constant.GHN_CANCEL, request, String.class);
 
         return ApiResponse.builder()
                 .message("Successfully!!!")
