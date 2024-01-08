@@ -278,4 +278,39 @@ public class ImagesServiceImpl implements ImagesService {
         }
         return images;
     }
+
+    @Override
+    public ApiResponse uploadImages(List<MultipartFile> images, String path) {
+        if (images.isEmpty()) {
+            return ApiResponse.builder()
+                    .message("Data invalid")
+                    .status(HttpStatus.BAD_REQUEST.value())
+                    .errors(true)
+                    .data(null)
+                    .build();
+        }
+
+        List<String> newListImages = images.stream().map((image) -> {
+
+            try {
+                File file = ImageUtils.createFileImage(path + "\\");
+
+                image.transferTo(new File(file.getAbsolutePath()));
+
+                return portUltil.getUrlImage(file.getName(), path);
+
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                return null;
+
+            }
+        }).toList();
+
+        return ApiResponse.builder()
+                .message("Add images successfuly")
+                .status(HttpStatus.OK.value())
+                .errors(false)
+                .data(newListImages)
+                .build();
+    }
 }

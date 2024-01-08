@@ -54,6 +54,7 @@ import com.poly.petfoster.request.order.UpdateStatusRequest;
 import com.poly.petfoster.request.payments.PaymentRequest;
 import com.poly.petfoster.request.payments.VnpaymentRequest;
 import com.poly.petfoster.response.ApiResponse;
+import com.poly.petfoster.response.order.OrderResponse;
 import com.poly.petfoster.response.order_history.OrderDetailsResponse;
 import com.poly.petfoster.response.order_history.OrderHistory;
 import com.poly.petfoster.response.order_history.OrderHistoryResponse;
@@ -236,7 +237,7 @@ public class OrderSeviceImpl implements OrderService {
                     .message("order successfuly!!!")
                     .status(200)
                     .errors(false)
-                    .data(null)
+                    .data(order.getId())
                     .build();
         } else {
             try {
@@ -387,7 +388,10 @@ public class OrderSeviceImpl implements OrderService {
                     .message("order successfuly!!!")
                     .status(200)
                     .errors(false)
-                    .data(null).build();
+                    .data(OrderResponse.builder().orderId(order.getId()).photourl(portUltil.getUrlImage(
+                            order.getOrderDetails().get(0).getProductRepo().getProduct().getImgs().get(0).getNameImg()))
+                            .build())
+                    .build();
         }
 
         return ApiResponse.builder()
