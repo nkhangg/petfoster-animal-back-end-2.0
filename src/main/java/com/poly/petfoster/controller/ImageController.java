@@ -35,4 +35,13 @@ public class ImageController {
                 .body(imageData);
     }
 
+    @GetMapping("/notification/{fileName}")
+    public ResponseEntity<?> downloadImageNotitfication(@PathVariable String fileName) {
+        byte[] imageData = imageService.getImage(fileName, "notification");
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.valueOf("image/png"))
+                .body(imageData);
+    }
+
 }
