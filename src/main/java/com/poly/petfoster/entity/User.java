@@ -16,6 +16,10 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Nationalized;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.poly.petfoster.entity.social.Comments;
+import com.poly.petfoster.entity.social.LikedComments;
+import com.poly.petfoster.entity.social.Likes;
+import com.poly.petfoster.entity.social.Posts;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -118,5 +122,21 @@ public class User {
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	@JsonIgnore
 	private List<RecentView> recentViews;
+
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	@JsonIgnore
+	private List<Posts> posts;
+
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	@JsonIgnore
+	private List<Likes> likes;
+
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	@JsonIgnore
+	private List<Comments> comments;
+
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	@JsonIgnore
+	private List<LikedComments> likedComments;
 
 }

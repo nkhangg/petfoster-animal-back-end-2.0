@@ -1,6 +1,5 @@
 package com.poly.petfoster.entity;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -53,7 +52,7 @@ public class Pet {
 
     @OneToMany(mappedBy = "pet", cascade = CascadeType.ALL)
     @JsonIgnore
-    private List<Imgs> imgs;
+    private List<PetImgs> imgs;
 
     @OneToMany(mappedBy = "pet", cascade = CascadeType.ALL)
     @JsonIgnore

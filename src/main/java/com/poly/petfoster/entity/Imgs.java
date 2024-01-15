@@ -25,10 +25,10 @@ public class Imgs {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "pet_id")
-    @JsonIgnore
-    private Pet pet;
+    // @ManyToOne
+    // @JoinColumn(name = "pet_id")
+    // @JsonIgnore
+    // private Pet pet;
 
     @ManyToOne
     @JoinColumn(name = "product_id")
