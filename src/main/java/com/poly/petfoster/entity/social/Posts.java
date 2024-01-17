@@ -15,7 +15,6 @@ import javax.persistence.OneToMany;
 import org.hibernate.annotations.CreationTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.poly.petfoster.entity.RecentView;
 import com.poly.petfoster.entity.User;
 
 import lombok.AllArgsConstructor;
@@ -44,15 +43,14 @@ public class Posts {
     @ManyToOne
     @JoinColumn(name = "user_id")
     @JsonIgnore
-    private User user; 
+    private User user;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
-	@JsonIgnore
-	private List<Medias> medias;
+    @JsonIgnore
+    private List<Medias> medias;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
-	@JsonIgnore
-	private List<Likes> likes;
+    @JsonIgnore
+    private List<Likes> likes;
 
 }
-
