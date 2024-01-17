@@ -10,11 +10,13 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.Nationalized;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -22,8 +24,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Builder
 public class Pet {
-    
+
     @Id
     private String petId;
 
@@ -42,6 +45,7 @@ public class Pet {
 
     private Boolean isSpay;
 
+    @CreationTimestamp
     private Date createAt;
 
     private Date fosterAt;
@@ -57,5 +61,5 @@ public class Pet {
     @OneToMany(mappedBy = "pet", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Favorite> favorites;
-    
+
 }
