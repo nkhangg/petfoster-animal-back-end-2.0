@@ -456,4 +456,30 @@ public class UserServiceImpl implements UserService {
                 + addresses.getProvince();
     }
 
+    @Override
+    public User getUserFromToken(String token) {
+
+        if (token == null || token.isEmpty()) {
+            return null;
+        }
+
+        // get username from token requested to user
+        String username = jwtProvider.getUsernameFromToken(token);
+
+        // check username
+        if (username == null || username.isEmpty()) {
+            return null;
+        }
+
+        // get user to username
+        User user = userRepository.findByUsername(username).orElse(null);
+
+        // check user
+        if (user == null) {
+            return null;
+        }
+
+        return user;
+    }
+
 }

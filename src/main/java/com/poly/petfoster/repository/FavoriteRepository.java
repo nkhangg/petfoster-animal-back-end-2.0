@@ -11,4 +11,5 @@ public interface FavoriteRepository extends JpaRepository<Favorite, Integer> {
     // where f.user.id = :userId and f.pet.petId = :petId
     @Query(value = "select favorite from Favorite favorite where favorite.user.id = :userId and favorite.pet.petId = :petId")
     Favorite existByUserAndPet(@Param("userId") String userId, @Param("petId") String petId);
+
 }
