@@ -27,6 +27,7 @@ public class PetDetailResponse {
     private String sex;
     private String type;
     private Integer fosterDate;
+    private String sterilization;
     private Boolean like;
     private List<String> images;
     private String color;

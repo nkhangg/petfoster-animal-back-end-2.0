@@ -13,4 +13,6 @@ public interface PetService {
     List<PetResponse> buildPetResponses(List<Pet> petsRaw, User user);
 
     ApiResponse getDetailPet(String id);
+
+    ApiResponse favorite(String id, String token);
 }

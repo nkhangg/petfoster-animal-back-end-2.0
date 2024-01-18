@@ -18,7 +18,7 @@ public class PetDetailPageController {
     private PetService petService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse> getMethodName(@PathVariable("id") String id) {
+    public ResponseEntity<ApiResponse> getDetailPet(@PathVariable("id") String id) {
         return ResponseEntity.ok(petService.getDetailPet(id));
     }
 }

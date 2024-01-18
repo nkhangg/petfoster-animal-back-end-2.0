@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.poly.petfoster.entity.User;
 import com.poly.petfoster.request.ResetPasswordRequest;
 import com.poly.petfoster.request.users.CreateaUserManageRequest;
 import com.poly.petfoster.request.users.UpdateUserRequest;
@@ -29,5 +30,7 @@ public interface UserService {
     public ApiResponse createUser(CreateaUserManageRequest createaUserManageRequest);
 
     public ApiResponse deleteUser(String id);
+
+    public User getUserFromToken(String token);
 
 }

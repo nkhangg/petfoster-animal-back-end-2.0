@@ -12,6 +12,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.poly.petfoster.config.JwtProvider;
+import com.poly.petfoster.entity.Favorite;
 import com.poly.petfoster.entity.Pet;
 import com.poly.petfoster.entity.User;
 import com.poly.petfoster.repository.FavoriteRepository;
@@ -23,6 +24,7 @@ import com.poly.petfoster.response.pages.homepage.HomePageResponse;
 import com.poly.petfoster.response.pets.PetDetailResponse;
 import com.poly.petfoster.response.pets.PetResponse;
 import com.poly.petfoster.service.pets.PetService;
+import com.poly.petfoster.service.user.UserService;
 import com.poly.petfoster.ultils.PortUltil;
 
 @Service
@@ -42,6 +44,9 @@ public class PetServiceImpl implements PetService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private UserService userService;
 
     @Override
     public List<PetResponse> buildPetResponses(List<Pet> petsRaw, User user) {
@@ -109,6 +114,7 @@ public class PetServiceImpl implements PetService {
                 .type(pet.getPetBreed().getPetType().getName())
                 .like(false)
                 .fostered(pet.getFosterAt())
+                .sterilization(pet.getIsSpay() ? "sterilizated" : "not sterilization")
                 .images(images)
                 .color(pet.getPetColor())
                 .build();
@@ -135,6 +141,7 @@ public class PetServiceImpl implements PetService {
                 .type(pet.getPetBreed().getPetType().getName())
                 .like(liked)
                 .fostered(pet.getFosterAt())
+                .sterilization(pet.getIsSpay() ? "sterilizated" : "not sterilization")
                 .images(images)
                 .color(pet.getPetColor())
                 .build();
@@ -212,6 +219,47 @@ public class PetServiceImpl implements PetService {
                 .errors(false)
                 .message("Successfuly")
                 .build();
+    }
+
+    @Override
+    public ApiResponse favorite(String id, String token) {
+
+        User user = userService.getUserFromToken(token);
+
+        if (id == null || id.isEmpty()) {
+            return ApiResponse.builder().message("Failure").status(HttpStatus.BAD_REQUEST.value()).errors(true)
+                    .data(null).build();
+        }
+
+        Pet pet = petRepository.findById(id).orElse(null);
+
+        // check user
+        if (user == null || pet == null) {
+            return ApiResponse.builder().message("Failure").status(HttpStatus.BAD_REQUEST.value()).errors(true)
+                    .data(null).build();
+        }
+
+        Favorite isFavorite = favoriteRepository.existByUserAndPet(user.getId(), pet.getPetId());
+
+        Favorite favoriteResponse = isFavorite;
+        if (isFavorite == null) {
+            favoriteResponse = Favorite.builder().user(user).pet(pet).build();
+            if (favoriteResponse != null) {
+                favoriteRepository.save(favoriteResponse);
+            }
+        } else {
+            if (favoriteResponse != null) {
+                favoriteRepository.delete(favoriteResponse);
+            }
+        }
+
+        return ApiResponse.builder()
+                .data(favoriteResponse)
+                .status(HttpStatus.OK.value())
+                .errors(false)
+                .message(isFavorite == null ? "Favorite Successfuly" : "Unfavorite Successfuly")
+                .build();
+
     }
 
 }
