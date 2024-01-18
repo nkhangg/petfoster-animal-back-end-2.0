@@ -1,4 +1,4 @@
-package com.poly.petfoster.response.statistic;
+package com.poly.petfoster.response.pages.homepage;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,11 +9,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ImpactItemResponse {
-    
+public class ImpactOfYearResponse {
+
     private String image;
 
-    private int quantity;
+    private String quantity;
 
     private String title;
 

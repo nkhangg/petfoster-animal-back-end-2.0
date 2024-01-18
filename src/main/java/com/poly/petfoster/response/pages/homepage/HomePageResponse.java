@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @Data
 public class HomePageResponse {
-        private List<Object> impactOfYear;
+        private List<ImpactOfYearResponse> impactOfYear;
         private List<PetResponse> pets;
         private List<PostHomePageResponse> postsPreview;
 }
