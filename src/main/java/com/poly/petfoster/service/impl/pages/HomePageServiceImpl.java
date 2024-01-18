@@ -103,12 +103,14 @@ public class HomePageServiceImpl implements HomePageService {
                     .data(HomePageResponse.builder().pets(pets).postsPreview(posts).build()).build();
         }
 
-        //get impact
+        // get impact
         List<ImpactOfYearResponse> impacts = Arrays.asList(
-            new ImpactOfYearResponse("dog.svg", petRepository.findAll().size() + "", "Total pets fostered"),
-            new ImpactOfYearResponse("cats.svg", donateRepository.getDonation() + "", "In products & donations"),
-            new ImpactOfYearResponse("home-dog.svg", adoptRepository.getAdoptedPets().size() + "", "Total pets have a home")
-        );
+                new ImpactOfYearResponse("dog.svg", petRepository.findAll().size() + "", "Total pets fostered"),
+                new ImpactOfYearResponse("cats.svg",
+                        donateRepository.getDonation() == null ? "0" : donateRepository.getDonation() + "",
+                        "In products & donations"),
+                new ImpactOfYearResponse("home-dog.svg", adoptRepository.getAdoptedPets().size() + "",
+                        "Total pets have a home"));
 
         List<PetResponse> pets = petService.buildPetResponses(petsRaw);
 
