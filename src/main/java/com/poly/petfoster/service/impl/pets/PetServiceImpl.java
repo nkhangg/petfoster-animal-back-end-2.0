@@ -114,6 +114,7 @@ public class PetServiceImpl implements PetService {
                 .type(pet.getPetBreed().getPetType().getName())
                 .like(false)
                 .fostered(pet.getFosterAt())
+                .sterilization(pet.getIsSpay() ? "sterilizated" : "not sterilization")
                 .images(images)
                 .color(pet.getPetColor())
                 .build();
@@ -140,6 +141,7 @@ public class PetServiceImpl implements PetService {
                 .type(pet.getPetBreed().getPetType().getName())
                 .like(liked)
                 .fostered(pet.getFosterAt())
+                .sterilization(pet.getIsSpay() ? "sterilizated" : "not sterilization")
                 .images(images)
                 .color(pet.getPetColor())
                 .build();
