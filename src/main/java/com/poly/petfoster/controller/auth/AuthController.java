@@ -50,6 +50,7 @@ public class AuthController {
     @PostMapping("register")
     public ResponseEntity<AuthResponse> register(HttpServletRequest httpServletRequest,
             @Valid @RequestBody RegisterRequest registerRequest) {
+        httpServletRequest.setAttribute("username", registerRequest.getUsername());
         return ResponseEntity.ok(authService.register(httpServletRequest, registerRequest));
     }
 
