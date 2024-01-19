@@ -3,17 +3,24 @@ package com.poly.petfoster.service.impl.pets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.poly.petfoster.config.JwtProvider;
+import com.poly.petfoster.constant.RespMessage;
 import com.poly.petfoster.entity.Favorite;
 import com.poly.petfoster.entity.Pet;
+import com.poly.petfoster.entity.Product;
 import com.poly.petfoster.entity.User;
 import com.poly.petfoster.repository.FavoriteRepository;
 import com.poly.petfoster.repository.PetRepository;
@@ -22,6 +29,7 @@ import com.poly.petfoster.response.ApiResponse;
 import com.poly.petfoster.response.pages.PetDetailPageResponse;
 import com.poly.petfoster.response.pages.homepage.HomePageResponse;
 import com.poly.petfoster.response.pets.PetDetailResponse;
+import com.poly.petfoster.response.pets.PetFilterResponse;
 import com.poly.petfoster.response.pets.PetResponse;
 import com.poly.petfoster.service.pets.PetService;
 import com.poly.petfoster.service.user.UserService;
@@ -260,6 +268,35 @@ public class PetServiceImpl implements PetService {
                 .message(isFavorite == null ? "Favorite Successfuly" : "Unfavorite Successfuly")
                 .build();
 
+    }
+
+
+    @Override
+    public ApiResponse filterPets(Optional<String> name, Optional<String> typeName, Optional<String> colors, Optional<String> age, Optional<Boolean> gender,Optional<String> sort, Optional<Integer> page) {
+
+        List<Pet> filterPets = petRepository.filterPets(name.orElse(null), typeName.orElse(null), colors.orElse(null), age.orElse(null), gender.orElse(null), sort.orElse("latest"));
+
+        Pageable pageable = PageRequest.of(page.orElse(0), 9);
+        int startIndex = (int) pageable.getOffset();
+        int endIndex = Math.min(startIndex + pageable.getPageSize(), filterPets.size());
+        if (startIndex >= endIndex) {
+            return ApiResponse.builder()
+                    .message(RespMessage.NOT_FOUND.getValue())
+                    .data(filterPets)
+                    .errors(true)
+                    .status(HttpStatus.NOT_FOUND.value())
+                    .build();
+        }
+
+        List<Pet> visiblePets = filterPets.subList(startIndex, endIndex);
+        Page<Pet> pagination = new PageImpl<Pet>(visiblePets, pageable, filterPets.size());
+        List<PetResponse> pets = this.buildPetResponses(visiblePets);
+
+        return ApiResponse.builder()
+            .status(200)
+            .message("Successfully!!!")
+            .errors(false)
+            .data(PetFilterResponse.builder().filterPets(pets).pages(pagination.getTotalPages()).build()).build();
     }
 
 }

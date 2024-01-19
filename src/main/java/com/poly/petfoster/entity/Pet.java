@@ -38,8 +38,10 @@ public class Pet {
     private PetBreed petBreed;
 
     private Boolean sex;
+
     @Nationalized
     private String petColor;
+    
     @Nationalized
     private String age;
 
