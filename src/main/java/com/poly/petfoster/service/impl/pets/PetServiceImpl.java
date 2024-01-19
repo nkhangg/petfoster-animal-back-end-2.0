@@ -20,16 +20,14 @@ import com.poly.petfoster.config.JwtProvider;
 import com.poly.petfoster.constant.RespMessage;
 import com.poly.petfoster.entity.Favorite;
 import com.poly.petfoster.entity.Pet;
-import com.poly.petfoster.entity.Product;
 import com.poly.petfoster.entity.User;
 import com.poly.petfoster.repository.FavoriteRepository;
 import com.poly.petfoster.repository.PetRepository;
 import com.poly.petfoster.repository.UserRepository;
 import com.poly.petfoster.response.ApiResponse;
+import com.poly.petfoster.response.common.PagiantionResponse;
 import com.poly.petfoster.response.pages.PetDetailPageResponse;
-import com.poly.petfoster.response.pages.homepage.HomePageResponse;
 import com.poly.petfoster.response.pets.PetDetailResponse;
-import com.poly.petfoster.response.pets.PetFilterResponse;
 import com.poly.petfoster.response.pets.PetResponse;
 import com.poly.petfoster.service.pets.PetService;
 import com.poly.petfoster.service.user.UserService;
@@ -281,11 +279,11 @@ public class PetServiceImpl implements PetService {
         int endIndex = Math.min(startIndex + pageable.getPageSize(), filterPets.size());
         if (startIndex >= endIndex) {
             return ApiResponse.builder()
-                    .message(RespMessage.NOT_FOUND.getValue())
-                    .data(filterPets)
-                    .errors(true)
-                    .status(HttpStatus.NOT_FOUND.value())
-                    .build();
+            .status(200)
+            .message("Successfully!!!")
+            .errors(false)
+            .data(PagiantionResponse.builder().data(filterPets).pages(0).build())
+            .build();
         }
 
         List<Pet> visiblePets = filterPets.subList(startIndex, endIndex);
@@ -296,7 +294,8 @@ public class PetServiceImpl implements PetService {
             .status(200)
             .message("Successfully!!!")
             .errors(false)
-            .data(PetFilterResponse.builder().filterPets(pets).pages(pagination.getTotalPages()).build()).build();
+            .data(PagiantionResponse.builder().data(pets).pages(pagination.getTotalPages()).build())
+            .build();
     }
 
 }
