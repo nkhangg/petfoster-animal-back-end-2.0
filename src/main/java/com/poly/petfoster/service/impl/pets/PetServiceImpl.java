@@ -2,6 +2,7 @@ package com.poly.petfoster.service.impl.pets;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -20,14 +21,20 @@ import com.poly.petfoster.config.JwtProvider;
 import com.poly.petfoster.constant.RespMessage;
 import com.poly.petfoster.entity.Favorite;
 import com.poly.petfoster.entity.Pet;
+import com.poly.petfoster.entity.PetBreed;
+import com.poly.petfoster.entity.PetType;
 import com.poly.petfoster.entity.User;
 import com.poly.petfoster.repository.FavoriteRepository;
+import com.poly.petfoster.repository.PetBreedRepository;
 import com.poly.petfoster.repository.PetRepository;
+import com.poly.petfoster.repository.PetTypeRepository;
 import com.poly.petfoster.repository.UserRepository;
 import com.poly.petfoster.response.ApiResponse;
 import com.poly.petfoster.response.common.PagiantionResponse;
 import com.poly.petfoster.response.pages.PetDetailPageResponse;
 import com.poly.petfoster.response.pages.homepage.HomePageResponse;
+import com.poly.petfoster.response.pets.PetAttributeReponse;
+import com.poly.petfoster.response.pets.PetAttributesReponse;
 import com.poly.petfoster.response.pets.PetDetailResponse;
 import com.poly.petfoster.response.pets.PetResponse;
 import com.poly.petfoster.service.pets.PetService;
@@ -54,6 +61,12 @@ public class PetServiceImpl implements PetService {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private PetBreedRepository petBreedRepository;
+    @Autowired
+
+    private PetTypeRepository petTypeRepository;
 
     @Override
     public List<PetResponse> buildPetResponses(List<Pet> petsRaw, User user) {
@@ -269,22 +282,23 @@ public class PetServiceImpl implements PetService {
 
     }
 
-
     @Override
-    public ApiResponse filterPets(Optional<String> name, Optional<String> typeName, Optional<String> colors, Optional<String> age, Optional<Boolean> gender,Optional<String> sort, Optional<Integer> page) {
+    public ApiResponse filterPets(Optional<String> name, Optional<String> typeName, Optional<String> colors,
+            Optional<String> age, Optional<Boolean> gender, Optional<String> sort, Optional<Integer> page) {
 
-        List<Pet> filterPets = petRepository.filterPets(name.orElse(null), typeName.orElse(null), colors.orElse(null), age.orElse(null), gender.orElse(null), sort.orElse("latest"));
+        List<Pet> filterPets = petRepository.filterPets(name.orElse(null), typeName.orElse(null), colors.orElse(null),
+                age.orElse(null), gender.orElse(null), sort.orElse("latest"));
 
         Pageable pageable = PageRequest.of(page.orElse(0), 9);
         int startIndex = (int) pageable.getOffset();
         int endIndex = Math.min(startIndex + pageable.getPageSize(), filterPets.size());
         if (startIndex >= endIndex) {
             return ApiResponse.builder()
-            .status(200)
-            .message("Successfully!!!")
-            .errors(false)
-            .data(PagiantionResponse.builder().data(filterPets).pages(0).build())
-            .build();
+                    .status(200)
+                    .message("Successfully!!!")
+                    .errors(false)
+                    .data(PagiantionResponse.builder().data(filterPets).pages(0).build())
+                    .build();
         }
 
         List<Pet> visiblePets = filterPets.subList(startIndex, endIndex);
@@ -292,7 +306,7 @@ public class PetServiceImpl implements PetService {
         List<PetResponse> pets;
 
         String token = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest()
-        .getHeader("Authorization");
+                .getHeader("Authorization");
 
         if (token != null) {
 
@@ -316,17 +330,56 @@ public class PetServiceImpl implements PetService {
 
             // get pets
             pets = this.buildPetResponses(visiblePets, user);
-            
-        }else {
+
+        } else {
             pets = this.buildPetResponses(visiblePets);
         }
-        
+
         return ApiResponse.builder()
-            .status(200)
-            .message("Successfully!!!")
-            .errors(false)
-            .data(PagiantionResponse.builder().data(pets).pages(pagination.getTotalPages()).build())
-            .build();
+                .status(200)
+                .message("Successfully!!!")
+                .errors(false)
+                .data(PagiantionResponse.builder().data(pets).pages(pagination.getTotalPages()).build())
+                .build();
+    }
+
+    @Override
+    public ApiResponse getAttributes() {
+
+        List<Pet> list = petRepository.findAll();
+
+        List<PetAttributeReponse> colors_ = new ArrayList<>();
+        List<PetAttributeReponse> states_ = new ArrayList<>();
+        List<PetAttributeReponse> breeds = new ArrayList<>();
+        List<PetAttributeReponse> typies = new ArrayList<>();
+
+        for (Pet p : list) {
+            colors_.add(new PetAttributeReponse(p.getPetColor().toLowerCase(), p.getPetColor()));
+            if (p.getAdoptStatus().equalsIgnoreCase("Awaiting adoption")) {
+                states_.add(new PetAttributeReponse("awaiting", p.getAdoptStatus()));
+            } else if (p.getAdoptStatus().equalsIgnoreCase("Haven't adopted yet")) {
+                states_.add(new PetAttributeReponse("haven_t", p.getAdoptStatus()));
+            } else if (p.getAdoptStatus().equalsIgnoreCase("Adopted")) {
+                states_.add(new PetAttributeReponse("adopted", p.getAdoptStatus()));
+            }
+        }
+        List<PetAttributeReponse> colors = new ArrayList<>(
+                new HashSet<>(colors_));
+        List<PetAttributeReponse> states = new ArrayList<>(
+                new HashSet<>(states_));
+
+        for (PetBreed b : petBreedRepository.findAll()) {
+            breeds.add(new PetAttributeReponse(b.getBreedId(), b.getBreedName()));
+        }
+
+        for (PetType t : petTypeRepository.findAll()) {
+            typies.add(new PetAttributeReponse(t.getId(), t.getName()));
+        }
+        PetAttributesReponse attributes = PetAttributesReponse.builder().breeds(breeds)
+                .colors(colors).states(states).typies(typies).build();
+
+        return ApiResponse.builder().message("Successfully!").errors(Boolean.FALSE).status(HttpStatus.OK.value())
+                .data(attributes).build();
     }
 
 }

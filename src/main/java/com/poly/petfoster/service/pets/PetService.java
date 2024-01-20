@@ -17,5 +17,8 @@ public interface PetService {
 
     ApiResponse favorite(String id, String token);
 
-    ApiResponse filterPets(Optional<String> name, Optional<String> typeName, Optional<String> colors, Optional<String> age, Optional<Boolean> gender, Optional<String> sort, Optional<Integer> page);
+    ApiResponse filterPets(Optional<String> name, Optional<String> typeName, Optional<String> colors,
+            Optional<String> age, Optional<Boolean> gender, Optional<String> sort, Optional<Integer> page);
+
+    ApiResponse getAttributes();
 }
