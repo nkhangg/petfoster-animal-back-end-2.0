@@ -3,15 +3,21 @@ package com.poly.petfoster.service.impl.pets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.poly.petfoster.config.JwtProvider;
+import com.poly.petfoster.constant.RespMessage;
 import com.poly.petfoster.entity.Favorite;
 import com.poly.petfoster.entity.Pet;
 import com.poly.petfoster.entity.User;
@@ -19,6 +25,7 @@ import com.poly.petfoster.repository.FavoriteRepository;
 import com.poly.petfoster.repository.PetRepository;
 import com.poly.petfoster.repository.UserRepository;
 import com.poly.petfoster.response.ApiResponse;
+import com.poly.petfoster.response.common.PagiantionResponse;
 import com.poly.petfoster.response.pages.PetDetailPageResponse;
 import com.poly.petfoster.response.pages.homepage.HomePageResponse;
 import com.poly.petfoster.response.pets.PetDetailResponse;
@@ -260,6 +267,66 @@ public class PetServiceImpl implements PetService {
                 .message(isFavorite == null ? "Favorite Successfuly" : "Unfavorite Successfuly")
                 .build();
 
+    }
+
+
+    @Override
+    public ApiResponse filterPets(Optional<String> name, Optional<String> typeName, Optional<String> colors, Optional<String> age, Optional<Boolean> gender,Optional<String> sort, Optional<Integer> page) {
+
+        List<Pet> filterPets = petRepository.filterPets(name.orElse(null), typeName.orElse(null), colors.orElse(null), age.orElse(null), gender.orElse(null), sort.orElse("latest"));
+
+        Pageable pageable = PageRequest.of(page.orElse(0), 9);
+        int startIndex = (int) pageable.getOffset();
+        int endIndex = Math.min(startIndex + pageable.getPageSize(), filterPets.size());
+        if (startIndex >= endIndex) {
+            return ApiResponse.builder()
+            .status(200)
+            .message("Successfully!!!")
+            .errors(false)
+            .data(PagiantionResponse.builder().data(filterPets).pages(0).build())
+            .build();
+        }
+
+        List<Pet> visiblePets = filterPets.subList(startIndex, endIndex);
+        Page<Pet> pagination = new PageImpl<Pet>(visiblePets, pageable, filterPets.size());
+        List<PetResponse> pets;
+
+        String token = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest()
+        .getHeader("Authorization");
+
+        if (token != null) {
+
+            // get username from token requested to user
+            String username = jwtProvider.getUsernameFromToken(token);
+
+            // check username
+            if (username == null || username.isEmpty()) {
+                return ApiResponse.builder().message("Failure").status(HttpStatus.BAD_REQUEST.value()).errors(true)
+                        .data(new ArrayList<>()).build();
+            }
+
+            // get user to username
+            User user = userRepository.findByUsername(username).orElse(null);
+
+            // check user
+            if (user == null) {
+                return ApiResponse.builder().message("Failure").status(HttpStatus.BAD_REQUEST.value()).errors(true)
+                        .data(new ArrayList<>()).build();
+            }
+
+            // get pets
+            pets = this.buildPetResponses(visiblePets, user);
+            
+        }else {
+            pets = this.buildPetResponses(visiblePets);
+        }
+        
+        return ApiResponse.builder()
+            .status(200)
+            .message("Successfully!!!")
+            .errors(false)
+            .data(PagiantionResponse.builder().data(pets).pages(pagination.getTotalPages()).build())
+            .build();
     }
 
 }
