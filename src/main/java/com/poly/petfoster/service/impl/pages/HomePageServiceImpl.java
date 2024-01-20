@@ -76,6 +76,15 @@ public class HomePageServiceImpl implements HomePageService {
 
         List<PostHomePageResponse> posts = postService.buildPostHomePageResponses(postsRaw);
 
+        // get impact
+        List<ImpactOfYearResponse> impacts = Arrays.asList(
+                new ImpactOfYearResponse("dog.svg", petRepository.findAll().size() + "", "Total pets fostered", null),
+                new ImpactOfYearResponse("cats.svg",
+                        donateRepository.getDonation() == null ? "0" : donateRepository.getDonation() + "",
+                        "In products & donations", "$"),
+                new ImpactOfYearResponse("home-dog.svg", adoptRepository.getAdoptedPets().size() + "",
+                        "Total pets have a home", null));
+
         if (token != null) {
 
             // get username from token requested to user
@@ -100,17 +109,9 @@ public class HomePageServiceImpl implements HomePageService {
             List<PetResponse> pets = petService.buildPetResponses(petsRaw, user);
 
             return ApiResponse.builder().message("Successfuly").status(200).errors(false)
-                    .data(HomePageResponse.builder().pets(pets).postsPreview(posts).build()).build();
+                    .data(HomePageResponse.builder().impactOfYear(impacts).pets(pets).postsPreview(posts).build())
+                    .build();
         }
-
-        // get impact
-        List<ImpactOfYearResponse> impacts = Arrays.asList(
-                new ImpactOfYearResponse("dog.svg", petRepository.findAll().size() + "", "Total pets fostered"),
-                new ImpactOfYearResponse("cats.svg",
-                        donateRepository.getDonation() == null ? "0" : donateRepository.getDonation() + "",
-                        "In products & donations"),
-                new ImpactOfYearResponse("home-dog.svg", adoptRepository.getAdoptedPets().size() + "",
-                        "Total pets have a home"));
 
         List<PetResponse> pets = petService.buildPetResponses(petsRaw);
 

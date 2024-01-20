@@ -1,5 +1,7 @@
 package com.poly.petfoster.response.pages.homepage;
 
+import java.util.Optional;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,5 +18,7 @@ public class ImpactOfYearResponse {
     private String quantity;
 
     private String title;
+
+    private String prefix;
 
 }
