@@ -19,17 +19,22 @@ public class PetFilterController {
 
     @Autowired
     PetService petService;
-    
+
     @GetMapping("")
     public ResponseEntity<ApiResponse> filterPets(
-        @RequestParam("name") Optional<String> name, 
-        @RequestParam("typeName") Optional<String> typeName,
-        @RequestParam("colors") Optional<String> colors,
-        @RequestParam("age") Optional<String> age,
-        @RequestParam("gender") Optional<Boolean> gender,
-        @RequestParam("sort") Optional<String> sort,
-        @RequestParam("page") Optional<Integer> page) {
+            @RequestParam("name") Optional<String> name,
+            @RequestParam("typeName") Optional<String> typeName,
+            @RequestParam("colors") Optional<String> colors,
+            @RequestParam("age") Optional<String> age,
+            @RequestParam("gender") Optional<Boolean> gender,
+            @RequestParam("sort") Optional<String> sort,
+            @RequestParam("page") Optional<Integer> page) {
         return ResponseEntity.ok(petService.filterPets(name, typeName, colors, age, gender, sort, page));
+    }
+
+    @GetMapping("attributes")
+    public ResponseEntity<ApiResponse> getAttributes() {
+        return ResponseEntity.ok(petService.getAttributes());
     }
 
 }
