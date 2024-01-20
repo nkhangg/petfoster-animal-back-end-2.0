@@ -27,6 +27,7 @@ import com.poly.petfoster.repository.UserRepository;
 import com.poly.petfoster.response.ApiResponse;
 import com.poly.petfoster.response.common.PagiantionResponse;
 import com.poly.petfoster.response.pages.PetDetailPageResponse;
+import com.poly.petfoster.response.pages.homepage.HomePageResponse;
 import com.poly.petfoster.response.pets.PetDetailResponse;
 import com.poly.petfoster.response.pets.PetResponse;
 import com.poly.petfoster.service.pets.PetService;
@@ -288,8 +289,38 @@ public class PetServiceImpl implements PetService {
 
         List<Pet> visiblePets = filterPets.subList(startIndex, endIndex);
         Page<Pet> pagination = new PageImpl<Pet>(visiblePets, pageable, filterPets.size());
-        List<PetResponse> pets = this.buildPetResponses(visiblePets);
+        List<PetResponse> pets;
 
+        String token = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest()
+        .getHeader("Authorization");
+
+        if (token != null) {
+
+            // get username from token requested to user
+            String username = jwtProvider.getUsernameFromToken(token);
+
+            // check username
+            if (username == null || username.isEmpty()) {
+                return ApiResponse.builder().message("Failure").status(HttpStatus.BAD_REQUEST.value()).errors(true)
+                        .data(new ArrayList<>()).build();
+            }
+
+            // get user to username
+            User user = userRepository.findByUsername(username).orElse(null);
+
+            // check user
+            if (user == null) {
+                return ApiResponse.builder().message("Failure").status(HttpStatus.BAD_REQUEST.value()).errors(true)
+                        .data(new ArrayList<>()).build();
+            }
+
+            // get pets
+            pets = this.buildPetResponses(visiblePets, user);
+            
+        }else {
+            pets = this.buildPetResponses(visiblePets);
+        }
+        
         return ApiResponse.builder()
             .status(200)
             .message("Successfully!!!")
