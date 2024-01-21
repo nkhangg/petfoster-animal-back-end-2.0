@@ -8,5 +8,5 @@ public interface EmailService {
 
     public void sendVerificationEmail(HttpServletRequest req, String email, UUID otp);
 
-    public void sendConfirmationEmail(HttpServletRequest req, String email, UUID token);
+    public void confirmResetPassword(HttpServletRequest req, String email, UUID token);
 }
