@@ -79,7 +79,7 @@ public interface OrdersRepository extends JpaRepository<Orders, Integer> {
         @Query("SELECT o FROM Orders o " +
                         "WHERE (:username IS NULL OR o.user.username like %:username%) " +
                         "AND (:orderId IS NULL OR o.id = :orderId) " +
-                        "AND (:status IS NULL OR o.status like %:status%) " +
+                        "AND (:status IS NULL OR o.status like :status) " +
                         "AND ((:minDate IS NULL AND :maxDate IS NULL) OR (convert(date, o.createAt) BETWEEN :minDate AND :maxDate)) "
                         +
                         "ORDER BY " +

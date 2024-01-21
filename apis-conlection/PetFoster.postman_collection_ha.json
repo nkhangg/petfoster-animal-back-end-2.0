@@ -2016,10 +2016,20 @@
             {
                "name": "Pet Filters",
                "request": {
+                  "auth": {
+                     "type": "bearer",
+                     "bearer": [
+                        {
+                           "key": "token",
+                           "value": "eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE3MDU3NTgzODcsImV4cCI6MTcwNjExODM4NywidXNlcm5hbWUiOiJraGFuZ3BuMSIsImF1dGhvcml0aWVzIjoiUk9MRV9VU0VSIn0.gZKcX3uv8C7beoQUCyYbtZrSBDLaMh63YimZUKPXkL3_dlP7Gk23krcJu7IWMXdK7BRuoQq0somYjJGF5hBsfA",
+                           "type": "string"
+                        }
+                     ]
+                  },
                   "method": "GET",
                   "header": [],
                   "url": {
-                     "raw": "http://localhost:8019/api/pets?typeName=Cat&age=Adult&colors=White,yellow&gender=true&sort=oldest",
+                     "raw": "http://localhost:8019/api/pets",
                      "protocol": "http",
                      "host": ["localhost"],
                      "port": "8019",
@@ -2027,33 +2037,119 @@
                      "query": [
                         {
                            "key": "name",
-                           "value": "Mi",
-                           "disabled": true
-                        },
-                        {
-                           "key": "page",
-                           "value": null,
+                           "value": "ga",
                            "disabled": true
                         },
                         {
                            "key": "typeName",
-                           "value": "Cat"
+                           "value": "Cat",
+                           "disabled": true
                         },
                         {
                            "key": "age",
-                           "value": "Adult"
+                           "value": "Adult",
+                           "disabled": true
                         },
                         {
                            "key": "colors",
-                           "value": "White,yellow"
+                           "value": "White,yellow",
+                           "disabled": true
                         },
                         {
                            "key": "gender",
-                           "value": "true"
+                           "value": "true",
+                           "disabled": true
                         },
                         {
                            "key": "sort",
-                           "value": "oldest"
+                           "value": "oldest",
+                           "disabled": true
+                        },
+                        {
+                           "key": "page",
+                           "value": "0",
+                           "disabled": true
+                        }
+                     ]
+                  }
+               },
+               "response": []
+            },
+            {
+               "name": "[admin] Pet Filters",
+               "request": {
+                  "auth": {
+                     "type": "bearer",
+                     "bearer": [
+                        {
+                           "key": "token",
+                           "value": "eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE3MDU3NjIyNTAsImV4cCI6MTcwNjEyMjI1MCwidXNlcm5hbWUiOiJraGFuZ3BuMSIsImF1dGhvcml0aWVzIjoiUk9MRV9BRE1JTiJ9.RuM_TPrlp7QO9nKldlEH0KxXcnwVF_grFBHFJfVX7dKcgIsiG3ckFJZnhWhQRJbiQqdELk_WeOkeaoejNIEjxA",
+                           "type": "string"
+                        }
+                     ]
+                  },
+                  "method": "GET",
+                  "header": [],
+                  "url": {
+                     "raw": "http://localhost:8019/api/admin/pets?page=3",
+                     "protocol": "http",
+                     "host": ["localhost"],
+                     "port": "8019",
+                     "path": ["api", "admin", "pets"],
+                     "query": [
+                        {
+                           "key": "typeName",
+                           "value": "cat",
+                           "disabled": true
+                        },
+                        {
+                           "key": "name",
+                           "value": "mi",
+                           "disabled": true
+                        },
+                        {
+                           "key": "status",
+                           "value": "Adopted",
+                           "disabled": true
+                        },
+                        {
+                           "key": "colors",
+                           "value": "black,white",
+                           "disabled": true
+                        },
+                        {
+                           "key": "age",
+                           "value": "baby",
+                           "disabled": true
+                        },
+                        {
+                           "key": "gender",
+                           "value": "true",
+                           "disabled": true
+                        },
+                        {
+                           "key": "sort",
+                           "value": "oldest",
+                           "disabled": true
+                        },
+                        {
+                           "key": "status",
+                           "value": "Haven't adopted yet",
+                           "disabled": true
+                        },
+                        {
+                           "key": "minDate",
+                           "value": "2023-06-01",
+                           "disabled": true
+                        },
+                        {
+                           "key": "maxDate",
+                           "value": "2023-06-29",
+                           "disabled": true
+                        },
+                        {
+                           "key": "page",
+                           "value": "3"
                         }
                      ]
                   }
