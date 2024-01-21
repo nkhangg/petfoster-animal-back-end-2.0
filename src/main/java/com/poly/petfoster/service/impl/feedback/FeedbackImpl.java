@@ -33,9 +33,10 @@ public class FeedbackImpl implements FeedbackService {
             map.put("message", feedBackRequest.getMessage());
             map.put("browser", request.getHeader("USER-AGENT"));
             SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-            mailUtils.sendTemplateEmail(feedBackRequest.getEmail(),
+            mailUtils.sendTemplateEmail("duynqpc04918@fpt.edu.vn",
                     "Visitor feedback - " + formatter.format(new Date()),
                     "feedback", map);
+            mailUtils.sendTemplateEmail(feedBackRequest.getEmail(), "Thanks your feedback!", "thanks", map);
         } catch (MessagingException e) {
             e.printStackTrace();
         }
