@@ -111,7 +111,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 
     public UUID sendToken(HttpServletRequest req, String email) {
         UUID token = UUID.randomUUID();
-        emailServiceImpl.sendConfirmationEmail(req, email, token);
+        emailServiceImpl.confirmResetPassword(req, email, token);
         return token;
     }
 
