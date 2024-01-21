@@ -1,5 +1,6 @@
 package com.poly.petfoster.service.pets;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,4 +22,8 @@ public interface PetService {
             Optional<String> age, Optional<Boolean> gender, Optional<String> sort, Optional<Integer> page);
 
     ApiResponse getAttributes();
+
+    ApiResponse filterAdminPets(Optional<String> name, Optional<String> typeName, Optional<String> colors,
+    Optional<String> age, Optional<Boolean> gender, Optional<String> status, Optional<Date> minDate, Optional<Date> maxDate, Optional<String> sort, Optional<Integer> page);
+    
 }

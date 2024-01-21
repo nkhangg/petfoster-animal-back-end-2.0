@@ -289,7 +289,20 @@ public class PetServiceImpl implements PetService {
         List<Pet> filterPets = petRepository.filterPets(name.orElse(null), typeName.orElse(null), colors.orElse(null),
                 age.orElse(null), gender.orElse(null), sort.orElse("latest"));
 
-        Pageable pageable = PageRequest.of(page.orElse(0), 9);
+        Integer pageSize = 9;
+        Integer pages = page.orElse(0);
+        Integer totalPages = (filterPets.size() + pageSize - 1) / pageSize;
+
+        if(pages >= totalPages) {
+            return ApiResponse.builder()
+                    .status(HttpStatus.NO_CONTENT.value())
+                    .message("No data available!!!")
+                    .errors(false)
+                    .data(PagiantionResponse.builder().data(new ArrayList<>()).pages(0).build())
+                    .build();
+        }
+
+        Pageable pageable = PageRequest.of(pages, pageSize);
         int startIndex = (int) pageable.getOffset();
         int endIndex = Math.min(startIndex + pageable.getPageSize(), filterPets.size());
         if (startIndex >= endIndex) {
@@ -380,6 +393,73 @@ public class PetServiceImpl implements PetService {
 
         return ApiResponse.builder().message("Successfully!").errors(Boolean.FALSE).status(HttpStatus.OK.value())
                 .data(attributes).build();
+    }
+
+    @Override
+    public ApiResponse filterAdminPets(Optional<String> name, Optional<String> typeName, Optional<String> colors,
+    Optional<String> age, Optional<Boolean> gender, Optional<String> status, Optional<Date> minDate, Optional<Date> maxDate, Optional<String> sort, Optional<Integer> page) {
+        
+        Date minDateValue = minDate.orElse(null);
+        Date maxDateValue = maxDate.orElse(null);
+
+        if (minDateValue == null && maxDateValue != null) {
+            minDateValue = maxDateValue;
+        }
+
+        if (maxDateValue == null && minDateValue != null) {
+            maxDateValue = minDateValue;
+        }
+
+        if (minDateValue != null && maxDateValue != null) {
+            if (minDateValue.after(maxDateValue)) {
+                return ApiResponse.builder()
+                        .message("The max date must after the min date!!!")
+                        .status(HttpStatus.CONFLICT.value())
+                        .errors("The max date must after the min date!!!")
+                        .build();
+            }
+        }
+
+        List<Pet> filterPets = petRepository.filterAdminPets(name.orElse(null), typeName.orElse(null), colors.orElse(null),
+                age.orElse(null), gender.orElse(null), status.orElse(null), minDateValue, maxDateValue, sort.orElse("latest"));
+
+
+        Integer pageSize = 10;
+        Integer pages = page.orElse(0);
+        Integer totalPages = (filterPets.size() + pageSize - 1) / pageSize;
+
+        if(pages >= totalPages) {
+            return ApiResponse.builder()
+                    .status(HttpStatus.NO_CONTENT.value())
+                    .message("No data available!!!")
+                    .errors(false)
+                    .data(PagiantionResponse.builder().data(new ArrayList<>()).pages(0).build())
+                    .build();
+        }
+
+        Pageable pageable = PageRequest.of(pages, pageSize);
+        int startIndex = (int) pageable.getOffset();
+        int endIndex = Math.min(startIndex + pageable.getPageSize(), filterPets.size());
+        if (startIndex >= endIndex) {
+            return ApiResponse.builder()
+                    .status(200)
+                    .message("Successfully!!!")
+                    .errors(false)
+                    .data(PagiantionResponse.builder().data(filterPets).pages(0).build())
+                    .build();
+        }
+
+        List<Pet> visiblePets = filterPets.subList(startIndex, endIndex);
+        Page<Pet> pagination = new PageImpl<Pet>(visiblePets, pageable, filterPets.size());
+        List<PetDetailResponse> pets = new ArrayList<>();
+        visiblePets.forEach(pet -> pets.add(this.buildPetResponses(pet)));
+
+        return ApiResponse.builder()
+            .status(200)
+            .message("Successfully!!!")
+            .errors(false)
+            .data(PagiantionResponse.builder().data(pets).pages(totalPages).build())
+            .build();
     }
 
 }
