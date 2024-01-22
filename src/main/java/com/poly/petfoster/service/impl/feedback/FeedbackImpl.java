@@ -12,13 +12,18 @@ import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.poly.petfoster.constant.RespMessage;
 import com.poly.petfoster.entity.Feedback;
 import com.poly.petfoster.repository.FeedbackRepository;
 import com.poly.petfoster.request.feedback.FeedBackRequest;
 import com.poly.petfoster.response.ApiResponse;
+import com.poly.petfoster.response.common.PagiantionResponse;
 import com.poly.petfoster.response.feedback.FeedBackResponse;
 import com.poly.petfoster.service.feedback.FeedbackService;
 import com.poly.petfoster.ultils.MailUtils;
@@ -32,9 +37,13 @@ public class FeedbackImpl implements FeedbackService {
         FeedbackRepository feedbackRepository;
 
         @Override
-        public ApiResponse getFeedback() {
-                return ApiResponse.builder().message("Successfully").status(HttpStatus.OK.value()).errors(Boolean.FALSE)
-                                .data(feedbackRepository.findAll()).build();
+        public ApiResponse getFeedback(int page) {
+                Pageable pageable = PageRequest.of(page, 10);
+                Page<Feedback> feedbacks = feedbackRepository.findAll(pageable);
+                List<Feedback> feedbackss = feedbacks.getContent();
+                return ApiResponse.builder()
+                                .data(new PagiantionResponse(feedbackss, feedbacks.getTotalPages()))
+                                .build();
         }
 
         public ApiResponse seen(Integer id) {
