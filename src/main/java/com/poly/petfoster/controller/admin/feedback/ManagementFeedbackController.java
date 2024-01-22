@@ -13,7 +13,7 @@ import com.poly.petfoster.response.ApiResponse;
 import com.poly.petfoster.service.feedback.FeedbackService;
 
 @RestController
-@RequestMapping("/api/test/feedbacks")
+@RequestMapping("/api/admin/feedbacks")
 public class ManagementFeedbackController {
     @Autowired
     FeedbackService feedbackService;
