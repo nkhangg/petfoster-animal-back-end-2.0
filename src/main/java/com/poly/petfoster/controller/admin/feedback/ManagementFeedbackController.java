@@ -18,8 +18,8 @@ public class ManagementFeedbackController {
     FeedbackService feedbackService;
 
     @GetMapping("")
-    public ResponseEntity<ApiResponse> getFeedback() {
-        return ResponseEntity.ok(feedbackService.getFeedback());
+    public ResponseEntity<ApiResponse> getFeedback(@PathVariable("page") int page) {
+        return ResponseEntity.ok(feedbackService.getFeedback(page));
     }
 
     @PutMapping("/{id}")
