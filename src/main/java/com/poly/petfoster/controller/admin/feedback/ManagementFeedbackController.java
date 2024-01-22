@@ -25,6 +25,7 @@ public class ManagementFeedbackController {
     }
 
     @PutMapping("/{id}")
+    //
     public ResponseEntity<ApiResponse> seen(@PathVariable("id") Integer id) {
         return ResponseEntity.ok(feedbackService.seen(id));
     }
