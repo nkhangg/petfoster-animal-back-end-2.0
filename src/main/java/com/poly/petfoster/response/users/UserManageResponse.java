@@ -29,4 +29,5 @@ public class UserManageResponse {
     private Date createAt;
     private String password;
     private Boolean active;
+    private String displayName;
 }

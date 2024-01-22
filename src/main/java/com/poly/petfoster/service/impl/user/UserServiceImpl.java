@@ -308,6 +308,7 @@ public class UserServiceImpl implements UserService {
                 .createAt(user.getCreateAt())
                 .phone(user.getPhone())
                 .active(user.getIsActive())
+                .displayName(user.getDisplayName())
                 .password("This is secret. You can't watch !")
                 .avatar(portUltil.getUrlImage(user.getAvatar()))
                 .fullname(user.getFullname()).build();
