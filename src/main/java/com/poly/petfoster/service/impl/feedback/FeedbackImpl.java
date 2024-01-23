@@ -73,15 +73,15 @@ public class FeedbackImpl implements FeedbackService {
                         map.put("email", feedBackRequest.getEmail());
                         map.put("phone", feedBackRequest.getPhone());
                         map.put("message", feedBackRequest.getMessage());
-                        map.put("browser", request.getHeader("USER-AGENT"));
-                        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+                        // map.put("browser", request.getHeader("USER-AGENT"));
+                        // SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
                         // save to database
                         feedbackRepository.save(new Feedback(null, feedBackRequest.getFullname(),
                                         feedBackRequest.getPhone(),
                                         feedBackRequest.getEmail(), feedBackRequest.getMessage(), Boolean.FALSE));
-                        mailUtils.sendTemplateEmail("duynqpc04918@fpt.edu.vn",
-                                        "Visitor feedback - " + formatter.format(new Date()),
-                                        "feedback", map);
+                        // mailUtils.sendTemplateEmail("duynqpc04918@fpt.edu.vn",
+                        // "Visitor feedback - " + formatter.format(new Date()),
+                        // "feedback", map);
                         mailUtils.sendTemplateEmail(feedBackRequest.getEmail(), "Thanks your feedback!", "thanks", map);
                 } catch (MessagingException e) {
                         return ApiResponse.builder().message("Failed").status(HttpStatus.BAD_REQUEST.value())
