@@ -1,5 +1,7 @@
 package com.poly.petfoster.controller.admin.feedback;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,7 +22,7 @@ public class ManagementFeedbackController {
 
     @GetMapping
     public ResponseEntity<ApiResponse> getFeedback(
-            @RequestParam(value = "page", defaultValue = "0", required = false) int page) {
+            @RequestParam(value = "page", defaultValue = "0", required = false) Optional<Integer> page) {
         return ResponseEntity.ok(feedbackService.getFeedback(page));
     }
 

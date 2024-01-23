@@ -13,22 +13,27 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.poly.petfoster.constant.RespMessage;
 import com.poly.petfoster.entity.Feedback;
+import com.poly.petfoster.entity.User;
 import com.poly.petfoster.repository.FeedbackRepository;
 import com.poly.petfoster.request.feedback.FeedBackRequest;
 import com.poly.petfoster.response.ApiResponse;
 import com.poly.petfoster.response.common.PagiantionResponse;
 import com.poly.petfoster.response.feedback.FeedBackResponse;
+import com.poly.petfoster.response.feedback.ManagementFeedbackPagiantionResponse;
+import com.poly.petfoster.response.users.UserProfileResponse;
 import com.poly.petfoster.service.feedback.FeedbackService;
 import com.poly.petfoster.ultils.MailUtils;
 
 @Service
-public class FeedbackImpl implements FeedbackService {
+public class FeedbackServiceImpl implements FeedbackService {
         @Autowired
         MailUtils mailUtils;
 
@@ -36,18 +41,44 @@ public class FeedbackImpl implements FeedbackService {
         FeedbackRepository feedbackRepository;
 
         @Override
-        public ApiResponse getFeedback(int page) {
-                Pageable pageable = PageRequest.of(page, 10);
-                Page<Feedback> feedbacks = feedbackRepository.findAll(pageable);
-                List<Feedback> feedbackss = feedbacks.getContent();
-                boolean check = page < feedbacks.getTotalPages();
+        public ApiResponse getFeedback(Optional<Integer> page) {
+
+                List<Feedback> feedbacks = feedbackRepository.findAllReverse();
+
+                if (feedbacks.isEmpty()) {
+                        return ApiResponse.builder().message("Page not exist")
+                                        .status(400)
+                                        .errors(false)
+                                        .data(PagiantionResponse.builder().data(new ArrayList<>()).pages(0).build())
+                                        .build();
+                }
+
+                Pageable pageable = PageRequest.of(page.orElse(0), 10);
+                int startIndex = (int) pageable.getOffset();
+                int endIndex = Math.min(startIndex + pageable.getPageSize(), feedbacks.size());
+
+                if (startIndex >= endIndex) {
+                        return ApiResponse.builder()
+                                        .message(RespMessage.NOT_FOUND.getValue())
+                                        .data(PagiantionResponse.builder().data(new ArrayList<>()).pages(0).build())
+                                        .errors(false)
+                                        .status(HttpStatus.NOT_FOUND.value())
+                                        .build();
+                }
+
+                List<Feedback> visibleFeedbacks = feedbacks.subList(startIndex, endIndex);
+
+                Page<Feedback> pagination = new PageImpl<Feedback>(visibleFeedbacks, pageable,
+                                feedbacks.size());
+
                 return ApiResponse.builder()
-                                .message(check ? "Successfully!" : "Page not exist")
-                                .errors(check ? Boolean.FALSE : Boolean.TRUE)
-                                .status(check ? HttpStatus.OK.value()
-                                                : HttpStatus.BAD_REQUEST.value())
-                                .data(new PagiantionResponse(feedbackss, feedbacks.getTotalPages()))
+                                .message("Successfully!")
+                                .errors(false)
+                                .status(HttpStatus.OK.value())
+                                .data(new ManagementFeedbackPagiantionResponse(visibleFeedbacks,
+                                                pagination.getTotalPages(), feedbacks.size()))
                                 .build();
+
         }
 
         public ApiResponse seen(Integer id) {
@@ -86,7 +117,7 @@ public class FeedbackImpl implements FeedbackService {
                 } catch (MessagingException e) {
                         return ApiResponse.builder().message("Failed").status(HttpStatus.BAD_REQUEST.value())
                                         .errors(Boolean.TRUE)
-                                        .data(new ArrayList<>())
+                                        .data(null)
                                         .build();
                 }
                 return ApiResponse.builder().message("Successfully").status(HttpStatus.OK.value()).errors(Boolean.FALSE)
