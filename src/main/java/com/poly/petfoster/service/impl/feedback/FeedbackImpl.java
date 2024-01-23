@@ -40,8 +40,12 @@ public class FeedbackImpl implements FeedbackService {
                 Pageable pageable = PageRequest.of(page, 10);
                 Page<Feedback> feedbacks = feedbackRepository.findAll(pageable);
                 List<Feedback> feedbackss = feedbacks.getContent();
-                return ApiResponse.builder().message("Successfully!").errors(Boolean.FALSE)
-                                .status(HttpStatus.OK.value())
+                boolean check = page < feedbacks.getTotalPages();
+                return ApiResponse.builder()
+                                .message(check ? "Successfully!" : "Page not exist")
+                                .errors(check ? Boolean.FALSE : Boolean.TRUE)
+                                .status(check ? HttpStatus.OK.value()
+                                                : HttpStatus.BAD_REQUEST.value())
                                 .data(new PagiantionResponse(feedbackss, feedbacks.getTotalPages()))
                                 .build();
         }

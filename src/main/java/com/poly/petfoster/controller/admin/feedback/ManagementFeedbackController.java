@@ -18,8 +18,9 @@ public class ManagementFeedbackController {
     @Autowired
     FeedbackService feedbackService;
 
-    @GetMapping("")
-    public ResponseEntity<ApiResponse> getFeedback(@RequestParam("page") int page) {
+    @GetMapping
+    public ResponseEntity<ApiResponse> getFeedback(
+            @RequestParam(value = "page", defaultValue = "0", required = false) int page) {
         return ResponseEntity.ok(feedbackService.getFeedback(page));
     }
 
