@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.poly.petfoster.response.ApiResponse;
@@ -17,9 +18,10 @@ public class ManagementFeedbackController {
     @Autowired
     FeedbackService feedbackService;
 
-    @GetMapping("")
-    public ResponseEntity<ApiResponse> getFeedback() {
-        return ResponseEntity.ok(feedbackService.getFeedback());
+    @GetMapping
+    public ResponseEntity<ApiResponse> getFeedback(
+            @RequestParam(value = "page", defaultValue = "0", required = false) int page) {
+        return ResponseEntity.ok(feedbackService.getFeedback(page));
     }
 
     @PutMapping("/{id}")
