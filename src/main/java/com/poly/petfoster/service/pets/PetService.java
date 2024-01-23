@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.poly.petfoster.entity.Pet;
 import com.poly.petfoster.entity.User;
 import com.poly.petfoster.response.ApiResponse;
@@ -24,6 +26,8 @@ public interface PetService {
     ApiResponse getAttributes();
 
     ApiResponse filterAdminPets(Optional<String> name, Optional<String> typeName, Optional<String> colors,
-    Optional<String> age, Optional<Boolean> gender, Optional<String> status, Optional<Date> minDate, Optional<Date> maxDate, Optional<String> sort, Optional<Integer> page);
-    
+            Optional<String> age, Optional<Boolean> gender, Optional<String> status, Optional<Date> minDate,
+            Optional<Date> maxDate, Optional<String> sort, Optional<Integer> page);
+
+    public ApiResponse getFavorites(String token, int page);
 }
