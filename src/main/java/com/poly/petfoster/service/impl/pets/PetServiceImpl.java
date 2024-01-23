@@ -24,6 +24,7 @@ import com.poly.petfoster.entity.Pet;
 import com.poly.petfoster.entity.PetBreed;
 import com.poly.petfoster.entity.PetType;
 import com.poly.petfoster.entity.User;
+import com.poly.petfoster.repository.AdoptRepository;
 import com.poly.petfoster.repository.FavoriteRepository;
 import com.poly.petfoster.repository.PetBreedRepository;
 import com.poly.petfoster.repository.PetRepository;
@@ -64,8 +65,11 @@ public class PetServiceImpl implements PetService {
 
     @Autowired
     private PetBreedRepository petBreedRepository;
-    @Autowired
 
+    @Autowired
+    private AdoptRepository adoptRepository;
+
+    @Autowired
     private PetTypeRepository petTypeRepository;
 
     @Override
@@ -116,7 +120,7 @@ public class PetServiceImpl implements PetService {
 
     public PetDetailResponse buildPetResponses(Pet pet) {
         Integer fosterDay = (int) TimeUnit.MILLISECONDS.toDays(new Date().getTime() - pet.getFosterAt().getTime());
-
+        boolean canAdopt = adoptRepository.existsByPet(pet.getPetId()) == null;
         List<String> images = pet.getImgs().stream().map(image -> {
 
             return portUltil.getUrlImage(image.getNameImg());
@@ -137,6 +141,7 @@ public class PetServiceImpl implements PetService {
                 .sterilization(pet.getIsSpay() ? "sterilizated" : "not sterilization")
                 .images(images)
                 .color(pet.getPetColor())
+                .canAdopt(canAdopt)
                 .build();
 
     }
@@ -144,6 +149,8 @@ public class PetServiceImpl implements PetService {
     public PetDetailResponse buildPetResponses(Pet pet, User user) {
         Integer fosterDay = (int) TimeUnit.MILLISECONDS.toDays(new Date().getTime() - pet.getFosterAt().getTime());
         boolean liked = favoriteRepository.existByUserAndPet(user.getId(), pet.getPetId()) != null;
+        boolean canAdopt = adoptRepository.existsByPet(pet.getPetId()) == null;
+
         List<String> images = pet.getImgs().stream().map(image -> {
 
             return portUltil.getUrlImage(image.getNameImg());
@@ -164,6 +171,7 @@ public class PetServiceImpl implements PetService {
                 .sterilization(pet.getIsSpay() ? "sterilizated" : "not sterilization")
                 .images(images)
                 .color(pet.getPetColor())
+                .canAdopt(canAdopt)
                 .build();
 
     }
@@ -293,7 +301,7 @@ public class PetServiceImpl implements PetService {
         Integer pages = page.orElse(0);
         Integer totalPages = (filterPets.size() + pageSize - 1) / pageSize;
 
-        if(pages >= totalPages) {
+        if (pages >= totalPages) {
             return ApiResponse.builder()
                     .status(HttpStatus.NO_CONTENT.value())
                     .message("No data available!!!")
@@ -397,8 +405,9 @@ public class PetServiceImpl implements PetService {
 
     @Override
     public ApiResponse filterAdminPets(Optional<String> name, Optional<String> typeName, Optional<String> colors,
-    Optional<String> age, Optional<Boolean> gender, Optional<String> status, Optional<Date> minDate, Optional<Date> maxDate, Optional<String> sort, Optional<Integer> page) {
-        
+            Optional<String> age, Optional<Boolean> gender, Optional<String> status, Optional<Date> minDate,
+            Optional<Date> maxDate, Optional<String> sort, Optional<Integer> page) {
+
         Date minDateValue = minDate.orElse(null);
         Date maxDateValue = maxDate.orElse(null);
 
@@ -420,15 +429,16 @@ public class PetServiceImpl implements PetService {
             }
         }
 
-        List<Pet> filterPets = petRepository.filterAdminPets(name.orElse(null), typeName.orElse(null), colors.orElse(null),
-                age.orElse(null), gender.orElse(null), status.orElse(null), minDateValue, maxDateValue, sort.orElse("latest"));
-
+        List<Pet> filterPets = petRepository.filterAdminPets(name.orElse(null), typeName.orElse(null),
+                colors.orElse(null),
+                age.orElse(null), gender.orElse(null), status.orElse(null), minDateValue, maxDateValue,
+                sort.orElse("latest"));
 
         Integer pageSize = 10;
         Integer pages = page.orElse(0);
         Integer totalPages = (filterPets.size() + pageSize - 1) / pageSize;
 
-        if(pages >= totalPages) {
+        if (pages >= totalPages) {
             return ApiResponse.builder()
                     .status(HttpStatus.NO_CONTENT.value())
                     .message("No data available!!!")
@@ -455,11 +465,11 @@ public class PetServiceImpl implements PetService {
         visiblePets.forEach(pet -> pets.add(this.buildPetResponses(pet)));
 
         return ApiResponse.builder()
-            .status(200)
-            .message("Successfully!!!")
-            .errors(false)
-            .data(PagiantionResponse.builder().data(pets).pages(totalPages).build())
-            .build();
+                .status(200)
+                .message("Successfully!!!")
+                .errors(false)
+                .data(PagiantionResponse.builder().data(pets).pages(totalPages).build())
+                .build();
     }
 
 }

@@ -31,4 +31,5 @@ public class PetDetailResponse {
     private Boolean like;
     private List<String> images;
     private String color;
+    private Boolean canAdopt;
 }
