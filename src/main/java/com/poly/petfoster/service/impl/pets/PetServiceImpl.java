@@ -472,4 +472,46 @@ public class PetServiceImpl implements PetService {
                 .build();
     }
 
+    @Override
+    public ApiResponse getFavorites(String token, int page) {
+        String username = jwtProvider.getUsernameFromToken(token);
+        User u = userRepository.findByUsername(username).orElse(null);
+        String user_id = u.getId();
+        List<Pet> list = petRepository.getFavorites(user_id);
+
+        int pageSize = 10;
+        int totalPages = (list.size() + pageSize - 1) / pageSize;
+
+        if (page >= totalPages) {
+            return ApiResponse.builder()
+                    .status(HttpStatus.NO_CONTENT.value())
+                    .message("Page is not exist!!!")
+                    .errors(false)
+                    .data(new ArrayList<>())
+                    .build();
+        }
+        Pageable pageable = PageRequest.of(page, pageSize);
+        int startIndex = (int) pageable.getOffset();
+        int endIndex = Math.min(startIndex + pageable.getPageSize(), list.size());
+        if (startIndex >= endIndex) {
+            return ApiResponse.builder()
+                    .status(200)
+                    .message("Successfully!!!")
+                    .errors(false)
+                    .data(PagiantionResponse.builder().data(list).pages(0).build())
+                    .build();
+        }
+
+        List<Pet> visiblePets = list.subList(startIndex, endIndex);
+        List<PetDetailResponse> pets = new ArrayList<>();
+        visiblePets.forEach(pet -> pets.add(this.buildPetResponses(pet, u)));
+
+        return ApiResponse.builder()
+                .status(200)
+                .message("Successfully!!!")
+                .errors(false)
+                .data(PagiantionResponse.builder().data(pets).pages(totalPages).build())
+                .build();
+    }
+
 }

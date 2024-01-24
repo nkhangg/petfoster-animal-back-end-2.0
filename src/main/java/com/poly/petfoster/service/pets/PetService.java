@@ -24,6 +24,8 @@ public interface PetService {
     ApiResponse getAttributes();
 
     ApiResponse filterAdminPets(Optional<String> name, Optional<String> typeName, Optional<String> colors,
-    Optional<String> age, Optional<Boolean> gender, Optional<String> status, Optional<Date> minDate, Optional<Date> maxDate, Optional<String> sort, Optional<Integer> page);
-    
+            Optional<String> age, Optional<Boolean> gender, Optional<String> status, Optional<Date> minDate,
+            Optional<Date> maxDate, Optional<String> sort, Optional<Integer> page);
+
+    public ApiResponse getFavorites(String token, int page);
 }
