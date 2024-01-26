@@ -366,4 +366,24 @@ public class AddressServiceImp implements AddressService {
                 .build();
     }
 
+    @Override
+    public ApiResponse getUserAddresses(String username) {
+        User u = userRepository.findByUsername(username).orElse(null);
+        if (u == null) {
+            return ApiResponse.builder().status(HttpStatus.BAD_REQUEST.value()).message("Not find this username!")
+                    .errors(Boolean.TRUE)
+                    .data(new ArrayList<>()).build();
+        }
+
+        List<Addresses> list = addressRepository.findByUser(u);
+        List<AddressUserResponse> lists = new ArrayList<>();
+        for (Addresses a : list) {
+            lists.add(new AddressUserResponse(a.getId(), a.getUser().getFullname(),
+                    a.getPhone(), new AddressResponse(a.getProvince(), a.getDistrict(), a.getWard(), a.getAddress()),
+                    a.getIsDefault()));
+        }
+        return ApiResponse.builder().status(HttpStatus.OK.value()).message("Successfully!").errors(Boolean.FALSE)
+                .data(lists).build();
+    }
+
 }
