@@ -1,5 +1,6 @@
 package com.poly.petfoster.service.impl.pets;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -16,29 +17,32 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.poly.petfoster.config.JwtProvider;
-import com.poly.petfoster.constant.RespMessage;
 import com.poly.petfoster.entity.Favorite;
 import com.poly.petfoster.entity.Pet;
 import com.poly.petfoster.entity.PetBreed;
+import com.poly.petfoster.entity.PetImgs;
 import com.poly.petfoster.entity.PetType;
 import com.poly.petfoster.entity.User;
 import com.poly.petfoster.repository.FavoriteRepository;
 import com.poly.petfoster.repository.PetBreedRepository;
+import com.poly.petfoster.repository.PetImgsRepository;
 import com.poly.petfoster.repository.PetRepository;
 import com.poly.petfoster.repository.PetTypeRepository;
 import com.poly.petfoster.repository.UserRepository;
+import com.poly.petfoster.request.pets.PetRequest;
 import com.poly.petfoster.response.ApiResponse;
 import com.poly.petfoster.response.common.PagiantionResponse;
 import com.poly.petfoster.response.pages.PetDetailPageResponse;
-import com.poly.petfoster.response.pages.homepage.HomePageResponse;
 import com.poly.petfoster.response.pets.PetAttributeReponse;
 import com.poly.petfoster.response.pets.PetAttributesReponse;
 import com.poly.petfoster.response.pets.PetDetailResponse;
 import com.poly.petfoster.response.pets.PetResponse;
 import com.poly.petfoster.service.pets.PetService;
 import com.poly.petfoster.service.user.UserService;
+import com.poly.petfoster.ultils.ImageUtils;
 import com.poly.petfoster.ultils.PortUltil;
 
 @Service
@@ -64,9 +68,13 @@ public class PetServiceImpl implements PetService {
 
     @Autowired
     private PetBreedRepository petBreedRepository;
+
     @Autowired
 
     private PetTypeRepository petTypeRepository;
+
+    @Autowired
+    private PetImgsRepository petImagesRepository;
 
     @Override
     public List<PetResponse> buildPetResponses(List<Pet> petsRaw, User user) {
@@ -293,7 +301,7 @@ public class PetServiceImpl implements PetService {
         Integer pages = page.orElse(0);
         Integer totalPages = (filterPets.size() + pageSize - 1) / pageSize;
 
-        if(pages >= totalPages) {
+        if (pages >= totalPages) {
             return ApiResponse.builder()
                     .status(HttpStatus.NO_CONTENT.value())
                     .message("No data available!!!")
@@ -397,8 +405,9 @@ public class PetServiceImpl implements PetService {
 
     @Override
     public ApiResponse filterAdminPets(Optional<String> name, Optional<String> typeName, Optional<String> colors,
-    Optional<String> age, Optional<Boolean> gender, Optional<String> status, Optional<Date> minDate, Optional<Date> maxDate, Optional<String> sort, Optional<Integer> page) {
-        
+            Optional<String> age, Optional<Boolean> gender, Optional<String> status, Optional<Date> minDate,
+            Optional<Date> maxDate, Optional<String> sort, Optional<Integer> page) {
+
         Date minDateValue = minDate.orElse(null);
         Date maxDateValue = maxDate.orElse(null);
 
@@ -420,15 +429,16 @@ public class PetServiceImpl implements PetService {
             }
         }
 
-        List<Pet> filterPets = petRepository.filterAdminPets(name.orElse(null), typeName.orElse(null), colors.orElse(null),
-                age.orElse(null), gender.orElse(null), status.orElse(null), minDateValue, maxDateValue, sort.orElse("latest"));
-
+        List<Pet> filterPets = petRepository.filterAdminPets(name.orElse(null), typeName.orElse(null),
+                colors.orElse(null),
+                age.orElse(null), gender.orElse(null), status.orElse(null), minDateValue, maxDateValue,
+                sort.orElse("latest"));
 
         Integer pageSize = 10;
         Integer pages = page.orElse(0);
         Integer totalPages = (filterPets.size() + pageSize - 1) / pageSize;
 
-        if(pages >= totalPages) {
+        if (pages >= totalPages) {
             return ApiResponse.builder()
                     .status(HttpStatus.NO_CONTENT.value())
                     .message("No data available!!!")
@@ -455,11 +465,216 @@ public class PetServiceImpl implements PetService {
         visiblePets.forEach(pet -> pets.add(this.buildPetResponses(pet)));
 
         return ApiResponse.builder()
-            .status(200)
-            .message("Successfully!!!")
-            .errors(false)
-            .data(PagiantionResponse.builder().data(pets).pages(totalPages).build())
-            .build();
+                .status(200)
+                .message("Successfully!!!")
+                .errors(false)
+                .data(PagiantionResponse.builder().data(pets).pages(totalPages).build())
+                .build();
     }
 
+    public ApiResponse createPet(PetRequest petRequest, List<MultipartFile> images) {
+        PetBreed breed = petBreedRepository.findById(petRequest.getBreed()).orElse(null);
+        List<Pet> listPets = petRepository.findAllPet();
+        System.out.println(petRequest);
+
+        if (breed == null) {
+            return ApiResponse.builder()
+                    .message("Can't found Pet Breed")
+                    .status(404)
+                    .errors(true)
+                    .data(null)
+                    .build();
+        }
+
+        if (petRequest.getName() == "") {
+            return ApiResponse.builder()
+                    .message("Pet Name can't be blank!")
+                    .status(404)
+                    .errors(true)
+                    .data(null)
+                    .build();
+        }
+        if (petRequest.getColor() == "") {
+            return ApiResponse.builder()
+                    .message("Pet Color can't be blank!")
+                    .status(404)
+                    .errors(true)
+                    .data(null)
+                    .build();
+        }
+        if (petRequest.getSize() == "") {
+            return ApiResponse.builder()
+                    .message("Pet Size can't be blank!")
+                    .status(404)
+                    .errors(true)
+                    .data(null)
+                    .build();
+        }
+
+        String lastID = "P0000";
+        if (listPets == null) {
+            lastID = "P0000";
+        } else {
+            lastID = getNextId(listPets.get(listPets.size() - 1).getPetId());
+        }
+        if ((images.size() == 0) || (images.isEmpty())) {
+            return ApiResponse.builder()
+                    .message("Pet Image can't be empty!")
+                    .status(404)
+                    .errors(true)
+                    .data(null)
+                    .build();
+        }
+        Pet pet = Pet.builder().petId(lastID)
+                .petName(petRequest.getName())
+                .petBreed(breed)
+                .sex(petRequest.getSex())
+                .petColor(petRequest.getColor())
+                .age(petRequest.getSize())
+                .isSpay(petRequest.getIsSpay())
+                .descriptions(petRequest.getDescription())
+                .fosterAt(petRequest.getFosterAt())
+                .adoptStatus("Haven't adopted yet.")
+                .build();
+        petRepository.save(pet);
+
+        // Get 4 Images
+        if (images.size() > 4) {
+            images = images.subList(0, 4);
+        }
+
+        // save images
+        List<PetImgs> newListImages = images.stream().map((image) -> {
+
+            try {
+                File file = ImageUtils.createFileImage();
+
+                image.transferTo(new File(file.getAbsolutePath()));
+                PetImgs newImages = PetImgs.builder()
+                        .nameImg(file.getName())
+                        .pet(pet)
+                        .build();
+                return newImages;
+
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                return null;
+
+            }
+        }).toList();
+
+        petImagesRepository.saveAll(newListImages);
+        pet.setImgs(newListImages);
+
+        return ApiResponse.builder()
+                .status(200)
+                .message("Successfully!!!")
+                .errors(false)
+                .data(buildPetResponses(pet))
+                .build();
+    };
+
+    public ApiResponse updatePet(String id, PetRequest petRequest) {
+        PetBreed breed = petBreedRepository.findById(petRequest.getBreed()).orElse(null);
+        if (breed == null) {
+            return ApiResponse.builder()
+                    .message("Can't found Pet Breed")
+                    .status(404)
+                    .errors(true)
+                    .data(null)
+                    .build();
+        }
+
+        Pet pet = petRepository.findById(id).orElse(null);
+        if (pet == null) {
+            return ApiResponse.builder()
+                    .message("Can't found Pet")
+                    .status(404)
+                    .errors(true)
+                    .data(null)
+                    .build();
+        }
+
+        if (petRequest.getName() == "") {
+            return ApiResponse.builder()
+                    .message("Pet Name can't be blank!")
+                    .status(404)
+                    .errors(true)
+                    .data(null)
+                    .build();
+        }
+        if (petRequest.getColor() == "") {
+            return ApiResponse.builder()
+                    .message("Pet Color can't be blank!")
+                    .status(404)
+                    .errors(true)
+                    .data(null)
+                    .build();
+        }
+        if (petRequest.getSize() == "") {
+            return ApiResponse.builder()
+                    .message("Pet Size can't be blank!")
+                    .status(404)
+                    .errors(true)
+                    .data(null)
+                    .build();
+        }
+        pet.setAge(petRequest.getSize());
+        pet.setDescriptions(petRequest.getDescription());
+        pet.setFosterAt(petRequest.getFosterAt());
+        pet.setIsSpay(petRequest.getIsSpay());
+        pet.setPetBreed(breed);
+        pet.setPetColor(petRequest.getColor());
+        pet.setPetName(petRequest.getName());
+        pet.setSex(petRequest.getSex());
+        petRepository.save(pet);
+
+        return ApiResponse.builder()
+                .status(200)
+                .message("Successfully!!!")
+                .errors(false)
+                .data(buildPetResponses(pet))
+                .build();
+    };
+
+    public ApiResponse deletePet(String id) {
+        Pet pet = petRepository.findById(id).orElse(null);
+        if (pet == null) {
+            return ApiResponse.builder()
+                    .message("Can't found Pet")
+                    .status(404)
+                    .errors(true)
+                    .data(null)
+                    .build();
+        }
+        pet.setAdoptStatus("Dead");
+        petRepository.save(pet);
+        return ApiResponse.builder()
+                .status(200)
+                .message("Successfully!!!")
+                .errors(false)
+                .data(null)
+                .build();
+    };
+
+    public String getNextId(String lastId) {
+
+        String nextId = "";
+        String first = lastId.substring(0, 1);
+        String last = lastId.substring(1);
+        Integer number = Integer.parseInt(last);
+        Double log = Math.log10(number);
+
+        if (log < 1) {
+            nextId = first + "000" + ++number;
+        } else if (log < 2) {
+            nextId = first + "00" + ++number;
+        } else if (log < 3) {
+            nextId = first + "0" + ++number;
+        } else {
+            nextId = first + ++number;
+        }
+
+        return nextId;
+    }
 }

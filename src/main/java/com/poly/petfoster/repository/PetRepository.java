@@ -14,6 +14,9 @@ public interface PetRepository extends JpaRepository<Pet, String> {
     @Query(nativeQuery = true, value = "select top 8 * from pet")
     List<Pet> findAllByActive();
 
+    @Query(nativeQuery = true, value = "select * from pet")
+    List<Pet> findAllPet();
+
     @Query(nativeQuery = true, value = "select top 8 * from pet where (breed_id = :id or age = :size) and pet_id != :petId")
     List<Pet> findByPetStyleAndIgnorePetId(@Param("id") String id, @Param("size") String size,
             @Param("petId") String petId);
