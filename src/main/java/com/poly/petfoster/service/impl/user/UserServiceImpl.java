@@ -483,4 +483,31 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
+    
+    public UserProfileResponse buildUserProfileResponse(User user) {
+        
+        List<Authorities> roles = authoritiesRepository.findByUser(user);
+        Role role = null;
+        if (roles.size() > 0) {
+            role = roles.get(0).getRole();
+        }
+        
+        UserProfileResponse userProfile = UserProfileResponse.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .fullname(user.getFullname())
+                .birthday(user.getBirthday())
+                .gender(user.getGender() == null ? false : true)
+                .phone(user.getPhone())
+                .email(user.getEmail())
+                .displayName(user.getDisplayName())
+                .provider(user.getProvider())
+                .avatar(user.getAvatar() == null ? null : portUltil.getUrlImage(user.getAvatar()))
+                .role(role == null ? null : role.getRole())
+                .createAt(user.getCreateAt())
+                .build();
+            
+        return userProfile;
+    }
+
 }

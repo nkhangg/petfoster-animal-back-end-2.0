@@ -518,6 +518,16 @@
                   "disabledSystemHeaders": {}
                },
                "request": {
+                  "auth": {
+                     "type": "bearer",
+                     "bearer": [
+                        {
+                           "key": "token",
+                           "value": "eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE3MDYxMTQzNjIsImV4cCI6MTcwNjQ3NDM2MiwidXNlcm5hbWUiOiJraGFuZ3BuMSIsImF1dGhvcml0aWVzIjoiUk9MRV9BRE1JTiJ9.rvSqHdUVmuX1U2Kf_i2LcA66BlVBIK21mPVsji4Wljeh905X6hzgKJrK-_qZqu1eR3Mr-gLVe8JcxyZA7G8cjg",
+                           "type": "string"
+                        }
+                     ]
+                  },
                   "method": "POST",
                   "header": [
                      {
@@ -545,10 +555,7 @@
                         {
                            "key": "images",
                            "type": "file",
-                           "src": [
-                              "/C:/Users/PC/Downloads/New folder/imgs/Loc.jpg",
-                              "/C:/Users/PC/Downloads/New folder/imgs/Thao2.jpg"
-                           ]
+                           "src": "/D:/WorkSpace/New folder/New folder/269603660_154839120206981_1445846102158353944_n.jpg"
                         },
                         {
                            "key": "name",
@@ -567,7 +574,7 @@
                         },
                         {
                            "key": "brand",
-                           "value": "Natural Core",
+                           "value": "1",
                            "type": "text"
                         },
                         {
@@ -1453,7 +1460,7 @@
                      "bearer": [
                         {
                            "key": "token",
-                           "value": "eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE3MDAyODA2MjQsImV4cCI6MTcwMDY0MDYyNCwidXNlcm5hbWUiOiJoYW50bDExMSIsImF1dGhvcml0aWVzIjoiUk9MRV9BRE1JTiJ9.mv-Ynzlr6Vaq5oJUaVMRGY4TZJFgYVulDZtg1iYv_w23uh-M2fTkk6gX6wgXzD8OGrLlbwsqBh_zPZuvtwwrBw",
+                           "value": "eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE3MDY0MjcwMzQsImV4cCI6MTcwNjc4NzAzNCwidXNlcm5hbWUiOiJraGFuZ3BuMSIsImF1dGhvcml0aWVzIjoiUk9MRV9BRE1JTiJ9.MW8zOJ0QbcA0tlusQtfPZp07rWtOofNryrGXKRfrhgu6jWzfJU0kAHBjJTTX4WwUBlaHUBg9pAjEjx-DcZEs_A",
                            "type": "string"
                         }
                      ]
@@ -2152,6 +2159,166 @@
                            "value": "3"
                         }
                      ]
+                  }
+               },
+               "response": []
+            },
+            {
+               "name": "[admin] Adopt Filters",
+               "request": {
+                  "auth": {
+                     "type": "bearer",
+                     "bearer": [
+                        {
+                           "key": "token",
+                           "value": "eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE3MDYzNDE5MTEsImV4cCI6MTcwNjcwMTkxMSwidXNlcm5hbWUiOiJraGFuZ3BuMSIsImF1dGhvcml0aWVzIjoiUk9MRV9BRE1JTiJ9.tmt0IaHWHTvLA2VOCMuVApwt753yiZozKSBrIYZcG3FnS04AstyeRohRoTuL3HSCR4KUgU-kjpFRKaO1x3d1WA",
+                           "type": "string"
+                        }
+                     ]
+                  },
+                  "method": "GET",
+                  "header": [],
+                  "url": {
+                     "raw": "http://localhost:8019/api/admin/adopts",
+                     "protocol": "http",
+                     "host": ["localhost"],
+                     "port": "8019",
+                     "path": ["api", "admin", "adopts"],
+                     "query": [
+                        {
+                           "key": "status",
+                           "value": "Adopted",
+                           "disabled": true
+                        },
+                        {
+                           "key": "name",
+                           "value": "pn1",
+                           "disabled": true
+                        },
+                        {
+                           "key": "petName",
+                           "value": "mi",
+                           "disabled": true
+                        },
+                        {
+                           "key": "registerStart",
+                           "value": "2023-12-01",
+                           "disabled": true
+                        },
+                        {
+                           "key": "registerEnd",
+                           "value": "2024-12-14",
+                           "disabled": true
+                        },
+                        {
+                           "key": "adoptStart",
+                           "value": "2023-12-03",
+                           "disabled": true
+                        },
+                        {
+                           "key": "adoptEnd",
+                           "value": "2023-12-09",
+                           "disabled": true
+                        },
+                        {
+                           "key": "sort",
+                           "value": "adopt-asc",
+                           "disabled": true
+                        }
+                     ]
+                  }
+               },
+               "response": []
+            },
+            {
+               "name": "Adopt",
+               "request": {
+                  "auth": {
+                     "type": "bearer",
+                     "bearer": [
+                        {
+                           "key": "token",
+                           "value": "eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE3MDY0Mjc0NzMsImV4cCI6MTcwNjc4NzQ3MywidXNlcm5hbWUiOiJraGFuZ3BuMSIsImF1dGhvcml0aWVzIjoiUk9MRV9BRE1JTiJ9.XAkXi04DBlwi8-JH8Lg5ySYGC8Rg5xkgLZSKEQ03qMeFIf-9RECI7CVbW-BcxtPSVuspaGG87yLDKAQSDs7atQ",
+                           "type": "string"
+                        }
+                     ]
+                  },
+                  "method": "POST",
+                  "header": [],
+                  "body": {
+                     "mode": "raw",
+                     "raw": "{\r\n    \"userId\": \"af1afb34-9e4a-49fd-8faa-9f3a59f74843\",\r\n    \"petId\": \"P0004\"\r\n}",
+                     "options": {
+                        "raw": {
+                           "language": "json"
+                        }
+                     }
+                  },
+                  "url": {
+                     "raw": "http://localhost:8019/api/user/adopts",
+                     "protocol": "http",
+                     "host": ["localhost"],
+                     "port": "8019",
+                     "path": ["api", "user", "adopts"]
+                  }
+               },
+               "response": []
+            },
+            {
+               "name": "Get User Adopts",
+               "request": {
+                  "auth": {
+                     "type": "bearer",
+                     "bearer": [
+                        {
+                           "key": "token",
+                           "value": "eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE3MDY0Mjc0NzMsImV4cCI6MTcwNjc4NzQ3MywidXNlcm5hbWUiOiJraGFuZ3BuMSIsImF1dGhvcml0aWVzIjoiUk9MRV9BRE1JTiJ9.XAkXi04DBlwi8-JH8Lg5ySYGC8Rg5xkgLZSKEQ03qMeFIf-9RECI7CVbW-BcxtPSVuspaGG87yLDKAQSDs7atQ",
+                           "type": "string"
+                        }
+                     ]
+                  },
+                  "method": "GET",
+                  "header": [],
+                  "url": {
+                     "raw": "http://localhost:8019/api/user/adopts",
+                     "protocol": "http",
+                     "host": ["localhost"],
+                     "port": "8019",
+                     "path": ["api", "user", "adopts"]
+                  }
+               },
+               "response": []
+            },
+            {
+               "name": "[admin]Accept Adoption",
+               "request": {
+                  "auth": {
+                     "type": "bearer",
+                     "bearer": [
+                        {
+                           "key": "token",
+                           "value": "eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE3MDY0MjgzNjQsImV4cCI6MTcwNjc4ODM2NCwidXNlcm5hbWUiOiJraGFuZ3BuMSIsImF1dGhvcml0aWVzIjoiUk9MRV9BRE1JTiJ9.ET6hMgcQ2JKN0kiAfwUR1w19zA8ayNsGs2pIeXBSixot0iTo1L4J8fYffgAUjKsjWOb9IfVSatxk0WhJy4CBXg",
+                           "type": "string"
+                        }
+                     ]
+                  },
+                  "method": "PUT",
+                  "header": [],
+                  "body": {
+                     "mode": "raw",
+                     "raw": "{\r\n    \"pickUpDate\": \"2024-01-29\"\r\n}",
+                     "options": {
+                        "raw": {
+                           "language": "json"
+                        }
+                     }
+                  },
+                  "url": {
+                     "raw": "http://localhost:8019/api/admin/adopts/8",
+                     "protocol": "http",
+                     "host": ["localhost"],
+                     "port": "8019",
+                     "path": ["api", "admin", "adopts", "8"]
                   }
                },
                "response": []
