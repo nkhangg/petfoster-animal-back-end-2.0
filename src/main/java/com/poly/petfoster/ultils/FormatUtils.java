@@ -3,9 +3,15 @@ package com.poly.petfoster.ultils;
 import java.text.Normalizer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+
+import com.poly.petfoster.response.ApiResponse;
 
 @Component
 public class FormatUtils {
@@ -59,6 +65,27 @@ public class FormatUtils {
         String temp = Normalizer.normalize(s, Normalizer.Form.NFD);
         Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
         return pattern.matcher(temp).replaceAll("");
+    }
+
+    public Map<String, Date> changeDateRange(Optional<Date> minDate, Optional<Date> maxDate) {
+
+        Date minDateValue = minDate.orElse(null);
+        Date maxDateValue = maxDate.orElse(null);
+
+        if (minDateValue == null && maxDateValue != null) {
+            minDateValue = maxDateValue;
+        }
+
+        if (maxDateValue == null && minDateValue != null) {
+            maxDateValue = minDateValue;
+        }
+
+        Map<String, Date> result = new HashMap<>();
+        result.put("minDateValue", minDateValue);
+        result.put("maxDateValue", maxDateValue);
+
+        return result;
+
     }
 
 }

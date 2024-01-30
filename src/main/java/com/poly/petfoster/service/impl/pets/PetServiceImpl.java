@@ -514,4 +514,25 @@ public class PetServiceImpl implements PetService {
                 .build();
     }
 
+    public PetResponse buildPetResponse(Pet pet, User user) {
+        boolean liked = favoriteRepository.existByUserAndPet(user.getId(), pet.getPetId()) != null;
+
+            Integer fosterDay = (int) TimeUnit.MILLISECONDS.toDays(new Date().getTime() - pet.getFosterAt().getTime());
+
+            return PetResponse.builder()
+                    .id(pet.getPetId())
+                    .breed(pet.getPetBreed().getBreedName())
+                    .name(pet.getPetName())
+                    .image(portUltil.getUrlImage(pet.getImgs().get(0).getNameImg()))
+                    .description(pet.getDescriptions() == null ? "" : pet.getDescriptions())
+                    .fosterDate(fosterDay)
+                    .size(pet.getAge())
+                    .sex(pet.getSex() ? "male" : "female")
+                    .type(pet.getPetBreed().getPetType().getName())
+                    .like(liked)
+                    .fostered(pet.getFosterAt())
+                    .build();
+    }
+
+
 }

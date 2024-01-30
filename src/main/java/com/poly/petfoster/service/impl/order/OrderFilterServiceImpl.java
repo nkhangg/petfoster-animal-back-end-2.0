@@ -67,7 +67,7 @@ public class OrderFilterServiceImpl implements OrderFilterService {
         }
 
         List<Orders> orders = ordersRepository.filterOrders(username.orElse(null), orderId.orElse(null),
-                status.orElse(""), minDateValue, maxDateValue, sort.orElse(null));
+                status.orElse(null), minDateValue, maxDateValue, sort.orElse(null));
 
         Pageable pageable = PageRequest.of(page.orElse(0), 10);
 
