@@ -21,4 +21,5 @@ public class AdoptsResponse {
     private PetResponse pet;
     private Date registerAt;
     private Date adoptAt; // can null if watting or cancel
+    private String cancelReason;
 }

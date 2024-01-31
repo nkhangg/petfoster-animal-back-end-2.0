@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.poly.petfoster.request.adopts.CancelAdoptRequest;
 import com.poly.petfoster.request.adopts.UpdatePickUpDateRequest;
-import com.poly.petfoster.request.order.UpdateStatusRequest;
 import com.poly.petfoster.response.ApiResponse;
 import com.poly.petfoster.service.adopt.AdoptService;
 
@@ -48,6 +48,11 @@ public class AdoptAdminController {
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse> acceptAdoption(@PathVariable Integer id, @Valid @RequestBody UpdatePickUpDateRequest updatePickUpDateRequest) {
         return ResponseEntity.ok(adoptService.acceptAdoption(id, updatePickUpDateRequest));
+    }
+
+    @PostMapping("/{id}")
+    public ResponseEntity<ApiResponse> cancelAdopt(@PathVariable Integer id, @Valid @RequestBody CancelAdoptRequest cancelAdoptRequest) {
+        return ResponseEntity.ok(adoptService.cancelAdopt(id, cancelAdoptRequest));
     }
 
 }

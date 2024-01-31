@@ -47,4 +47,6 @@ public class Adopt {
     private Date adoptAt;
 
     private Date pickUpAt;
+
+    private String cancelReason;
 }
