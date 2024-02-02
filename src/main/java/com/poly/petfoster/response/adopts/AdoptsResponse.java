@@ -22,4 +22,6 @@ public class AdoptsResponse {
     private Date registerAt;
     private Date adoptAt; // can null if watting or cancel
     private String cancelReason;
+    private String phone;
+    private String address;
 }

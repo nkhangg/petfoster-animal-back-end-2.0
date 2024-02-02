@@ -32,7 +32,7 @@ public class AdoptController {
     }
 
     @PostMapping("")
-    public ResponseEntity<ApiResponse> adopt(@RequestHeader("Authorization") String jwt, @RequestBody AdoptsRequest adoptsRequest) {
+    public ResponseEntity<ApiResponse> adopt(@RequestHeader("Authorization") String jwt, @Valid @RequestBody AdoptsRequest adoptsRequest) {
         return ResponseEntity.ok(adoptService.adopt(jwt, adoptsRequest));
     }
 

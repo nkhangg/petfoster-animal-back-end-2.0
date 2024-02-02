@@ -169,6 +169,8 @@ public class AdoptServiceImpl implements AdoptService {
             .status("Waiting")
             .pet(pet)
             .user(user)
+            .phone(adoptsRequest.getPhone())
+            .address(adoptsRequest.getAddress())
             .build();
         adoptRepository.save(adopt);
 
@@ -192,6 +194,8 @@ public class AdoptServiceImpl implements AdoptService {
         .adoptAt(adopt.getAdoptAt())
         .registerAt(adopt.getRegisterAt())
         .cancelReason(adopt.getCancelReason() != null ? adopt.getCancelReason() : "")
+        .phone(adopt.getPhone())
+        .address(adopt.getAddress())
         .build();
     }
 
