@@ -5,12 +5,13 @@ import java.util.Optional;
 
 
 import com.poly.petfoster.request.adopts.AdoptsRequest;
+import com.poly.petfoster.request.adopts.CancelAdoptRequest;
 import com.poly.petfoster.request.adopts.UpdatePickUpDateRequest;
 import com.poly.petfoster.response.ApiResponse;
 
 public interface AdoptService {
     
-    ApiResponse getAdopts(String jwt);
+    ApiResponse getAdopts(String jwt, Optional<Integer> page);
 
     ApiResponse adopt(String jwt, AdoptsRequest adoptsRequest);
 
@@ -27,5 +28,9 @@ public interface AdoptService {
     );
 
     ApiResponse acceptAdoption(Integer id, UpdatePickUpDateRequest updatePickUpDateRequest);
+
+    ApiResponse cancelAdopt(Integer id, CancelAdoptRequest cancelAdoptRequest);
+
+    ApiResponse cancelAdoptByUser(Integer id, String jwt, CancelAdoptRequest cancelAdoptRequest);
 
 }
