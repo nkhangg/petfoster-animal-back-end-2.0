@@ -18,9 +18,11 @@ import org.springframework.stereotype.Service;
 import com.poly.petfoster.config.JwtProvider;
 import com.poly.petfoster.constant.AdoptStatus;
 import com.poly.petfoster.constant.Constant;
+import com.poly.petfoster.entity.Addresses;
 import com.poly.petfoster.entity.Adopt;
 import com.poly.petfoster.entity.Pet;
 import com.poly.petfoster.entity.User;
+import com.poly.petfoster.repository.AddressRepository;
 import com.poly.petfoster.repository.AdoptRepository;
 import com.poly.petfoster.repository.PetRepository;
 import com.poly.petfoster.repository.UserRepository;
@@ -49,6 +51,9 @@ public class AdoptServiceImpl implements AdoptService {
     
     @Autowired
     AdoptRepository adoptRepository;
+
+    @Autowired
+    AddressRepository addressRepository;
 
     @Autowired
     UserServiceImpl userServiceImpl;
@@ -147,6 +152,12 @@ public class AdoptServiceImpl implements AdoptService {
             return ApiResponse.builder().status(HttpStatus.BAD_REQUEST.value()).message("You don't have permission to adopt for this user!!!").errors(true).build();
         }
 
+        //get Address
+        Addresses address = addressRepository.findByIdAndUser(adoptsRequest.getAddressId(), user.getUsername());
+        if(address == null) {
+            return ApiResponse.builder().status(HttpStatus.BAD_REQUEST.value()).message("Address not found by this user!!!").errors(true).build();
+        }
+
         //get pet
         Pet pet = petRepository.findById(adoptsRequest.getPetId()).orElse(null);
         if(pet == null) {
@@ -169,8 +180,8 @@ public class AdoptServiceImpl implements AdoptService {
             .status("Waiting")
             .pet(pet)
             .user(user)
-            .phone(adoptsRequest.getPhone())
-            .address(adoptsRequest.getAddress())
+            .phone(address.getPhone())
+            .address(formatUtils.getAddress(address.getAddress(), address.getWard(), address.getDistrict(), address.getProvince()))
             .build();
         adoptRepository.save(adopt);
 
