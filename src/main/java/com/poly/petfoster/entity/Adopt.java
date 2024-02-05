@@ -48,9 +48,11 @@ public class Adopt {
 
     private Date pickUpAt;
 
+    @Nationalized
     private String cancelReason;
 
     private String phone;
 
+    @Nationalized
     private String address;
 }
