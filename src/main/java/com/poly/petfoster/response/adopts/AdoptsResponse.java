@@ -2,6 +2,7 @@ package com.poly.petfoster.response.adopts;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.poly.petfoster.response.pets.PetResponse;
 import com.poly.petfoster.response.users.UserProfileResponse;
 
@@ -24,4 +25,5 @@ public class AdoptsResponse {
     private String cancelReason;
     private String phone;
     private String address;
+    private Date pickUpDate;
 }

@@ -48,7 +48,7 @@ public class AdoptServiceImpl implements AdoptService {
 
     @Autowired
     PetRepository petRepository;
-    
+
     @Autowired
     AdoptRepository adoptRepository;
 
@@ -66,23 +66,26 @@ public class AdoptServiceImpl implements AdoptService {
 
     @Override
     public ApiResponse getAdopts(String jwt, Optional<Integer> page) {
-        
-        //get username 
+
+        // get username
         String username = jwtProvider.getUsernameFromToken(jwt);
-        if(username.isEmpty() || username == null) {
-            return ApiResponse.builder().status(HttpStatus.BAD_REQUEST.value()).message("Failure!!!").errors(true).data(new ArrayList<>()).build();
+        if (username.isEmpty() || username == null) {
+            return ApiResponse.builder().status(HttpStatus.BAD_REQUEST.value()).message("Failure!!!").errors(true)
+                    .data(new ArrayList<>()).build();
         }
 
-        //get user
+        // get user
         User user = userRepository.findByUsername(username).orElse(null);
-        if(user == null) {
-            return ApiResponse.builder().status(HttpStatus.BAD_REQUEST.value()).message("Failure!!!").errors(true).data(new ArrayList<>()).build();
+        if (user == null) {
+            return ApiResponse.builder().status(HttpStatus.BAD_REQUEST.value()).message("Failure!!!").errors(true)
+                    .data(new ArrayList<>()).build();
         }
 
-        //get adopts
+        // get adopts
         List<Adopt> adopts = user.getAdopts();
-        if(adopts.isEmpty()) {
-            return ApiResponse.builder().status(HttpStatus.BAD_REQUEST.value()).message("No data available!!!").errors(false).data(adopts).build();
+        if (adopts.isEmpty()) {
+            return ApiResponse.builder().status(HttpStatus.BAD_REQUEST.value()).message("No data available!!!")
+                    .errors(false).data(adopts).build();
         }
 
         Integer pageSize = 10;
@@ -111,14 +114,16 @@ public class AdoptServiceImpl implements AdoptService {
         }
 
         List<Adopt> visibleAdopts = adopts.subList(startIndex, endIndex);
-        
+
         Page<Adopt> pagination = new PageImpl<Adopt>(visibleAdopts, pageable, adopts.size());
-        
-        //get adopts response & sort
+
+        // get adopts response & sort
         List<AdoptsResponse> adoptsResponse = visibleAdopts.stream().map(adopt -> this.buildAdoptsResponse(adopt))
-                                                .collect(Collectors.toList());
-        adoptsResponse.sort(Comparator.comparing((AdoptsResponse adoptResponse) -> adoptResponse.getRegisterAt() != null ? adoptResponse.getRegisterAt() : Constant.MIN_DATE).reversed());                                        
-                                                
+                .collect(Collectors.toList());
+        adoptsResponse.sort(Comparator.comparing(
+                (AdoptsResponse adoptResponse) -> adoptResponse.getRegisterAt() != null ? adoptResponse.getRegisterAt()
+                        : Constant.MIN_DATE)
+                .reversed());
 
         return ApiResponse.builder()
                 .status(200)
@@ -126,101 +131,111 @@ public class AdoptServiceImpl implements AdoptService {
                 .errors(false)
                 .data(PagiantionResponse.builder().data(adoptsResponse).pages(pagination.getTotalPages()).build())
                 .build();
-    
+
     }
 
     @Override
     public ApiResponse adopt(String jwt, AdoptsRequest adoptsRequest) {
 
-        //get user
+        // get user
         String username = jwtProvider.getUsernameFromToken(jwt);
-        if(username == null || username.isEmpty()) {
-            return ApiResponse.builder().status(HttpStatus.BAD_REQUEST.value()).message("User not found!!!").errors(true).build();
+        if (username == null || username.isEmpty()) {
+            return ApiResponse.builder().status(HttpStatus.BAD_REQUEST.value()).message("User not found!!!")
+                    .errors(true).build();
         }
 
         User curUser = userRepository.findByUsername(username).orElse(null);
-        if(curUser == null) {
-            return ApiResponse.builder().status(HttpStatus.BAD_REQUEST.value()).message("User not found!!!").errors(true).build();
+        if (curUser == null) {
+            return ApiResponse.builder().status(HttpStatus.BAD_REQUEST.value()).message("User not found!!!")
+                    .errors(true).build();
         }
 
         User user = userRepository.findById(adoptsRequest.getUserId()).orElse(null);
-        if(user == null) {
-            return ApiResponse.builder().status(HttpStatus.BAD_REQUEST.value()).message("User not found!!!").errors(true).build();
+        if (user == null) {
+            return ApiResponse.builder().status(HttpStatus.BAD_REQUEST.value()).message("User not found!!!")
+                    .errors(true).build();
         }
 
-        if(user != curUser) {
-            return ApiResponse.builder().status(HttpStatus.BAD_REQUEST.value()).message("You don't have permission to adopt for this user!!!").errors(true).build();
+        if (user != curUser) {
+            return ApiResponse.builder().status(HttpStatus.BAD_REQUEST.value())
+                    .message("You don't have permission to adopt for this user!!!").errors(true).build();
         }
 
-        //get Address
+        // get Address
         Addresses address = addressRepository.findByIdAndUser(adoptsRequest.getAddressId(), user.getUsername());
-        if(address == null) {
-            return ApiResponse.builder().status(HttpStatus.BAD_REQUEST.value()).message("Address not found by this user!!!").errors(true).build();
+        if (address == null) {
+            return ApiResponse.builder().status(HttpStatus.BAD_REQUEST.value())
+                    .message("Address not found by this user!!!").errors(true).build();
         }
 
-        //get pet
+        // get pet
         Pet pet = petRepository.findById(adoptsRequest.getPetId()).orElse(null);
-        if(pet == null) {
-            return ApiResponse.builder().status(HttpStatus.BAD_REQUEST.value()).message("Pet not found!!!").errors(true).build();
+        if (pet == null) {
+            return ApiResponse.builder().status(HttpStatus.BAD_REQUEST.value()).message("Pet not found!!!").errors(true)
+                    .build();
         }
 
-        //pet was adopted
-        if(adoptRepository.exsitsAdopted(adoptsRequest.getPetId()) != null) {
-            return ApiResponse.builder().status(HttpStatus.BAD_REQUEST.value()).message("This pet was adopted or registered").errors(true).build();
+        // pet was adopted
+        if (adoptRepository.exsitsAdopted(adoptsRequest.getPetId()) != null) {
+            return ApiResponse.builder().status(HttpStatus.BAD_REQUEST.value())
+                    .message("This pet was adopted or registered").errors(true).build();
         }
 
-        //the adoption was waiting by the user
-        if(adoptRepository.existsByPetAndUser(adoptsRequest.getPetId(), adoptsRequest.getUserId()) != null) {
-            return ApiResponse.builder().status(HttpStatus.BAD_REQUEST.value()).message("The adoption was accepted!!!").errors(true).build();
+        // the adoption was waiting by the user
+        if (adoptRepository.existsByPetAndUser(adoptsRequest.getPetId(), adoptsRequest.getUserId()) != null) {
+            return ApiResponse.builder().status(HttpStatus.BAD_REQUEST.value()).message("The adoption was accepted!!!")
+                    .errors(true).build();
         }
-        
-        //save adopt
+
+        // save adopt
         Adopt adopt = Adopt.builder()
-            .registerAt(new Date())
-            .status("Waiting")
-            .pet(pet)
-            .user(user)
-            .phone(address.getPhone())
-            .address(formatUtils.getAddress(address.getAddress(), address.getWard(), address.getDistrict(), address.getProvince()))
-            .build();
+                .registerAt(new Date())
+                .status("Waiting")
+                .pet(pet)
+                .user(user)
+                .phone(address.getPhone())
+                .address(formatUtils.getAddress(address.getAddress(), address.getWard(), address.getDistrict(),
+                        address.getProvince()))
+                .build();
         adoptRepository.save(adopt);
 
-        //adopt response
+        // adopt response
         AdoptsResponse adoptsResponse = this.buildAdoptsResponse(adopt);
 
         return ApiResponse.builder()
-            .status(200)
-            .message("Successfully!!!")
-            .errors(false)
-            .data(adoptsResponse)
-            .build();
+                .status(200)
+                .message("Successfully!!!")
+                .errors(false)
+                .data(adoptsResponse)
+                .build();
     }
-    
+
     public AdoptsResponse buildAdoptsResponse(Adopt adopt) {
         return AdoptsResponse.builder()
-        .id(adopt.getAdoptId())
-        .state(adopt.getStatus())
-        .user(userServiceImpl.buildUserProfileResponse(adopt.getUser()))
-        .pet(petServiceImpl.buildPetResponse(adopt.getPet(), adopt.getUser()))
-        .adoptAt(adopt.getAdoptAt())
-        .registerAt(adopt.getRegisterAt())
-        .cancelReason(adopt.getCancelReason() != null ? adopt.getCancelReason() : "")
-        .phone(adopt.getPhone())
-        .address(adopt.getAddress())
-        .build();
+                .id(adopt.getAdoptId())
+                .state(adopt.getStatus())
+                .user(userServiceImpl.buildUserProfileResponse(adopt.getUser()))
+                .pet(petServiceImpl.buildPetResponse(adopt.getPet(), adopt.getUser()))
+                .adoptAt(adopt.getAdoptAt())
+                .registerAt(adopt.getRegisterAt())
+                .cancelReason(adopt.getCancelReason() != null ? adopt.getCancelReason() : "")
+                .phone(adopt.getPhone())
+                .address(adopt.getAddress())
+                .pickUpDate(adopt.getPickUpAt())
+                .build();
     }
 
     @Override
     public ApiResponse filterAdopts(
-        Optional<String> name, 
-        Optional<String> petName, 
-        Optional<String> status, 
-        Optional<Date> registerStart, 
-        Optional<Date> registerEnd,
-        Optional<Date> adoptStart,
-        Optional<Date> adoptEnd,
-        Optional<String> sort,
-        Optional<Integer> page) {
+            Optional<String> name,
+            Optional<String> petName,
+            Optional<String> status,
+            Optional<Date> registerStart,
+            Optional<Date> registerEnd,
+            Optional<Date> adoptStart,
+            Optional<Date> adoptEnd,
+            Optional<String> sort,
+            Optional<Integer> page) {
 
         Date registerStartValue = formatUtils.changeDateRange(registerStart, registerEnd).get("minDateValue");
         Date registerEndValue = formatUtils.changeDateRange(registerStart, registerEnd).get("maxDateValue");
@@ -248,9 +263,8 @@ public class AdoptServiceImpl implements AdoptService {
         }
 
         List<Adopt> filterAdopts = adoptRepository.filterAdopts(
-            name.orElse(null), petName.orElse(null), status.orElse(null), 
-            registerStartValue, registerEndValue, adoptStartValue, adoptEndValue, sort.orElse(null)
-            );
+                name.orElse(null), petName.orElse(null), status.orElse(null),
+                registerStartValue, registerEndValue, adoptStartValue, adoptEndValue, sort.orElse(null));
 
         Integer pageSize = 10;
         Integer pages = page.orElse(0);
@@ -288,23 +302,28 @@ public class AdoptServiceImpl implements AdoptService {
                 .errors(false)
                 .data(PagiantionResponse.builder().data(adopts).pages(pagination.getTotalPages()).build())
                 .build();
-       
+
     }
 
     @Override
     public ApiResponse acceptAdoption(Integer id, UpdatePickUpDateRequest updatePickUpDateRequest) {
-        
+
         Adopt adopt = adoptRepository.findById(id).orElse(null);
-        if(adopt == null) {
-            return ApiResponse.builder().status(HttpStatus.NOT_FOUND.value()).message("Adopt not found!!!").errors(true).build();
+        if (adopt == null) {
+            return ApiResponse.builder().status(HttpStatus.NOT_FOUND.value()).message("Adopt not found!!!").errors(true)
+                    .build();
         }
 
-        if(adopt.getStatus().equalsIgnoreCase(AdoptStatus.ADOPTED.getValue()) || adopt.getStatus().equalsIgnoreCase(AdoptStatus.REGISTERED.getValue())) {
-            return ApiResponse.builder().status(HttpStatus.BAD_REQUEST.value()).message("This adoption was accepted!!!").errors(true).build();
+        if (adopt.getStatus().equalsIgnoreCase(AdoptStatus.ADOPTED.getValue())
+                || (adopt.getStatus().equalsIgnoreCase(AdoptStatus.REGISTERED.getValue())
+                        && adopt.getPickUpAt() == null)) {
+            return ApiResponse.builder().status(HttpStatus.BAD_REQUEST.value()).message("This adoption was accepted!!!")
+                    .errors(true).build();
         }
 
-        if(updatePickUpDateRequest.getPickUpDate().before(new Date())) {
-            return ApiResponse.builder().status(HttpStatus.BAD_REQUEST.value()).message("The date was passed! Please choose another date!!!").errors(true).build();
+        if (updatePickUpDateRequest.getPickUpDate().before(new Date())) {
+            return ApiResponse.builder().status(HttpStatus.BAD_REQUEST.value())
+                    .message("The date was passed! Please choose another date!!!").errors(true).build();
         }
 
         adopt.setStatus(AdoptStatus.REGISTERED.getValue());
@@ -322,23 +341,27 @@ public class AdoptServiceImpl implements AdoptService {
     @Override
     public ApiResponse cancelAdopt(Integer id, CancelAdoptRequest cancelAdoptRequest) {
 
-        //get adopt
+        // get adopt
         Adopt adopt = adoptRepository.findById(id).orElse(null);
-        if(adopt == null) {
-            return ApiResponse.builder().status(HttpStatus.BAD_REQUEST.value()).message("Adopt not found!!!").errors(true).build();
+        if (adopt == null) {
+            return ApiResponse.builder().status(HttpStatus.BAD_REQUEST.value()).message("Adopt not found!!!")
+                    .errors(true).build();
         }
 
-        //check adoption status was adopted or not
-        if(adopt.getStatus().equalsIgnoreCase(AdoptStatus.ADOPTED.getValue())) {
-            return ApiResponse.builder().status(HttpStatus.BAD_REQUEST.value()).message("The pet was adopted. Cannot cancel!!!").errors(true).build();
+        // check adoption status was adopted or not
+        if (adopt.getStatus().equalsIgnoreCase(AdoptStatus.ADOPTED.getValue())) {
+            return ApiResponse.builder().status(HttpStatus.BAD_REQUEST.value())
+                    .message("The pet was adopted. Cannot cancel!!!").errors(true).build();
         }
 
-        //check adoption status was cancel or not
-        if(adopt.getStatus().equalsIgnoreCase(AdoptStatus.CANCELLED_BY_ADMIN.getValue()) || adopt.getStatus().equalsIgnoreCase(AdoptStatus.CANCELLED_BY_CUSTOMER.getValue())) {
-            return ApiResponse.builder().status(HttpStatus.BAD_REQUEST.value()).message("The adoption was cancel. Cannot cancel again!!!").errors(true).build();
+        // check adoption status was cancel or not
+        if (adopt.getStatus().equalsIgnoreCase(AdoptStatus.CANCELLED_BY_ADMIN.getValue())
+                || adopt.getStatus().equalsIgnoreCase(AdoptStatus.CANCELLED_BY_CUSTOMER.getValue())) {
+            return ApiResponse.builder().status(HttpStatus.BAD_REQUEST.value())
+                    .message("The adoption was cancel. Cannot cancel again!!!").errors(true).build();
         }
 
-        //reject the adoption
+        // reject the adoption
         adopt.setStatus(AdoptStatus.CANCELLED_BY_ADMIN.getValue());
         adopt.setCancelReason(cancelAdoptRequest.getCancelReason());
         adoptRepository.save(adopt);
@@ -354,39 +377,45 @@ public class AdoptServiceImpl implements AdoptService {
     @Override
     public ApiResponse cancelAdoptByUser(Integer id, String jwt, CancelAdoptRequest cancelAdoptRequest) {
 
-        //get adopt
+        // get adopt
         Adopt adopt = adoptRepository.findById(id).orElse(null);
-        if(adopt == null) {
-            return ApiResponse.builder().status(HttpStatus.BAD_REQUEST.value()).message("Adopt not found!!!").errors(true).build();
+        if (adopt == null) {
+            return ApiResponse.builder().status(HttpStatus.BAD_REQUEST.value()).message("Adopt not found!!!")
+                    .errors(true).build();
         }
 
-        //check user adopt
+        // check user adopt
         String username = jwtProvider.getUsernameFromToken(jwt);
-        if(username == null || username.isEmpty()) {
-            return ApiResponse.builder().status(HttpStatus.BAD_REQUEST.value()).message("Username is not exists!!!").errors(true).build();
+        if (username == null || username.isEmpty()) {
+            return ApiResponse.builder().status(HttpStatus.BAD_REQUEST.value()).message("Username is not exists!!!")
+                    .errors(true).build();
         }
 
         User user = userRepository.findByUsername(username).orElse(null);
-        if(user == null) {
-            return ApiResponse.builder().status(HttpStatus.BAD_REQUEST.value()).message("User not found!!!").errors(true).build();
+        if (user == null) {
+            return ApiResponse.builder().status(HttpStatus.BAD_REQUEST.value()).message("User not found!!!")
+                    .errors(true).build();
         }
 
-        if(adoptRepository.existsByUser(user.getId(), id) == null) {
-            return ApiResponse.builder().status(HttpStatus.BAD_REQUEST.value()).message("You don't have permission to cancel!!!").errors(true).build();
-        }
-        
-
-        //check adoption status was adopted or not
-        if(adopt.getStatus().equalsIgnoreCase(AdoptStatus.ADOPTED.getValue())) {
-            return ApiResponse.builder().status(HttpStatus.BAD_REQUEST.value()).message("The pet was adopted. Cannot cancel!!!").errors(true).build();
+        if (adoptRepository.existsByUser(user.getId(), id) == null) {
+            return ApiResponse.builder().status(HttpStatus.BAD_REQUEST.value())
+                    .message("You don't have permission to cancel!!!").errors(true).build();
         }
 
-        //check adoption status was cancel or not
-        if(adopt.getStatus().equalsIgnoreCase(AdoptStatus.CANCELLED_BY_ADMIN.getValue()) || adopt.getStatus().equalsIgnoreCase(AdoptStatus.CANCELLED_BY_CUSTOMER.getValue())) {
-            return ApiResponse.builder().status(HttpStatus.BAD_REQUEST.value()).message("The adoption was cancel. Cannot cancel again!!!").errors(true).build();
+        // check adoption status was adopted or not
+        if (adopt.getStatus().equalsIgnoreCase(AdoptStatus.ADOPTED.getValue())) {
+            return ApiResponse.builder().status(HttpStatus.BAD_REQUEST.value())
+                    .message("The pet was adopted. Cannot cancel!!!").errors(true).build();
         }
 
-        //reject the adoption
+        // check adoption status was cancel or not
+        if (adopt.getStatus().equalsIgnoreCase(AdoptStatus.CANCELLED_BY_ADMIN.getValue())
+                || adopt.getStatus().equalsIgnoreCase(AdoptStatus.CANCELLED_BY_CUSTOMER.getValue())) {
+            return ApiResponse.builder().status(HttpStatus.BAD_REQUEST.value())
+                    .message("The adoption was cancel. Cannot cancel again!!!").errors(true).build();
+        }
+
+        // reject the adoption
         adopt.setStatus(AdoptStatus.CANCELLED_BY_CUSTOMER.getValue());
         adopt.setCancelReason(cancelAdoptRequest.getCancelReason());
         adoptRepository.save(adopt);
