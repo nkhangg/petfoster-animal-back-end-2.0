@@ -16,13 +16,15 @@ public interface AdoptRepository extends JpaRepository<Adopt, Integer> {
 
     @Query(nativeQuery = true, value = "select * from adopt where pet_id = :petId")
     Adopt existsByPet(@Param("petId") String petId);
-
+    
     @Query(nativeQuery = true, value = "select * from adopt where user_id = :userId and adopt_id = :adoptId")
     Adopt existsByUser(@Param("userId") String userId, @Param("adoptId") Integer adoptId);
 
-    @Query(nativeQuery = true, value = "select * from adopt where pet_id = :petId and user_id = :userId and status like 'waiting'")
+    //The pet status was waiting by the user, the same user cannot registered adopt the pet again
+    @Query(nativeQuery = true, value = "select * from adopt where pet_id = :petId and user_id = :userId and status like 'Waiting'")
     Adopt existsByPetAndUser(@Param("petId") String petId, @Param("userId") String userId);
 
+    //The pet was adopted or registered cannot register adopt
     @Query(nativeQuery = true, value = "select * from adopt where pet_id = :petId and status in ('Adopted', 'Registered')")
     Adopt exsitsAdopted(@Param("petId") String petId);
 

@@ -18,7 +18,6 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.poly.petfoster.config.JwtProvider;
-import com.poly.petfoster.constant.RespMessage;
 import com.poly.petfoster.entity.Favorite;
 import com.poly.petfoster.entity.Pet;
 import com.poly.petfoster.entity.PetBreed;
@@ -33,7 +32,6 @@ import com.poly.petfoster.repository.UserRepository;
 import com.poly.petfoster.response.ApiResponse;
 import com.poly.petfoster.response.common.PagiantionResponse;
 import com.poly.petfoster.response.pages.PetDetailPageResponse;
-import com.poly.petfoster.response.pages.homepage.HomePageResponse;
 import com.poly.petfoster.response.pets.PetAttributeReponse;
 import com.poly.petfoster.response.pets.PetAttributesReponse;
 import com.poly.petfoster.response.pets.PetDetailResponse;
@@ -121,7 +119,7 @@ public class PetServiceImpl implements PetService {
 
     public PetDetailResponse buildPetResponses(Pet pet) {
         Integer fosterDay = (int) TimeUnit.MILLISECONDS.toDays(new Date().getTime() - pet.getFosterAt().getTime());
-        boolean canAdopt = adoptRepository.existsByPet(pet.getPetId()) == null;
+        boolean canAdopt = this.isCanAdopt(pet, null);
         List<String> images = pet.getImgs().stream().map(image -> {
 
             return portUltil.getUrlImage(image.getNameImg());
@@ -150,7 +148,7 @@ public class PetServiceImpl implements PetService {
     public PetDetailResponse buildPetResponses(Pet pet, User user) {
         Integer fosterDay = (int) TimeUnit.MILLISECONDS.toDays(new Date().getTime() - pet.getFosterAt().getTime());
         boolean liked = favoriteRepository.existByUserAndPet(user.getId(), pet.getPetId()) != null;
-        boolean canAdopt = adoptRepository.existsByPet(pet.getPetId()) == null;
+        boolean canAdopt = isCanAdopt(pet, user);
 
         List<String> images = pet.getImgs().stream().map(image -> {
 
@@ -556,6 +554,14 @@ public class PetServiceImpl implements PetService {
                 .like(liked)
                 .fostered(pet.getFosterAt())
                 .build();
+    }
+
+    public boolean isCanAdopt(Pet pet, User user) {
+
+        return user == null ? (adoptRepository.exsitsAdopted(pet.getPetId()) == null)
+                : ((adoptRepository.existsByPetAndUser(pet.getPetId(), user.getId()) == null)
+                        && ((adoptRepository.exsitsAdopted(pet.getPetId())) == null));
+
     }
 
     @Override
