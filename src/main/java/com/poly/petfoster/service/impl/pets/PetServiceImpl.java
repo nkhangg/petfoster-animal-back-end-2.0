@@ -556,11 +556,14 @@ public class PetServiceImpl implements PetService {
                 .build();
     }
 
-
     public boolean isCanAdopt(Pet pet, User user) {
 
-        return user == null ? (adoptRepository.exsitsAdopted(pet.getPetId()) == null) : 
-        ((adoptRepository.existsByPetAndUser(pet.getPetId(), user.getId()) == null) && ((adoptRepository.exsitsAdopted(pet.getPetId())) == null));
+        return user == null ? (adoptRepository.exsitsAdopted(pet.getPetId()) == null)
+                : ((adoptRepository.existsByPetAndUser(pet.getPetId(), user.getId()) == null)
+                        && ((adoptRepository.exsitsAdopted(pet.getPetId())) == null));
+
+    }
+
     @Override
     public ApiResponse getPetManament(String id) {
 
@@ -590,7 +593,6 @@ public class PetServiceImpl implements PetService {
                 .errors(false)
                 .data(buildPetManamentResponses(pet))
                 .build();
-
 
     }
 
