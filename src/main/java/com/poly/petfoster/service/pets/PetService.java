@@ -10,22 +10,24 @@ import com.poly.petfoster.response.ApiResponse;
 import com.poly.petfoster.response.pets.PetResponse;
 
 public interface PetService {
-    List<PetResponse> buildPetResponses(List<Pet> petsRaw);
+        List<PetResponse> buildPetResponses(List<Pet> petsRaw);
 
-    List<PetResponse> buildPetResponses(List<Pet> petsRaw, User user);
+        List<PetResponse> buildPetResponses(List<Pet> petsRaw, User user);
 
-    ApiResponse getDetailPet(String id);
+        ApiResponse getDetailPet(String id);
 
-    ApiResponse favorite(String id, String token);
+        ApiResponse favorite(String id, String token);
 
-    ApiResponse filterPets(Optional<String> name, Optional<String> typeName, Optional<String> colors,
-            Optional<String> age, Optional<Boolean> gender, Optional<String> sort, Optional<Integer> page);
+        ApiResponse getPetManament(String id);
 
-    ApiResponse getAttributes();
+        ApiResponse filterPets(Optional<String> name, Optional<String> typeName, Optional<String> colors,
+                        Optional<String> age, Optional<Boolean> gender, Optional<String> sort, Optional<Integer> page);
 
-    ApiResponse filterAdminPets(Optional<String> name, Optional<String> typeName, Optional<String> colors,
-            Optional<String> age, Optional<Boolean> gender, Optional<String> status, Optional<Date> minDate,
-            Optional<Date> maxDate, Optional<String> sort, Optional<Integer> page);
+        ApiResponse getAttributes();
 
-    public ApiResponse getFavorites(String token, int page);
+        ApiResponse filterAdminPets(Optional<String> name, Optional<String> typeName, Optional<String> colors,
+                        Optional<String> age, Optional<Boolean> gender, Optional<String> status, Optional<Date> minDate,
+                        Optional<Date> maxDate, Optional<String> sort, Optional<Integer> page);
+
+        public ApiResponse getFavorites(String token, int page);
 }
