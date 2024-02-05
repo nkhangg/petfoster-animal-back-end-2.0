@@ -35,6 +35,7 @@ import com.poly.petfoster.response.pages.PetDetailPageResponse;
 import com.poly.petfoster.response.pets.PetAttributeReponse;
 import com.poly.petfoster.response.pets.PetAttributesReponse;
 import com.poly.petfoster.response.pets.PetDetailResponse;
+import com.poly.petfoster.response.pets.PetManamentResponse;
 import com.poly.petfoster.response.pets.PetResponse;
 import com.poly.petfoster.service.pets.PetService;
 import com.poly.petfoster.service.user.UserService;
@@ -170,6 +171,29 @@ public class PetServiceImpl implements PetService {
                 .images(images)
                 .color(pet.getPetColor())
                 .canAdopt(canAdopt)
+                .build();
+
+    }
+
+    public PetManamentResponse buildPetManamentResponses(Pet pet) {
+        List<String> images = pet.getImgs().stream().map(image -> {
+
+            return portUltil.getUrlImage(image.getNameImg());
+        }).toList();
+
+        return PetManamentResponse.builder()
+                .id(pet.getPetId())
+                .breed(pet.getPetBreed().getBreedId())
+                .name(pet.getPetName())
+                .description(pet.getDescriptions() == null ? "" : pet.getDescriptions())
+                .size(pet.getAge().toLowerCase().trim())
+                .sex(pet.getSex() ? "male" : "female")
+                .type(pet.getPetBreed().getPetType().getId())
+                .fostered(pet.getFosterAt())
+                .spay(pet.getIsSpay())
+                .images(images)
+                .color(pet.getPetColor())
+                .status(pet.getAdoptStatus().toLowerCase())
                 .build();
 
     }
@@ -532,10 +556,42 @@ public class PetServiceImpl implements PetService {
                 .build();
     }
 
+
     public boolean isCanAdopt(Pet pet, User user) {
 
         return user == null ? (adoptRepository.exsitsAdopted(pet.getPetId()) == null) : 
         ((adoptRepository.existsByPetAndUser(pet.getPetId(), user.getId()) == null) && ((adoptRepository.exsitsAdopted(pet.getPetId())) == null));
+    @Override
+    public ApiResponse getPetManament(String id) {
+
+        if (id == null || id.isEmpty()) {
+            return ApiResponse.builder()
+                    .status(HttpStatus.BAD_REQUEST.value())
+                    .message("Bad request")
+                    .errors(true)
+                    .data(null)
+                    .build();
+        }
+
+        Pet pet = petRepository.findById(id).orElse(null);
+
+        if (pet == null) {
+            return ApiResponse.builder()
+                    .status(HttpStatus.NOT_FOUND.value())
+                    .message("Pet notfound")
+                    .errors(true)
+                    .data(null)
+                    .build();
+        }
+
+        return ApiResponse.builder()
+                .status(200)
+                .message("Successfully!!!")
+                .errors(false)
+                .data(buildPetManamentResponses(pet))
+                .build();
+
+
     }
 
 }

@@ -441,7 +441,7 @@ public class OrderSeviceImpl implements OrderService {
 
         OrderDetailsResponse orderDetails = OrderDetailsResponse.builder()
                 .id(id)
-                .address(this.getAddress(shippingInfo.getAddress(), shippingInfo.getWard(), shippingInfo.getDistrict(),
+                .address(formatUtils.getAddress(shippingInfo.getAddress(), shippingInfo.getWard(), shippingInfo.getDistrict(),
                         shippingInfo.getProvince()))
                 .placedDate(formatUtils.dateToString(order.getCreateAt(), "MMM d, yyyy"))
                 .deliveryMethod(shippingInfo.getDeliveryCompany().getCompany())
@@ -533,10 +533,6 @@ public class OrderSeviceImpl implements OrderService {
     public ProductRepo returnQuantity(ProductRepo productRepo, Integer quantity) {
         productRepo.setQuantity(productRepo.getQuantity() + quantity);
         return productRepoRepository.save(productRepo);
-    }
-
-    public String getAddress(String street, String ward, String district, String province) {
-        return String.join(", ", street, ward, district, province);
     }
 
     @Override
@@ -651,7 +647,7 @@ public class OrderSeviceImpl implements OrderService {
 
             OrderDetailsResponse orderDetails = new OrderDetailsResponse();
             orderDetails.setId(order.getShippingInfo().getId());
-            orderDetails.setAddress(this.getAddress(shippingInfo.getAddress(), shippingInfo.getWard(),
+            orderDetails.setAddress(formatUtils.getAddress(shippingInfo.getAddress(), shippingInfo.getWard(),
                     shippingInfo.getDistrict(), shippingInfo.getProvince()));
             orderDetails.setPlacedDate(order.getCreateAt().toString());
             orderDetails.setDeliveryMethod(shippingInfo.getDeliveryCompany().getCompany());

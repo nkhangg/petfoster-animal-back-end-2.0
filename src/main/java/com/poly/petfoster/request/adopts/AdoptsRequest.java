@@ -14,10 +14,5 @@ import lombok.NoArgsConstructor;
 public class AdoptsRequest {
     private String userId;
     private String petId;
-
-    @NotBlank(message = "Phone number can't be blank!!!")
-    private String phone;
-
-    @NotBlank(message = "Address can't be blank!!!")
-    private String address;
+    private Integer addressId;
 }
