@@ -3,7 +3,6 @@ package com.poly.petfoster.request.adopts;
 import java.util.Date;
 
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 
 import org.springframework.format.annotation.DateTimeFormat;
 

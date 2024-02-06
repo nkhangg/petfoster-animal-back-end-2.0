@@ -22,20 +22,6 @@ public class PetAdminController {
     @Autowired
     PetService petService;
 
-    // @GetMapping("")
-    // public ResponseEntity<ApiResponse> filterAdminPets(
-    // @RequestParam("name") Optional<String> name,
-    // @RequestParam("typeName") Optional<String> typeName,
-    // @RequestParam("colors") Optional<String> colors,
-    // @RequestParam("age") Optional<String> age,
-    // @RequestParam("gender") Optional<Boolean> gender,
-    // @RequestParam("sort") Optional<String> status,
-    // @RequestParam("sort") Optional<String> sort,
-    // @RequestParam("page") Optional<Integer> page) {
-    // return ResponseEntity.ok(petService.filterAdminPets(name, typeName, colors,
-    // age, gender, status, sort, page));
-    // }
-
     @GetMapping("{id}")
     public ResponseEntity<ApiResponse> getPetManagement(@PathVariable String id) {
         return ResponseEntity.ok(petService.getPetManament(id));

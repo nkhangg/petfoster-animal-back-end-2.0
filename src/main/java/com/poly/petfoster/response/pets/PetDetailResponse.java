@@ -3,6 +3,8 @@ package com.poly.petfoster.response.pets;
 import java.util.Date;
 import java.util.List;
 
+import org.hibernate.annotations.Nationalized;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.AllArgsConstructor;
@@ -31,4 +33,5 @@ public class PetDetailResponse {
     private List<String> images;
     private String color;
     private Boolean canAdopt;
+    private String status;
 }
