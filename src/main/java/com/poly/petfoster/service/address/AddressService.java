@@ -6,6 +6,8 @@ import com.poly.petfoster.response.ApiResponse;
 public interface AddressService {
     ApiResponse getDefaultAddress(String token);
 
+    ApiResponse getUserAddresses(String username);
+
     ApiResponse getAddressByToken(String token);
 
     ApiResponse getAddressById(String token, Integer id);

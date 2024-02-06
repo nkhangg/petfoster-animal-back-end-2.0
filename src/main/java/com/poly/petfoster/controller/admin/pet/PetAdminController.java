@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -28,22 +29,14 @@ import com.poly.petfoster.service.pets.PetService;
 @RestController
 @RequestMapping("/api/admin/pets")
 public class PetAdminController {
-    
+
     @Autowired
     PetService petService;
 
-    // @GetMapping("")
-    // public ResponseEntity<ApiResponse> filterAdminPets(
-    //         @RequestParam("name") Optional<String> name,
-    //         @RequestParam("typeName") Optional<String> typeName,
-    //         @RequestParam("colors") Optional<String> colors,
-    //         @RequestParam("age") Optional<String> age,
-    //         @RequestParam("gender") Optional<Boolean> gender,
-    //         @RequestParam("sort") Optional<String> status,
-    //         @RequestParam("sort") Optional<String> sort,
-    //         @RequestParam("page") Optional<Integer> page) {
-    //     return ResponseEntity.ok(petService.filterAdminPets(name, typeName, colors, age, gender, status, sort, page));
-    // }
+    @GetMapping("{id}")
+    public ResponseEntity<ApiResponse> getPetManagement(@PathVariable String id) {
+        return ResponseEntity.ok(petService.getPetManament(id));
+    }
 
     @GetMapping("")
     public ResponseEntity<ApiResponse> filterAdminPets(
@@ -56,9 +49,9 @@ public class PetAdminController {
             @RequestParam("minDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> minDate,
             @RequestParam("maxDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> maxDate,
             @RequestParam("sort") Optional<String> sort,
-            @RequestParam("page") Optional<Integer> page
-            ) {
-        return ResponseEntity.ok(petService.filterAdminPets(name, typeName, colors, age, gender, status, minDate, maxDate, sort, page));
+            @RequestParam("page") Optional<Integer> page) {
+        return ResponseEntity.ok(
+                petService.filterAdminPets(name, typeName, colors, age, gender, status, minDate, maxDate, sort, page));
     }
 
     @PostMapping("")

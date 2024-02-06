@@ -20,12 +20,14 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.poly.petfoster.config.JwtProvider;
+import com.poly.petfoster.constant.PetStatus;
 import com.poly.petfoster.entity.Favorite;
 import com.poly.petfoster.entity.Pet;
 import com.poly.petfoster.entity.PetBreed;
 import com.poly.petfoster.entity.PetImgs;
 import com.poly.petfoster.entity.PetType;
 import com.poly.petfoster.entity.User;
+import com.poly.petfoster.repository.AdoptRepository;
 import com.poly.petfoster.repository.FavoriteRepository;
 import com.poly.petfoster.repository.PetBreedRepository;
 import com.poly.petfoster.repository.PetImgsRepository;
@@ -39,6 +41,7 @@ import com.poly.petfoster.response.pages.PetDetailPageResponse;
 import com.poly.petfoster.response.pets.PetAttributeReponse;
 import com.poly.petfoster.response.pets.PetAttributesReponse;
 import com.poly.petfoster.response.pets.PetDetailResponse;
+import com.poly.petfoster.response.pets.PetManamentResponse;
 import com.poly.petfoster.response.pets.PetResponse;
 import com.poly.petfoster.service.pets.PetService;
 import com.poly.petfoster.service.user.UserService;
@@ -70,7 +73,9 @@ public class PetServiceImpl implements PetService {
     private PetBreedRepository petBreedRepository;
 
     @Autowired
+    private AdoptRepository adoptRepository;
 
+    @Autowired
     private PetTypeRepository petTypeRepository;
 
     @Autowired
@@ -124,7 +129,7 @@ public class PetServiceImpl implements PetService {
 
     public PetDetailResponse buildPetResponses(Pet pet) {
         Integer fosterDay = (int) TimeUnit.MILLISECONDS.toDays(new Date().getTime() - pet.getFosterAt().getTime());
-
+        boolean canAdopt = this.isCanAdopt(pet, null);
         List<String> images = pet.getImgs().stream().map(image -> {
 
             return portUltil.getUrlImage(image.getNameImg());
@@ -142,9 +147,11 @@ public class PetServiceImpl implements PetService {
                 .type(pet.getPetBreed().getPetType().getName())
                 .like(false)
                 .fostered(pet.getFosterAt())
-                .sterilization(pet.getIsSpay() ? "sterilizated" : "not sterilization")
+                .sterilization(pet.getIsSpay() ? "sterilizated" : "none")
                 .images(images)
                 .color(pet.getPetColor())
+                .canAdopt(canAdopt)
+                .status(pet.getAdoptStatus())
                 .build();
 
     }
@@ -152,6 +159,8 @@ public class PetServiceImpl implements PetService {
     public PetDetailResponse buildPetResponses(Pet pet, User user) {
         Integer fosterDay = (int) TimeUnit.MILLISECONDS.toDays(new Date().getTime() - pet.getFosterAt().getTime());
         boolean liked = favoriteRepository.existByUserAndPet(user.getId(), pet.getPetId()) != null;
+        boolean canAdopt = isCanAdopt(pet, user);
+
         List<String> images = pet.getImgs().stream().map(image -> {
 
             return portUltil.getUrlImage(image.getNameImg());
@@ -169,9 +178,34 @@ public class PetServiceImpl implements PetService {
                 .type(pet.getPetBreed().getPetType().getName())
                 .like(liked)
                 .fostered(pet.getFosterAt())
-                .sterilization(pet.getIsSpay() ? "sterilizated" : "not sterilization")
+                .sterilization(pet.getIsSpay() ? "sterilizated" : "none")
                 .images(images)
                 .color(pet.getPetColor())
+                .canAdopt(canAdopt)
+                .status(pet.getAdoptStatus())
+                .build();
+
+    }
+
+    public PetManamentResponse buildPetManamentResponses(Pet pet) {
+        List<String> images = pet.getImgs().stream().map(image -> {
+
+            return portUltil.getUrlImage(image.getNameImg());
+        }).toList();
+
+        return PetManamentResponse.builder()
+                .id(pet.getPetId())
+                .breed(pet.getPetBreed().getBreedId())
+                .name(pet.getPetName())
+                .description(pet.getDescriptions() == null ? "" : pet.getDescriptions())
+                .size(pet.getAge().toLowerCase().trim())
+                .sex(pet.getSex() ? "male" : "female")
+                .type(pet.getPetBreed().getPetType().getId())
+                .fostered(pet.getFosterAt())
+                .spay(pet.getIsSpay())
+                .images(images)
+                .color(pet.getPetColor())
+                .status(pet.getAdoptStatus().toLowerCase())
                 .build();
 
     }
@@ -470,6 +504,116 @@ public class PetServiceImpl implements PetService {
                 .errors(false)
                 .data(PagiantionResponse.builder().data(pets).pages(totalPages).build())
                 .build();
+
+    }
+
+    @Override
+    public ApiResponse getFavorites(String token, int page) {
+        String username = jwtProvider.getUsernameFromToken(token);
+        User u = userRepository.findByUsername(username).orElse(null);
+        String user_id = u.getId();
+        List<Pet> list = petRepository.getFavorites(user_id);
+
+        int pageSize = 10;
+        int totalPages = (list.size() + pageSize - 1) / pageSize;
+
+        if (page >= totalPages) {
+            return ApiResponse.builder()
+                    .status(HttpStatus.NO_CONTENT.value())
+                    .message("Page is not exist!!!")
+                    .errors(false)
+                    .data(new ArrayList<>())
+                    .build();
+        }
+        Pageable pageable = PageRequest.of(page, pageSize);
+        int startIndex = (int) pageable.getOffset();
+        int endIndex = Math.min(startIndex + pageable.getPageSize(), list.size());
+        if (startIndex >= endIndex) {
+            return ApiResponse.builder()
+                    .status(200)
+                    .message("Successfully!!!")
+                    .errors(false)
+                    .data(PagiantionResponse.builder().data(list).pages(0).build())
+                    .build();
+        }
+
+        List<Pet> visiblePets = list.subList(startIndex, endIndex);
+        List<PetDetailResponse> pets = new ArrayList<>();
+        visiblePets.forEach(pet -> pets.add(this.buildPetResponses(pet, u)));
+
+        return ApiResponse.builder()
+                .status(200)
+                .message("Successfully!!!")
+                .errors(false)
+                .data(PagiantionResponse.builder().data(pets).pages(totalPages).build())
+                .build();
+    }
+
+    public PetResponse buildPetResponse(Pet pet, User user) {
+        boolean liked = favoriteRepository.existByUserAndPet(user.getId(), pet.getPetId()) != null;
+
+        Integer fosterDay = (int) TimeUnit.MILLISECONDS.toDays(new Date().getTime() - pet.getFosterAt().getTime());
+
+        return PetResponse.builder()
+                .id(pet.getPetId())
+                .breed(pet.getPetBreed().getBreedName())
+                .name(pet.getPetName())
+                .image(portUltil.getUrlImage(pet.getImgs().get(0).getNameImg()))
+                .description(pet.getDescriptions() == null ? "" : pet.getDescriptions())
+                .fosterDate(fosterDay)
+                .size(pet.getAge())
+                .sex(pet.getSex() ? "male" : "female")
+                .type(pet.getPetBreed().getPetType().getName())
+                .like(liked)
+                .fostered(pet.getFosterAt())
+                .build();
+    }
+
+    public boolean isCanAdopt(Pet pet, User user) {
+
+         //if the pet was sick or deceased will can't adopt
+         if(pet.getAdoptStatus().equalsIgnoreCase(PetStatus.SICK.getValue()) 
+         || pet.getAdoptStatus().equalsIgnoreCase(PetStatus.DECEASED.getValue())) {
+             return false;
+         }
+
+        return user == null ? (adoptRepository.exsitsAdopted(pet.getPetId()) == null)
+                : ((adoptRepository.existsByPetAndUser(pet.getPetId(), user.getId()) == null)
+                        && ((adoptRepository.exsitsAdopted(pet.getPetId())) == null));
+
+    }
+
+    @Override
+    public ApiResponse getPetManament(String id) {
+
+        if (id == null || id.isEmpty()) {
+            return ApiResponse.builder()
+                    .status(HttpStatus.BAD_REQUEST.value())
+                    .message("Bad request")
+                    .errors(true)
+                    .data(null)
+                    .build();
+        }
+
+        Pet pet = petRepository.findById(id).orElse(null);
+
+        if (pet == null) {
+            return ApiResponse.builder()
+                    .status(HttpStatus.NOT_FOUND.value())
+                    .message("Pet notfound")
+                    .errors(true)
+                    .data(null)
+                    .build();
+        }
+
+        return ApiResponse.builder()
+                .status(200)
+                .message("Successfully!!!")
+                .errors(false)
+                .data(buildPetManamentResponses(pet))
+                .build();
+
+       
     }
 
     public ApiResponse createPet(PetRequest petRequest, List<MultipartFile> images) {

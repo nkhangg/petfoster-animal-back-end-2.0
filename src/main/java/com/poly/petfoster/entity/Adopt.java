@@ -15,12 +15,14 @@ import org.hibernate.annotations.Nationalized;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Entity
 public class Adopt {
 
@@ -38,9 +40,17 @@ public class Adopt {
     private Pet pet;
 
     private Date registerAt;
-    @Nationalized
 
     private String status;
 
     private Date adoptAt;
+
+    private Date pickUpAt;
+
+    private String cancelReason;
+
+    private String phone;
+
+    @Nationalized
+    private String address;
 }

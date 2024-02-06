@@ -2,6 +2,7 @@ package com.poly.petfoster.controller.pets;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -26,5 +27,12 @@ public class PetsController {
     public ResponseEntity<ApiResponse> favorite(@PathVariable("id") String id,
             @RequestHeader("Authorization") String token) {
         return ResponseEntity.ok(petService.favorite(id, token));
+    }
+
+    @GetMapping("/favorites")
+    public ResponseEntity<ApiResponse> getFavorites(
+            @RequestHeader("Authorization") String token,
+            @RequestParam(value = "page", defaultValue = "0", required = false) int page) {
+        return ResponseEntity.ok(petService.getFavorites(token, page));
     }
 }
