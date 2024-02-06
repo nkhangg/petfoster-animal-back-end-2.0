@@ -80,7 +80,7 @@ public class PetImagesServiceImpl implements PetImagesService {
     }
 
     @Override
-    public ApiResponse deleteImage(String id, Integer idImage) {
+    public ApiResponse deleteImage(String id, String nameImage) {
         Pet pet = petRepository.findById(id).orElse(null);
         if (pet == null) {
             return ApiResponse.builder()
@@ -90,7 +90,7 @@ public class PetImagesServiceImpl implements PetImagesService {
                     .build();
         }
 
-        PetImgs image = petImgsRepository.getImageByPetId(id, idImage);
+        PetImgs image = petImgsRepository.findByNameImg(id, nameImage);
 
         if (image == null) {
             return ApiResponse.builder()

@@ -37,7 +37,7 @@ public class PetRequest {
     private Boolean sex;
     @NotBlank(message = "Pet Breed ID can't be blank!")
     @NotEmpty(message = "Pet Name can't be empty!")
-
-
     private String breed; // => breed id
+
+    private String status;
 }

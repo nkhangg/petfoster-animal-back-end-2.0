@@ -571,11 +571,11 @@ public class PetServiceImpl implements PetService {
 
     public boolean isCanAdopt(Pet pet, User user) {
 
-         //if the pet was sick or deceased will can't adopt
-         if(pet.getAdoptStatus().equalsIgnoreCase(PetStatus.SICK.getValue()) 
-         || pet.getAdoptStatus().equalsIgnoreCase(PetStatus.DECEASED.getValue())) {
-             return false;
-         }
+        // if the pet was sick or deceased will can't adopt
+        if (pet.getAdoptStatus().equalsIgnoreCase(PetStatus.SICK.getValue())
+                || pet.getAdoptStatus().equalsIgnoreCase(PetStatus.DECEASED.getValue())) {
+            return false;
+        }
 
         return user == null ? (adoptRepository.exsitsAdopted(pet.getPetId()) == null)
                 : ((adoptRepository.existsByPetAndUser(pet.getPetId(), user.getId()) == null)
@@ -613,7 +613,6 @@ public class PetServiceImpl implements PetService {
                 .data(buildPetManamentResponses(pet))
                 .build();
 
-       
     }
 
     public ApiResponse createPet(PetRequest petRequest, List<MultipartFile> images) {
@@ -624,6 +623,15 @@ public class PetServiceImpl implements PetService {
         if (breed == null) {
             return ApiResponse.builder()
                     .message("Can't found Pet Breed")
+                    .status(404)
+                    .errors(true)
+                    .data(null)
+                    .build();
+        }
+
+        if (petRequest.getStatus() == null) {
+            return ApiResponse.builder()
+                    .message("Staus is not blank")
                     .status(404)
                     .errors(true)
                     .data(null)
@@ -661,7 +669,7 @@ public class PetServiceImpl implements PetService {
         } else {
             lastID = getNextId(listPets.get(listPets.size() - 1).getPetId());
         }
-        if ((images.size() == 0) || (images.isEmpty())) {
+        if ((images.size() == 0) || (images.isEmpty()) || images.size() != 4) {
             return ApiResponse.builder()
                     .message("Pet Image can't be empty!")
                     .status(404)
@@ -669,6 +677,7 @@ public class PetServiceImpl implements PetService {
                     .data(null)
                     .build();
         }
+
         Pet pet = Pet.builder().petId(lastID)
                 .petName(petRequest.getName())
                 .petBreed(breed)
@@ -678,7 +687,7 @@ public class PetServiceImpl implements PetService {
                 .isSpay(petRequest.getIsSpay())
                 .descriptions(petRequest.getDescription())
                 .fosterAt(petRequest.getFosterAt())
-                .adoptStatus("Haven't adopted yet.")
+                .adoptStatus(petRequest.getStatus())
                 .build();
         petRepository.save(pet);
 
@@ -771,6 +780,7 @@ public class PetServiceImpl implements PetService {
         pet.setPetColor(petRequest.getColor());
         pet.setPetName(petRequest.getName());
         pet.setSex(petRequest.getSex());
+        pet.setAdoptStatus(petRequest.getStatus());
         petRepository.save(pet);
 
         return ApiResponse.builder()

@@ -26,19 +26,17 @@ public interface PetService {
         ApiResponse filterPets(Optional<String> name, Optional<String> typeName, Optional<String> colors,
                         Optional<String> age, Optional<Boolean> gender, Optional<String> sort, Optional<Integer> page);
 
-    ApiResponse filterAdminPets(Optional<String> name, Optional<String> typeName, Optional<String> colors,
-    Optional<String> age, Optional<Boolean> gender, Optional<String> status, Optional<Date> minDate, Optional<Date> maxDate, Optional<String> sort, Optional<Integer> page);
-    
-    ApiResponse createPet(PetRequest petResquest, List<MultipartFile> images);
-
-    ApiResponse updatePet(String id, PetRequest petResquest);
-
-    ApiResponse deletePet(String id);
-        ApiResponse getAttributes();
-
         ApiResponse filterAdminPets(Optional<String> name, Optional<String> typeName, Optional<String> colors,
                         Optional<String> age, Optional<Boolean> gender, Optional<String> status, Optional<Date> minDate,
                         Optional<Date> maxDate, Optional<String> sort, Optional<Integer> page);
 
-        public ApiResponse getFavorites(String token, int page);
+        ApiResponse createPet(PetRequest petResquest, List<MultipartFile> images);
+
+        ApiResponse updatePet(String id, PetRequest petResquest);
+
+        ApiResponse deletePet(String id);
+
+        ApiResponse getAttributes();
+
+        ApiResponse getFavorites(String token, int page);
 }

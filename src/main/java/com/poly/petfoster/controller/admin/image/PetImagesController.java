@@ -41,7 +41,7 @@ public class PetImagesController {
 
     @DeleteMapping("{id}/{idImage}")
     public ResponseEntity<ApiResponse> deleteImage(@PathVariable("id") String id,
-            @PathVariable("idImage") Integer idImage) {
-        return ResponseEntity.ok(petImagesService.deleteImage(id, idImage));
+            @PathVariable("idImage") String nameImage) {
+        return ResponseEntity.ok(petImagesService.deleteImage(id, nameImage));
     }
 }

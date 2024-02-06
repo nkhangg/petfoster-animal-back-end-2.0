@@ -17,7 +17,7 @@ public interface PetImagesService {
 
     ApiResponse addImagesByIdPet(String id, List<MultipartFile> images);
 
-    ApiResponse deleteImage(String id, Integer idImage);
+    ApiResponse deleteImage(String id, String nameImage);
 
     ApiResponse uploadImages(List<MultipartFile> images);
 
