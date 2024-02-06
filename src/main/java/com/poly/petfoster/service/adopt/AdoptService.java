@@ -33,4 +33,6 @@ public interface AdoptService {
 
     ApiResponse cancelAdoptByUser(Integer id, String jwt, CancelAdoptRequest cancelAdoptRequest);
 
+    ApiResponse doneAdoption(Integer id);
+
 }

@@ -40,7 +40,6 @@ public class Adopt {
     private Pet pet;
 
     private Date registerAt;
-    @Nationalized
 
     private String status;
 

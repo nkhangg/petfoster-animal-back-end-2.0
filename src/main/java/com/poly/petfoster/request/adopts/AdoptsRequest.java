@@ -1,6 +1,5 @@
 package com.poly.petfoster.request.adopts;
 
-import javax.validation.constraints.NotBlank;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

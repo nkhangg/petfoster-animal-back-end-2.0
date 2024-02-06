@@ -54,5 +54,10 @@ public class AdoptAdminController {
     public ResponseEntity<ApiResponse> cancelAdopt(@PathVariable Integer id, @Valid @RequestBody CancelAdoptRequest cancelAdoptRequest) {
         return ResponseEntity.ok(adoptService.cancelAdopt(id, cancelAdoptRequest));
     }
+   
+    @PutMapping("/confirmed/{id}")
+    public ResponseEntity<ApiResponse> doneAdoption(@PathVariable Integer id) {
+        return ResponseEntity.ok(adoptService.doneAdoption(id));
+    }
 
 }

@@ -18,6 +18,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.poly.petfoster.config.JwtProvider;
+import com.poly.petfoster.constant.PetStatus;
 import com.poly.petfoster.entity.Favorite;
 import com.poly.petfoster.entity.Pet;
 import com.poly.petfoster.entity.PetBreed;
@@ -141,6 +142,7 @@ public class PetServiceImpl implements PetService {
                 .images(images)
                 .color(pet.getPetColor())
                 .canAdopt(canAdopt)
+                .status(pet.getAdoptStatus())
                 .build();
 
     }
@@ -171,6 +173,7 @@ public class PetServiceImpl implements PetService {
                 .images(images)
                 .color(pet.getPetColor())
                 .canAdopt(canAdopt)
+                .status(pet.getAdoptStatus())
                 .build();
 
     }
@@ -558,6 +561,12 @@ public class PetServiceImpl implements PetService {
 
     public boolean isCanAdopt(Pet pet, User user) {
 
+         //if the pet was sick or deceased will can't adopt
+         if(pet.getAdoptStatus().equalsIgnoreCase(PetStatus.SICK.getValue()) 
+         || pet.getAdoptStatus().equalsIgnoreCase(PetStatus.DECEASED.getValue())) {
+             return false;
+         }
+
         return user == null ? (adoptRepository.exsitsAdopted(pet.getPetId()) == null)
                 : ((adoptRepository.existsByPetAndUser(pet.getPetId(), user.getId()) == null)
                         && ((adoptRepository.exsitsAdopted(pet.getPetId())) == null));
@@ -594,6 +603,7 @@ public class PetServiceImpl implements PetService {
                 .data(buildPetManamentResponses(pet))
                 .build();
 
+       
     }
 
 }
