@@ -18,6 +18,7 @@ import com.poly.petfoster.request.order.UpdateStatusRequest;
 import com.poly.petfoster.response.ApiResponse;
 import com.poly.petfoster.service.admin.order.OrderFilterService;
 import com.poly.petfoster.service.order.AdminOrderService;
+import org.springframework.web.bind.annotation.PutMapping;
 
 @RestController
 @RequestMapping("/api/admin/orders/")
@@ -44,12 +45,18 @@ public class AdminOrderController {
             @RequestParam("maxDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> maxDate,
             @RequestParam("sort") Optional<String> sort,
             @RequestParam("page") Optional<Integer> page) {
-        return ResponseEntity.ok(orderFilterService.filterOrders(username, orderId, status, minDate, maxDate, sort, page));
+        return ResponseEntity
+                .ok(orderFilterService.filterOrders(username, orderId, status, minDate, maxDate, sort, page));
     }
 
     @GetMapping("/details/{id}")
     public ResponseEntity<ApiResponse> orderDetails(@PathVariable Integer id) {
         return ResponseEntity.ok(orderFilterService.orderDetails(id));
+    }
+
+    @PutMapping("read/{id}")
+    public ResponseEntity<ApiResponse> putMethodName(@PathVariable Integer id) {
+        return ResponseEntity.ok(adminOrderService.updateReadForOrder(id));
     }
 
 }

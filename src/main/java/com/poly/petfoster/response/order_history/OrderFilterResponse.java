@@ -21,4 +21,8 @@ public class OrderFilterResponse {
 
     private String status;
 
+    private Boolean read;
+
+    private String token;
+
 }

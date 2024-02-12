@@ -56,6 +56,7 @@ import com.poly.petfoster.request.payments.VnpaymentRequest;
 import com.poly.petfoster.response.ApiResponse;
 import com.poly.petfoster.response.order.OrderResponse;
 import com.poly.petfoster.response.order_history.OrderDetailsResponse;
+import com.poly.petfoster.response.order_history.OrderFilterResponse;
 import com.poly.petfoster.response.order_history.OrderHistory;
 import com.poly.petfoster.response.order_history.OrderHistoryResponse;
 import com.poly.petfoster.response.order_history.OrderProductItem;
@@ -441,7 +442,8 @@ public class OrderSeviceImpl implements OrderService {
 
         OrderDetailsResponse orderDetails = OrderDetailsResponse.builder()
                 .id(id)
-                .address(formatUtils.getAddress(shippingInfo.getAddress(), shippingInfo.getWard(), shippingInfo.getDistrict(),
+                .address(formatUtils.getAddress(shippingInfo.getAddress(), shippingInfo.getWard(),
+                        shippingInfo.getDistrict(),
                         shippingInfo.getProvince()))
                 .placedDate(formatUtils.dateToString(order.getCreateAt(), "MMM d, yyyy"))
                 .deliveryMethod(shippingInfo.getDeliveryCompany().getCompany())
@@ -521,6 +523,7 @@ public class OrderSeviceImpl implements OrderService {
         return ordersRepository.save(Orders.builder()
                 .user(address.getUser())
                 .payment(payment)
+                .read(false)
                 .shippingInfo(shippingInfo)
                 .build());
     }
@@ -601,7 +604,7 @@ public class OrderSeviceImpl implements OrderService {
         order.setDescriptions(updateStatusRequest.getReason() != null ? updateStatusRequest.getReason() : "");
         ordersRepository.save(order);
 
-        if(order.getGhnCode() != null) {
+        if (order.getGhnCode() != null) {
             List<String> order_codes = new ArrayList<>();
             RestTemplate restTemplate = new RestTemplate();
             order_codes.add(order.getGhnCode());
