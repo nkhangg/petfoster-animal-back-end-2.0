@@ -10,7 +10,10 @@ import javax.persistence.Id;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.Nationalized;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -18,6 +21,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Builder
 public class Donate {
 
     @Id
@@ -25,6 +29,7 @@ public class Donate {
     private Integer id;
 
     @CreationTimestamp
+    @JsonFormat(pattern = "dd/MM/yyyy")
     private Date donateAt;
     @Nationalized
     private String donater;
@@ -32,5 +37,12 @@ public class Donate {
     private String descriptions;
 
     private Double donateAmount;
+
+    @Nationalized
+    private String beneficiaryBank;
+
+    private String toAccountNumber;
+
+    private Integer idTransactionl;
 
 }

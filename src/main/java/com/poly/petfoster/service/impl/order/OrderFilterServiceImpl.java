@@ -89,20 +89,23 @@ public class OrderFilterServiceImpl implements OrderFilterService {
         List<OrderFilterResponse> orderFilters = new ArrayList<>();
         pagination.getContent().stream().forEach((order) -> {
             orderFilters.add(
-                OrderFilterResponse.builder()
-                    .orderId(order.getId())
-                    .username(order.getUser().getUsername())
-                    .total(order.getTotal().intValue())
-                    .placedDate(formatUtils.dateToString(order.getCreateAt(), "yyyy-MM-dd"))
-                    .status(order.getStatus())
-                    .build());
+                    OrderFilterResponse.builder()
+                            .orderId(order.getId())
+                            .username(order.getUser().getUsername())
+                            .total(order.getTotal().intValue())
+                            .placedDate(formatUtils.dateToString(order.getCreateAt(), "yyyy-MM-dd"))
+                            .status(order.getStatus())
+                            .read(order.getRead())
+                            .token(order.getGhnCode())
+                            .build());
         });
 
         return ApiResponse.builder()
                 .message("Successfully!!!")
                 .status(200)
                 .errors(false)
-                .data(OrdersFilterResponse.builder().orderFilters(orderFilters).pages(pagination.getTotalPages()).build())
+                .data(OrdersFilterResponse.builder().orderFilters(orderFilters).pages(pagination.getTotalPages())
+                        .build())
                 .build();
     }
 
@@ -145,6 +148,8 @@ public class OrderFilterServiceImpl implements OrderFilterService {
                 .total(order.getTotal().intValue() + shippingInfo.getShipFee())
                 .state(order.getStatus())
                 .expectedTime(order.getExpectedDeliveryTime())
+                .username(order.getUser().getUsername())
+                .displayName(order.getUser().getDisplayName())
                 .build();
 
         return ApiResponse.builder()

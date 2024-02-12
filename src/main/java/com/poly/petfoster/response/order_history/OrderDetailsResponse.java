@@ -46,4 +46,8 @@ public class OrderDetailsResponse {
 
     private String expectedTime;
 
+    private String username;
+
+    private String displayName;
+
 }

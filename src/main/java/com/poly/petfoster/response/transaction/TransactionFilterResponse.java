@@ -1,4 +1,6 @@
-package com.poly.petfoster.response.common;
+package com.poly.petfoster.response.transaction;
+
+import com.poly.petfoster.response.common.PagiantionResponse;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,9 +9,12 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @Data
-@Builder
 @AllArgsConstructor
-public class PagiantionResponse {
+@Builder
+public class TransactionFilterResponse {
+
     private Object data;
     private Integer pages;
+    private Double total;
+
 }
