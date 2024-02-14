@@ -40,6 +40,8 @@ public class Posts {
 
     private Date lastUpdate;
 
+    private String uuid;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     @JsonIgnore
@@ -52,5 +54,9 @@ public class Posts {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Likes> likes;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<Comments> comments;
 
 }

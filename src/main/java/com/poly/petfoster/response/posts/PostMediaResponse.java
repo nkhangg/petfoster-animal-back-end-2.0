@@ -5,14 +5,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 @Data
-public class PostHomePageResponse {
-    private Integer id;
-    private String title;
-    private String contents;
-    private String thumbnail;
-    private boolean containVideo;
+public class PostMediaResponse {
+    private String url;
+    private Boolean isVideo;
 }
