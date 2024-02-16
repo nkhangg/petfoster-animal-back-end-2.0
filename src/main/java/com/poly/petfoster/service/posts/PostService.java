@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.poly.petfoster.entity.social.Posts;
+import com.poly.petfoster.request.comments.CommentPostRequest;
 import com.poly.petfoster.response.ApiResponse;
 import com.poly.petfoster.response.posts.PostResponse;
 
@@ -19,4 +20,11 @@ public interface PostService {
     ApiResponse postsOfUser(String username, Optional<Integer> page, Optional<String> type);
 
     ApiResponse detailPost(String uuid);
+
+    ApiResponse likePost(String uuid, String token);
+
+    ApiResponse deletePost(String uuid, String token);
+
+    ApiResponse createPost();
+
 }

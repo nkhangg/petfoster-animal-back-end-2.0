@@ -17,18 +17,23 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.poly.petfoster.config.JwtProvider;
 import com.poly.petfoster.constant.RespMessage;
-import com.poly.petfoster.entity.Feedback;
 import com.poly.petfoster.entity.User;
+import com.poly.petfoster.entity.social.Comments;
+import com.poly.petfoster.entity.social.Likes;
 import com.poly.petfoster.entity.social.Medias;
 import com.poly.petfoster.entity.social.Posts;
+import com.poly.petfoster.repository.CommentRepository;
 import com.poly.petfoster.repository.LikesRepository;
+import com.poly.petfoster.repository.MediasRepository;
 import com.poly.petfoster.repository.PostsRepository;
 import com.poly.petfoster.repository.UserRepository;
+import com.poly.petfoster.request.comments.CommentPostRequest;
 import com.poly.petfoster.response.ApiResponse;
 import com.poly.petfoster.response.common.PagiantionResponse;
 import com.poly.petfoster.response.posts.PostDetailResponse;
 import com.poly.petfoster.response.posts.PostMediaResponse;
 import com.poly.petfoster.response.posts.PostResponse;
+import com.poly.petfoster.service.impl.comments.CommentServiceImpl;
 import com.poly.petfoster.service.impl.user.UserServiceImpl;
 import com.poly.petfoster.service.posts.PostService;
 import com.poly.petfoster.service.user.UserService;
@@ -53,7 +58,16 @@ public class PostServiceImpl implements PostService {
         private UserRepository userRepository;
 
         @Autowired
+        private CommentServiceImpl commentServiceImpl;
+
+        @Autowired
         private JwtProvider jwtProvider;
+
+        @Autowired
+        private CommentRepository commentRepository;
+
+        @Autowired
+        private MediasRepository mediasRepository;
 
         @Override
         public List<PostResponse> buildPostHomePageResponses(List<Posts> posts) {
@@ -63,11 +77,14 @@ public class PostServiceImpl implements PostService {
                 return posts.stream().map(post -> {
                         boolean isLike = false;
 
-                        if (token != null) {
-                                isLike = likesRepository.existByUserAndPost(post.getUser().getId(),
+                        User user = userServiceImpl.getUserFromToken(token);
+
+                        if (token != null && user != null) {
+                                isLike = likesRepository.existByUserAndPost(user.getId(),
                                                 post.getId()) != null;
                         }
-                        Medias medias = post.getMedias().get(0);
+
+                        Medias medias = mediasRepository.findByIndex(post, 0);
 
                         return PostResponse.builder()
                                         .id(post.getUuid())
@@ -90,16 +107,19 @@ public class PostServiceImpl implements PostService {
                 boolean owner = false;
 
                 if (token != null) {
-                        isLike = likesRepository.existByUserAndPost(post.getUser().getId(),
-                                        post.getId()) != null;
+                        User user = userServiceImpl.getUserFromToken(token);
 
-                        String username = jwtProvider.getUsernameFromToken(token);
-                        if (username != null) {
-                                owner = username.equals(post.getUser().getUsername());
+                        if (user != null) {
+                                isLike = likesRepository.existByUserAndPost(user.getId(),
+                                                post.getId()) != null;
+                                owner = user.getUsername().equals(post.getUser().getUsername())
+                                                || userServiceImpl.isAdmin(token);
                         }
                 }
-                List<PostMediaResponse> medias = post.getMedias().stream().map(media -> {
+                List<PostMediaResponse> medias = mediasRepository.findMediasWithPost(post).stream().map(media -> {
                         return PostMediaResponse.builder().url(portUltil.getUrlImage(media.getName()))
+                                        .id(media.getId())
+                                        .index(media.getIndex())
                                         .isVideo(media.getIsVideo()).build();
                 }).toList();
 
@@ -302,6 +322,140 @@ public class PostServiceImpl implements PostService {
                                 .status(HttpStatus.OK.value())
                                 .errors(false)
                                 .data(buildDetailResponse(posts))
+                                .build();
+        }
+
+        @Override
+        public ApiResponse likePost(String uuid, String token) {
+                if (uuid == null) {
+                        return ApiResponse.builder()
+                                        .message(RespMessage.NOT_FOUND.getValue())
+                                        .data(null)
+                                        .errors(true)
+                                        .status(HttpStatus.NOT_FOUND.value())
+                                        .build();
+                }
+
+                if (token == null) {
+                        return ApiResponse.builder()
+                                        .message("Please login to use")
+                                        .data(null)
+                                        .errors(true)
+                                        .status(HttpStatus.BAD_REQUEST.value())
+                                        .build();
+                }
+
+                Posts posts = postsRepository.findByUuid(uuid);
+                User user = userServiceImpl.getUserFromToken(token);
+
+                if (posts == null || user == null) {
+                        return ApiResponse.builder()
+                                        .message("Something not found")
+                                        .data(null)
+                                        .errors(true)
+                                        .status(HttpStatus.NOT_FOUND.value())
+                                        .build();
+                }
+                Likes checkLiked = likesRepository.existByUserAndPost(user.getId(), posts.getId());
+
+                if (checkLiked != null) {
+                        likesRepository.delete(checkLiked);
+
+                        return ApiResponse.builder()
+                                        .message("Successfuly")
+                                        .errors(false)
+                                        .status(HttpStatus.OK.value())
+                                        .data(buildDetailResponse(posts))
+                                        .build();
+                }
+
+                Likes like = Likes.builder()
+                                .post(posts)
+                                .user(user)
+                                .build();
+
+                if (like == null) {
+                        return ApiResponse.builder()
+                                        .message("Failure")
+                                        .data(null)
+                                        .errors(true)
+                                        .status(HttpStatus.BAD_REQUEST.value())
+                                        .build();
+                }
+
+                // save like for this post
+                likesRepository.save(like);
+
+                return ApiResponse.builder()
+                                .message("Successfuly")
+                                .errors(false)
+                                .status(HttpStatus.OK.value())
+                                .data(buildDetailResponse(posts))
+                                .build();
+        }
+
+        @Override
+        public ApiResponse deletePost(String uuid, String token) {
+                if (uuid == null) {
+                        return ApiResponse.builder()
+                                        .message(RespMessage.NOT_FOUND.getValue())
+                                        .data(null)
+                                        .errors(true)
+                                        .status(HttpStatus.NOT_FOUND.value())
+                                        .build();
+                }
+
+                if (token == null) {
+                        return ApiResponse.builder()
+                                        .message("Please login to use")
+                                        .data(null)
+                                        .errors(true)
+                                        .status(HttpStatus.BAD_REQUEST.value())
+                                        .build();
+                }
+
+                Posts posts = postsRepository.findByUuid(uuid);
+                User user = userServiceImpl.getUserFromToken(token);
+
+                if (posts == null || user == null) {
+                        return ApiResponse.builder()
+                                        .message("Something not found")
+                                        .data(null)
+                                        .errors(true)
+                                        .status(HttpStatus.NOT_FOUND.value())
+                                        .build();
+                }
+
+                if (!posts.getUser().getId().equals(user.getId()) && !userServiceImpl.isAdmin(user)) {
+                        return ApiResponse.builder()
+                                        .message("Unauthorizated")
+                                        .data(null)
+                                        .errors(true)
+                                        .status(HttpStatus.BAD_REQUEST.value())
+                                        .build();
+                }
+
+                postsRepository.delete(posts);
+
+                return ApiResponse.builder()
+                                .message("Successfuly")
+                                .errors(false)
+                                .status(HttpStatus.OK.value())
+                                .data(buildDetailResponse(posts))
+                                .build();
+        }
+
+        @Override
+        public ApiResponse createPost() {
+                UUID uuid = UUID.randomUUID();
+
+                System.out.println(uuid.toString());
+
+                return ApiResponse.builder()
+                                .message("Successfuly")
+                                .errors(false)
+                                .status(HttpStatus.OK.value())
+                                .data(uuid.toString())
                                 .build();
         }
 

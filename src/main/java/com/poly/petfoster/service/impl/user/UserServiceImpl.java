@@ -483,15 +483,14 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
-    
     public UserProfileResponse buildUserProfileResponse(User user) {
-        
+
         List<Authorities> roles = authoritiesRepository.findByUser(user);
         Role role = null;
         if (roles.size() > 0) {
             role = roles.get(0).getRole();
         }
-        
+
         UserProfileResponse userProfile = UserProfileResponse.builder()
                 .id(user.getId())
                 .username(user.getUsername())
@@ -506,8 +505,39 @@ public class UserServiceImpl implements UserService {
                 .role(role == null ? null : role.getRole())
                 .createAt(user.getCreateAt())
                 .build();
-            
+
         return userProfile;
     }
 
+    public Boolean isAdmin(String token) {
+
+        User user = this.getUserFromToken(token);
+
+        boolean admin = false;
+        List<Role> managementRoles = roleRepository.managementRoles();
+
+        for (Role role : managementRoles) {
+            if (role.getRole().equals(user.getAuthorities().get(0).getRole().getRole())) {
+                admin = true;
+            }
+
+        }
+        return admin;
+
+    }
+
+    public Boolean isAdmin(User user) {
+
+        boolean admin = false;
+        List<Role> managementRoles = roleRepository.managementRoles();
+
+        for (Role role : managementRoles) {
+            if (role.getRole().equals(user.getAuthorities().get(0).getRole().getRole())) {
+                admin = true;
+            }
+
+        }
+        return admin;
+
+    }
 }
