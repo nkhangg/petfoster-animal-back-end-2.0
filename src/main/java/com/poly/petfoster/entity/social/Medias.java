@@ -1,5 +1,6 @@
 package com.poly.petfoster.entity.social;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -20,7 +21,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @Entity
 public class Medias {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -28,6 +29,9 @@ public class Medias {
     private String name;
 
     private Boolean isVideo;
+
+    @Column(name = "[index]")
+    private Integer index;
 
     @ManyToOne
     @JoinColumn(name = "post_id")

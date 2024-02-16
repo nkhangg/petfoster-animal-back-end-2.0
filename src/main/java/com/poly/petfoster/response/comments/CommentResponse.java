@@ -1,5 +1,6 @@
 package com.poly.petfoster.response.comments;
 
+import java.util.Date;
 import java.util.List;
 
 import com.poly.petfoster.response.users.UserProfileResponse;
@@ -19,5 +20,7 @@ public class CommentResponse {
     private String comment;
     private Integer likes;
     private Boolean isLike;
+    private Date createAt;
     private List<CommentResponse> children;
+    private Boolean owner;
 }

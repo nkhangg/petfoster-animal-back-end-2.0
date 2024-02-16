@@ -38,6 +38,7 @@ public class Posts {
     @CreationTimestamp
     private Date createAt;
 
+    @CreationTimestamp
     private Date lastUpdate;
 
     private String uuid;

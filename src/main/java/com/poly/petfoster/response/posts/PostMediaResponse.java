@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class PostMediaResponse {
+    private Integer id;
     private String url;
     private Boolean isVideo;
+    private Integer index;
 }
