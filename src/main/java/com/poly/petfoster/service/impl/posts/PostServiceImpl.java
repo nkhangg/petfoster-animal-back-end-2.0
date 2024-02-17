@@ -1,6 +1,8 @@
 package com.poly.petfoster.service.impl.posts;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -28,6 +30,8 @@ import com.poly.petfoster.repository.MediasRepository;
 import com.poly.petfoster.repository.PostsRepository;
 import com.poly.petfoster.repository.UserRepository;
 import com.poly.petfoster.request.comments.CommentPostRequest;
+import com.poly.petfoster.request.posts.PostMediaRequest;
+import com.poly.petfoster.request.posts.PostRequest;
 import com.poly.petfoster.response.ApiResponse;
 import com.poly.petfoster.response.common.PagiantionResponse;
 import com.poly.petfoster.response.posts.PostDetailResponse;
@@ -36,8 +40,9 @@ import com.poly.petfoster.response.posts.PostResponse;
 import com.poly.petfoster.service.impl.comments.CommentServiceImpl;
 import com.poly.petfoster.service.impl.user.UserServiceImpl;
 import com.poly.petfoster.service.posts.PostService;
-import com.poly.petfoster.service.user.UserService;
+import com.poly.petfoster.ultils.ImageUtils;
 import com.poly.petfoster.ultils.PortUltil;
+import com.poly.petfoster.ultils.partent.OptionsCreateAndSaveFile;
 
 @Service
 public class PostServiceImpl implements PostService {
@@ -55,16 +60,7 @@ public class PostServiceImpl implements PostService {
         private LikesRepository likesRepository;
 
         @Autowired
-        private UserRepository userRepository;
-
-        @Autowired
-        private CommentServiceImpl commentServiceImpl;
-
-        @Autowired
         private JwtProvider jwtProvider;
-
-        @Autowired
-        private CommentRepository commentRepository;
 
         @Autowired
         private MediasRepository mediasRepository;
@@ -89,7 +85,7 @@ public class PostServiceImpl implements PostService {
                         return PostResponse.builder()
                                         .id(post.getUuid())
                                         .title(post.getTitle())
-                                        .thumbnail(portUltil.getUrlImage(medias.getName()))
+                                        .thumbnail(portUltil.getUrlImage(medias.getName(), "medias"))
                                         .containVideo(medias.getIsVideo())
                                         .comments(post.getComments().size())
                                         .likes(post.getLikes().size())
@@ -105,7 +101,7 @@ public class PostServiceImpl implements PostService {
 
                 boolean isLike = false;
                 boolean owner = false;
-
+                boolean edit = false;
                 if (token != null) {
                         User user = userServiceImpl.getUserFromToken(token);
 
@@ -114,10 +110,12 @@ public class PostServiceImpl implements PostService {
                                                 post.getId()) != null;
                                 owner = user.getUsername().equals(post.getUser().getUsername())
                                                 || userServiceImpl.isAdmin(token);
+
+                                edit = user.getUsername().equals(post.getUser().getUsername());
                         }
                 }
                 List<PostMediaResponse> medias = mediasRepository.findMediasWithPost(post).stream().map(media -> {
-                        return PostMediaResponse.builder().url(portUltil.getUrlImage(media.getName()))
+                        return PostMediaResponse.builder().url(portUltil.getUrlImage(media.getName(), "medias"))
                                         .id(media.getId())
                                         .index(media.getIndex())
                                         .isVideo(media.getIsVideo()).build();
@@ -126,15 +124,49 @@ public class PostServiceImpl implements PostService {
                 return PostDetailResponse.builder()
                                 .id(post.getUuid())
                                 .title(post.getTitle())
-                                .comments(post.getComments().size())
-                                .likes(post.getLikes().size())
+                                .comments(post.getComments() == null ? 0 : post.getComments().size())
+                                .likes(post.getLikes() == null ? 0 : post.getLikes().size())
                                 .isLike(isLike)
                                 .user(userServiceImpl.buildUserProfileResponse(post.getUser()))
                                 .images(medias)
+                                .edit(edit)
                                 .owner(owner)
                                 .createdAt(post.getCreateAt())
                                 .build();
 
+        }
+
+        public Posts buildPostFromPostRequest(PostRequest data, User user) {
+
+                UUID uuid = UUID.randomUUID();
+
+                Posts posts = Posts.builder()
+                                .title(data.getTitle())
+                                .user(user)
+                                .uuid(uuid.toString())
+                                .build();
+
+                List<Medias> medias = data.getMedias().stream().map(item -> {
+                        Boolean isVideo = item.getFile().getContentType().equalsIgnoreCase("video/mp4");
+
+                        File file = ImageUtils.createFileAndSave("medias\\", item.getFile(),
+                                        OptionsCreateAndSaveFile.builder()
+                                                        .acceptExtentions(new ArrayList<>(Arrays.asList("svg",
+                                                                        "webp", "jpg", "png", "mp4")))
+                                                        .build());
+
+                        return Medias.builder()
+                                        .index(item.getIndex())
+                                        .isVideo(isVideo)
+                                        .post(posts)
+                                        .name(file == null ? "" : file.getName())
+                                        .build();
+
+                }).toList();
+
+                posts.setMedias(medias);
+
+                return posts;
         }
 
         @Override
@@ -445,17 +477,70 @@ public class PostServiceImpl implements PostService {
                                 .build();
         }
 
-        @Override
-        public ApiResponse createPost() {
-                UUID uuid = UUID.randomUUID();
+        public Boolean validateCreatePost(PostRequest data) {
 
-                System.out.println(uuid.toString());
+                if (data.getTitle() == null || data.getTitle().isEmpty())
+                        return true;
+
+                if (data.getMedias().size() <= 0)
+                        return true;
+
+                List<PostMediaRequest> medias = data.getMedias();
+
+                if (medias.size() > 1) {
+                        for (PostMediaRequest media : medias) {
+                                if (media.getFile().getContentType().equals("video/mp4")) {
+                                        return true;
+                                }
+                        }
+                }
+
+                return false;
+
+        }
+
+        @Override
+        public ApiResponse createPost(PostRequest data, String token) {
+
+                User user = userServiceImpl.getUserFromToken(token);
+
+                if (user == null) {
+                        return ApiResponse.builder()
+                                        .message("Un Authorization")
+                                        .errors(false)
+                                        .status(HttpStatus.FORBIDDEN.value())
+                                        .data(null)
+                                        .build();
+                }
+
+                if (validateCreatePost(data)) {
+                        return ApiResponse.builder()
+                                        .message("Create failure Make sure you have submitted the correct data")
+                                        .errors(false)
+                                        .status(HttpStatus.BAD_REQUEST.value())
+                                        .data(null)
+                                        .build();
+                }
+
+                // Create Post from buildPostFromPostRequest
+                Posts posts = buildPostFromPostRequest(data, user);
+
+                if (posts.getMedias().isEmpty()) {
+                        return ApiResponse.builder()
+                                        .message("Create failure Make sure you have submitted the correct data")
+                                        .errors(false)
+                                        .status(HttpStatus.BAD_REQUEST.value())
+                                        .data(null)
+                                        .build();
+                }
+
+                postsRepository.save(posts);
 
                 return ApiResponse.builder()
                                 .message("Successfuly")
                                 .errors(false)
                                 .status(HttpStatus.OK.value())
-                                .data(uuid.toString())
+                                .data(buildDetailResponse(posts))
                                 .build();
         }
 

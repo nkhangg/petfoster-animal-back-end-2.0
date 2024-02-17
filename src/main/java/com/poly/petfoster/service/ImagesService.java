@@ -5,11 +5,16 @@ import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.poly.petfoster.response.ApiResponse;
+import com.poly.petfoster.service.impl.image.items.GetMediasItem;
 
 public interface ImagesService {
     byte[] getImage(String fileName);
 
     byte[] getImage(String fileName, String pathName);
+
+    byte[] getImage(String fileName, String pathName, String defaultImageWhenWrong);
+
+    GetMediasItem getMedias(String fileName, String pathName);
 
     ApiResponse deleteImgs(String id);
 

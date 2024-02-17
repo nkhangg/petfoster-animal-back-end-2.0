@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import com.poly.petfoster.entity.social.Posts;
 import com.poly.petfoster.request.comments.CommentPostRequest;
+import com.poly.petfoster.request.posts.PostRequest;
 import com.poly.petfoster.response.ApiResponse;
 import com.poly.petfoster.response.posts.PostResponse;
 
@@ -25,6 +26,6 @@ public interface PostService {
 
     ApiResponse deletePost(String uuid, String token);
 
-    ApiResponse createPost();
+    ApiResponse createPost(PostRequest data, String token);
 
 }
