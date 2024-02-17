@@ -16,4 +16,7 @@ public interface MediasRepository extends JpaRepository<Medias, Integer> {
 
     @Query(value = "select m from Medias m where m.post = :post order by m.index asc")
     List<Medias> findMediasWithPost(@Param("post") Posts posts);
+
+    @Query(value = "select m from Medias m where m.name = :name ")
+    Medias findByName(@Param("name") String name);
 }

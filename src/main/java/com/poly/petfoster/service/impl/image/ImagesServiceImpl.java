@@ -10,14 +10,18 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URLConnection;
 
 import com.poly.petfoster.entity.Imgs;
 import com.poly.petfoster.entity.Product;
+import com.poly.petfoster.entity.social.Medias;
 import com.poly.petfoster.repository.ImgsRepository;
+import com.poly.petfoster.repository.MediasRepository;
 import com.poly.petfoster.repository.ProductRepository;
 import com.poly.petfoster.response.ApiResponse;
 import com.poly.petfoster.response.images.ImageResponse;
 import com.poly.petfoster.service.ImagesService;
+import com.poly.petfoster.service.impl.image.items.GetMediasItem;
 import com.poly.petfoster.ultils.ImageUtils;
 import com.poly.petfoster.ultils.PortUltil;
 
@@ -25,13 +29,16 @@ import com.poly.petfoster.ultils.PortUltil;
 public class ImagesServiceImpl implements ImagesService {
 
     @Autowired
-    ImgsRepository imgsRepository;
+    private ImgsRepository imgsRepository;
 
     @Autowired
-    ProductRepository productRepository;
+    private ProductRepository productRepository;
 
     @Autowired
-    PortUltil portUltil;
+    private PortUltil portUltil;
+
+    @Autowired
+    private MediasRepository mediasRepository;
 
     @Override
     public byte[] getImage(String fileName) {
@@ -312,5 +319,41 @@ public class ImagesServiceImpl implements ImagesService {
                 .errors(false)
                 .data(newListImages)
                 .build();
+    }
+
+    @Override
+    public GetMediasItem getMedias(String fileName, String pathName) {
+        Medias media = mediasRepository.findByName(fileName);
+
+        GetMediasItem getMediasItem = GetMediasItem.builder()
+                .data(this.getImage(fileName, pathName, "planhorder-image.png")).build();
+
+        if (media != null) {
+            File file = new File("images/medias/" + media.getName());
+            String mimeType = URLConnection.guessContentTypeFromName(file.getName());
+
+            getMediasItem.setContentType(mimeType);
+            getMediasItem.setOriginaFile(file);
+        }
+
+        return getMediasItem;
+    }
+
+    @Override
+    public byte[] getImage(String fileName, String pathName, String defaultImageWhenWrong) {
+        String filePath = "images/" + pathName + "/" + fileName;
+
+        byte[] images;
+        try {
+            images = Files.readAllBytes(new File(filePath).toPath());
+        } catch (IOException e) {
+            try {
+                images = Files.readAllBytes(new File("images/" + defaultImageWhenWrong).toPath());
+            } catch (IOException e1) {
+                System.out.println("Error in getImage" + e.getMessage());
+                images = null;
+            }
+        }
+        return images;
     }
 }

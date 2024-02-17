@@ -2,9 +2,16 @@ package com.poly.petfoster.ultils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
+
+import org.springframework.web.multipart.MultipartFile;
+
+import com.poly.petfoster.ultils.partent.OptionsCreateAndSaveFile;
 
 public class ImageUtils {
 
@@ -59,6 +66,71 @@ public class ImageUtils {
     public static File createFileImage(String path) {
         UUID uuid = UUID.randomUUID();
         return new File("images\\" + path + uuid.toString() + ".jpg");
+    }
+
+    public static File createFile(String path, String contentType) {
+        UUID uuid = UUID.randomUUID();
+        return new File("images\\" + path + uuid.toString() + "." + contentType);
+    }
+
+    public static String getExtentionFile(File file) {
+        String fileName = file.getName();
+        int index = fileName.lastIndexOf('.');
+
+        return fileName.substring(index + 1);
+    }
+
+    public static String getExtentionFile(MultipartFile file) {
+        String fileName = file.getOriginalFilename() == null ? file.getName() : file.getOriginalFilename();
+
+        if (fileName != null) {
+            int index = fileName.lastIndexOf('.');
+            return fileName.substring(index + 1);
+
+        }
+        throw new Error("Something wen't wrong when get name of file");
+
+    }
+
+    public static File createFileAndSave(String path, MultipartFile originalFile,
+            OptionsCreateAndSaveFile optionsCreateAndSaveFile) {
+
+        try {
+            // create a dynamic name for file
+            UUID uuid = UUID.randomUUID();
+
+            // handle options of funtion
+            OptionsCreateAndSaveFile unWrapOptionsCreateAndSaveFile = optionsCreateAndSaveFile == null
+                    ? new OptionsCreateAndSaveFile()
+                    : optionsCreateAndSaveFile;
+
+            // get extention from option
+            String extension = unWrapOptionsCreateAndSaveFile.getDefaultExtention();
+
+            // handle original file of funtion
+
+            // check extention from original file could accept by options of user
+            if (originalFile != null) {
+                String nonValidateExtention = getExtentionFile(originalFile);
+
+                if (ListUltils.includes(unWrapOptionsCreateAndSaveFile.getAcceptExtentions(), nonValidateExtention)) {
+                    extension = nonValidateExtention;
+                }
+
+            }
+
+            // all good
+            File resultFile = new File("images\\" + path + uuid.toString() + "." +
+                    extension);
+
+            if (originalFile != null) {
+                originalFile.transferTo(new File(resultFile.getAbsolutePath()));
+            }
+
+            return resultFile;
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     // public static String getURLImage(String nameImage, TypeFileImage

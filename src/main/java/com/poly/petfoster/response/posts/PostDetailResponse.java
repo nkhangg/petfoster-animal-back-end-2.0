@@ -3,7 +3,6 @@ package com.poly.petfoster.response.posts;
 import java.util.Date;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.poly.petfoster.response.users.UserProfileResponse;
 
 import lombok.AllArgsConstructor;
@@ -25,5 +24,6 @@ public class PostDetailResponse {
     private List<PostMediaResponse> images;
     private Date createdAt;
     private Boolean owner;
+    private Boolean edit;
 
 }
