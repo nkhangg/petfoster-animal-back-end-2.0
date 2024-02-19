@@ -24,6 +24,8 @@ public interface ImagesService {
 
     ApiResponse deleteImage(String id, Integer idImage);
 
+    ApiResponse deleteMedia(Integer idImage, String token);
+
     ApiResponse uploadImages(List<MultipartFile> images);
 
     ApiResponse uploadImages(List<MultipartFile> images, String path);

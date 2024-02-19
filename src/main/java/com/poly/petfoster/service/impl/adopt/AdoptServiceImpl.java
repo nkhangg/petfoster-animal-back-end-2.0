@@ -33,6 +33,7 @@ import com.poly.petfoster.request.adopts.UpdatePickUpDateRequest;
 import com.poly.petfoster.response.ApiResponse;
 import com.poly.petfoster.response.adopts.AdoptsResponse;
 import com.poly.petfoster.response.common.PagiantionResponse;
+import com.poly.petfoster.response.common.ReportResponse;
 import com.poly.petfoster.service.adopt.AdoptService;
 import com.poly.petfoster.service.impl.pets.PetServiceImpl;
 import com.poly.petfoster.service.impl.user.UserServiceImpl;
@@ -492,6 +493,51 @@ public class AdoptServiceImpl implements AdoptService {
                                 .errors(false)
                                 .data(this.buildAdoptsResponse(adopt))
                                 .build();
+        }
+
+        @Override
+        public ApiResponse reprots() {
+
+                List<ReportResponse> reportResponses = new ArrayList<>();
+
+                Date date = formatUtils.dateToDateFormat(new Date(), "yyyy-MM-dd");
+
+                // Double month =
+                // donateRepository.reprotMonth(formatUtils.dateToDateFormat(date,
+                // "yyyy-MM-dd"));
+
+                // Double year = donateRepository.reprotYear(formatUtils.dateToDateFormat(date,
+                // "yyyy-MM-dd"));
+
+                // registrations
+                reportResponses.add(ReportResponse.builder().title("registrations")
+                                .day(adoptRepository.reprotDayRegistrations(date, date))
+                                .month(adoptRepository.reprotMonthRegistrations(date))
+                                .year(adoptRepository.reprotYearRegistrations(date))
+                                .build());
+                reportResponses.add(ReportResponse.builder().title("awaiting adoption")
+                                .day(adoptRepository.reprotDayWating(date, date))
+                                .month(adoptRepository.reprotMonthWating(date))
+                                .year(adoptRepository.reprotYearWating(date))
+                                .build());
+                reportResponses.add(ReportResponse.builder().title("adopted")
+                                .day(adoptRepository.reprotDayAdopted(date, date))
+                                .month(adoptRepository.reprotMonthAdopted(date))
+                                .year(adoptRepository.reprotYearAdopted(date))
+                                .build());
+                reportResponses.add(ReportResponse.builder().title("Cancel")
+                                .day(adoptRepository.reprotDayDeleted(date, date))
+                                .month(adoptRepository.reprotMonthDeleted(date))
+                                .year(adoptRepository.reprotYearDeleted(date))
+                                .build());
+
+                return ApiResponse.builder()
+                                .status(200)
+                                .message("Successfully!!!")
+                                .errors(false)
+                                .data(reportResponses)
+                                .build();
+
         }
 
 }

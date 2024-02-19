@@ -1,6 +1,9 @@
 package com.poly.petfoster.constant;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 public class Constant {
 
@@ -30,4 +33,7 @@ public class Constant {
     public static String GHN_GETWARD = "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward?district_id";
     public static String GHN_CANCEL = "https://dev-online-gateway.ghn.vn/shiip/public-api/v2/switch-status/cancel";
 
+    public static List<String> ACCEPT_EXTENTION = new ArrayList<>(Arrays.asList(
+            "svg",
+            "webp", "jpg", "png", "mp4"));
 }

@@ -37,7 +37,7 @@ public interface PostsRepository extends JpaRepository<Posts, Integer> {
                         "order by p.createAt desc")
         List<Posts> posts(@Param("search") Optional<String> search);
 
-        @Query(value = "select p from Posts p where p.user.username = :username")
+        @Query(value = "select p from Posts p where p.user.username = :username order by p.createAt desc")
         List<Posts> postsOfUser(@Param("username") String username);
 
         @Query(value = "select * from posts " +

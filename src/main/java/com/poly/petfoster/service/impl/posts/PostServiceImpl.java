@@ -3,6 +3,7 @@ package com.poly.petfoster.service.impl.posts;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -16,8 +17,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.poly.petfoster.config.JwtProvider;
+import com.poly.petfoster.constant.Constant;
 import com.poly.petfoster.constant.RespMessage;
 import com.poly.petfoster.entity.User;
 import com.poly.petfoster.entity.social.Comments;
@@ -31,7 +34,9 @@ import com.poly.petfoster.repository.PostsRepository;
 import com.poly.petfoster.repository.UserRepository;
 import com.poly.petfoster.request.comments.CommentPostRequest;
 import com.poly.petfoster.request.posts.PostMediaRequest;
+import com.poly.petfoster.request.posts.PostMediaUpdateRequest;
 import com.poly.petfoster.request.posts.PostRequest;
+import com.poly.petfoster.request.posts.PostUpdateRequest;
 import com.poly.petfoster.response.ApiResponse;
 import com.poly.petfoster.response.common.PagiantionResponse;
 import com.poly.petfoster.response.posts.PostDetailResponse;
@@ -80,7 +85,7 @@ public class PostServiceImpl implements PostService {
                                                 post.getId()) != null;
                         }
 
-                        Medias medias = mediasRepository.findByIndex(post, 0);
+                        Medias medias = mediasRepository.findMediasWithPost(post).get(0);
 
                         return PostResponse.builder()
                                         .id(post.getUuid())
@@ -136,6 +141,14 @@ public class PostServiceImpl implements PostService {
 
         }
 
+        @Override
+        public PostMediaResponse builPostMediaResponse(Medias media) {
+                return PostMediaResponse.builder().url(portUltil.getUrlImage(media.getName(), "medias"))
+                                .id(media.getId())
+                                .index(media.getIndex())
+                                .isVideo(media.getIsVideo()).build();
+        }
+
         public Posts buildPostFromPostRequest(PostRequest data, User user) {
 
                 UUID uuid = UUID.randomUUID();
@@ -151,8 +164,7 @@ public class PostServiceImpl implements PostService {
 
                         File file = ImageUtils.createFileAndSave("medias\\", item.getFile(),
                                         OptionsCreateAndSaveFile.builder()
-                                                        .acceptExtentions(new ArrayList<>(Arrays.asList("svg",
-                                                                        "webp", "jpg", "png", "mp4")))
+                                                        .acceptExtentions(Constant.ACCEPT_EXTENTION)
                                                         .build());
 
                         return Medias.builder()
@@ -467,6 +479,10 @@ public class PostServiceImpl implements PostService {
                                         .build();
                 }
 
+                posts.getMedias().forEach(image -> {
+                        ImageUtils.deleteImg("medias/" + image.getName());
+                });
+
                 postsRepository.delete(posts);
 
                 return ApiResponse.builder()
@@ -494,6 +510,39 @@ public class PostServiceImpl implements PostService {
                                 }
                         }
                 }
+
+                return false;
+
+        }
+
+        public Boolean validateUpdatePost(PostUpdateRequest data) {
+
+                if (data.getTitle() == null || data.getTitle().isEmpty())
+                        return true;
+
+                if (data.getMedias().size() <= 0)
+                        return true;
+
+                List<PostMediaUpdateRequest> medias = data.getMedias();
+
+                // if (medias.size() > 1) {
+                // for (PostMediaUpdateRequest media : medias) {
+
+                // MultipartFile unWrapMedia = media.getFile().orElse(null);
+
+                // if (media.getId() != null && media.getFile().orElse(null) == null) {
+                // Medias checkMedias = mediasRepository.findById(media.getId()).orElse(null);
+
+                // if (checkMedias != null && checkMedias.getIsVideo())
+                // return true;
+                // }
+
+                // if (media.getId() == null && media.getFile().orElse(null) != null
+                // && media.getFile().orElse(null).getContentType().equals("video/mp4")) {
+                // return true;
+                // }
+                // }
+                // }
 
                 return false;
 
@@ -534,6 +583,101 @@ public class PostServiceImpl implements PostService {
                                         .build();
                 }
 
+                postsRepository.save(posts);
+
+                return ApiResponse.builder()
+                                .message("Successfuly")
+                                .errors(false)
+                                .status(HttpStatus.OK.value())
+                                .data(buildDetailResponse(posts))
+                                .build();
+        }
+
+        @Override
+        public ApiResponse updatePost(PostUpdateRequest data, String id, String token) {
+                User user = userServiceImpl.getUserFromToken(token);
+
+                if (user == null) {
+                        return ApiResponse.builder()
+                                        .message("Un Authorization")
+                                        .errors(true)
+                                        .status(HttpStatus.FORBIDDEN.value())
+                                        .data(null)
+                                        .build();
+                }
+
+                // Get post with uuid
+                Posts posts = postsRepository.findByUuid(id);
+
+                if (posts == null) {
+                        return ApiResponse.builder()
+                                        .message("Data not found")
+                                        .errors(true)
+                                        .status(HttpStatus.NOT_FOUND.value())
+                                        .data(null)
+                                        .build();
+                }
+
+                List<Medias> medias = new ArrayList<>();
+
+                for (PostMediaUpdateRequest item : data.getMedias()) {
+                        if (item.getId() != null) {
+                                Medias mediasNeedUpdateIndex = mediasRepository.findById(item.getId())
+                                                .orElse(null);
+
+                                if (mediasNeedUpdateIndex != null) {
+                                        mediasNeedUpdateIndex.setIndex(item.getIndex());
+
+                                        mediasRepository.save(mediasNeedUpdateIndex);
+                                }
+
+                        }
+
+                        if (item.getFile() != null && item.getId() == null) {
+                                Boolean isVideo = item.getFile().getContentType().equalsIgnoreCase("video/mp4");
+
+                                File file = ImageUtils.createFileAndSave("medias\\", item.getFile(),
+                                                OptionsCreateAndSaveFile.builder()
+                                                                .acceptExtentions(Constant.ACCEPT_EXTENTION)
+                                                                .build());
+
+                                if (isVideo) {
+                                        Medias exitMedias = mediasRepository.exitsVideoOfPost(posts);
+                                        if (exitMedias == null) {
+                                                mediasRepository.findMediasWithPost(posts).stream()
+                                                                .forEach(exitMedia -> {
+                                                                        ImageUtils.deleteImg("medias/"
+                                                                                        + exitMedia.getName());
+                                                                        mediasRepository.delete(exitMedia);
+                                                                });
+                                        }
+                                }
+
+                                medias.add(Medias.builder()
+                                                .index(item.getIndex())
+                                                .isVideo(isVideo)
+                                                .post(posts)
+                                                .name(file == null ? "" : file.getName())
+                                                .build());
+                        }
+
+                }
+
+                if (!medias.isEmpty()) {
+                        posts.setMedias(medias);
+                }
+
+                if (posts.getMedias().isEmpty()) {
+                        return ApiResponse.builder()
+                                        .message("Update failure Make sure you have submitted the correct data")
+                                        .errors(true)
+                                        .status(HttpStatus.BAD_REQUEST.value())
+                                        .data(null)
+                                        .build();
+                }
+
+                posts.setTitle(data.getTitle());
+                posts.setLastUpdate(new Date());
                 postsRepository.save(posts);
 
                 return ApiResponse.builder()
