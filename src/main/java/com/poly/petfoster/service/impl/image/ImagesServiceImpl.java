@@ -14,6 +14,7 @@ import java.net.URLConnection;
 
 import com.poly.petfoster.entity.Imgs;
 import com.poly.petfoster.entity.Product;
+import com.poly.petfoster.entity.User;
 import com.poly.petfoster.entity.social.Medias;
 import com.poly.petfoster.repository.ImgsRepository;
 import com.poly.petfoster.repository.MediasRepository;
@@ -22,6 +23,8 @@ import com.poly.petfoster.response.ApiResponse;
 import com.poly.petfoster.response.images.ImageResponse;
 import com.poly.petfoster.service.ImagesService;
 import com.poly.petfoster.service.impl.image.items.GetMediasItem;
+import com.poly.petfoster.service.impl.user.UserServiceImpl;
+import com.poly.petfoster.service.posts.PostService;
 import com.poly.petfoster.ultils.ImageUtils;
 import com.poly.petfoster.ultils.PortUltil;
 
@@ -32,6 +35,9 @@ public class ImagesServiceImpl implements ImagesService {
     private ImgsRepository imgsRepository;
 
     @Autowired
+    private PostService postService;
+
+    @Autowired
     private ProductRepository productRepository;
 
     @Autowired
@@ -39,6 +45,9 @@ public class ImagesServiceImpl implements ImagesService {
 
     @Autowired
     private MediasRepository mediasRepository;
+
+    @Autowired
+    private UserServiceImpl userServiceImpl;
 
     @Override
     public byte[] getImage(String fileName) {
@@ -355,5 +364,51 @@ public class ImagesServiceImpl implements ImagesService {
             }
         }
         return images;
+    }
+
+    @Override
+    public ApiResponse deleteMedia(Integer idImage, String token) {
+
+        if (idImage == null || token == null) {
+            return ApiResponse.builder()
+                    .message("Data invalid")
+                    .status(HttpStatus.BAD_REQUEST.value())
+                    .errors(true)
+                    .data(null)
+                    .build();
+        }
+
+        User user = userServiceImpl.getUserFromToken(token);
+        Medias media = mediasRepository.findById(idImage).orElse(null);
+
+        if (user == null) {
+            return ApiResponse.builder()
+                    .message("Un authorization")
+                    .status(HttpStatus.FORBIDDEN.value())
+                    .errors(true)
+                    .data(null)
+                    .build();
+        }
+
+        if (media == null) {
+            return ApiResponse.builder()
+                    .message("Data not found")
+                    .status(HttpStatus.NOT_FOUND.value())
+                    .errors(true)
+                    .data(null)
+                    .build();
+        }
+
+        ImageUtils.deleteImg("medias/" + media.getName());
+
+        mediasRepository.delete(media);
+
+        return ApiResponse.builder()
+                .message("Successfuly")
+                .status(HttpStatus.OK.value())
+                .errors(false)
+                .data(postService.builPostMediaResponse(media))
+                .build();
+
     }
 }

@@ -19,4 +19,8 @@ public interface MediasRepository extends JpaRepository<Medias, Integer> {
 
     @Query(value = "select m from Medias m where m.name = :name ")
     Medias findByName(@Param("name") String name);
+
+    @Query(value = "select m from Medias m where m.post = :post and m.isVideo = true")
+    Medias exitsVideoOfPost(@Param("post") Posts post);
+
 }

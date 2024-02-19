@@ -28,36 +28,43 @@ public class AdoptAdminController {
 
     @Autowired
     AdoptService adoptService;
-    
+
     @GetMapping("")
     public ResponseEntity<ApiResponse> filterAdopts(
-        @RequestParam("name") Optional<String> name,
-        @RequestParam("petName") Optional<String> petName,
-        @RequestParam("status") Optional<String> status,
-        @RequestParam("registerStart") @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> registerStart,
-        @RequestParam("registerEnd") @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> registerEnd,
-        @RequestParam("adoptStart") @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> adoptStart,
-        @RequestParam("adoptEnd") @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> adoptEnd,
-        @RequestParam("sort") Optional<String> sort,
-        @RequestParam("page") Optional<Integer> page
-        ) {
-        return ResponseEntity.ok(adoptService.filterAdopts(name, petName, status, registerStart, registerEnd, adoptStart, adoptEnd, sort, page));
+            @RequestParam("name") Optional<String> name,
+            @RequestParam("petName") Optional<String> petName,
+            @RequestParam("status") Optional<String> status,
+            @RequestParam("registerStart") @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> registerStart,
+            @RequestParam("registerEnd") @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> registerEnd,
+            @RequestParam("adoptStart") @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> adoptStart,
+            @RequestParam("adoptEnd") @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> adoptEnd,
+            @RequestParam("sort") Optional<String> sort,
+            @RequestParam("page") Optional<Integer> page) {
+        return ResponseEntity.ok(adoptService.filterAdopts(name, petName, status, registerStart, registerEnd,
+                adoptStart, adoptEnd, sort, page));
     }
 
-
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse> acceptAdoption(@PathVariable Integer id, @Valid @RequestBody UpdatePickUpDateRequest updatePickUpDateRequest) {
+    public ResponseEntity<ApiResponse> acceptAdoption(@PathVariable Integer id,
+            @Valid @RequestBody UpdatePickUpDateRequest updatePickUpDateRequest) {
         return ResponseEntity.ok(adoptService.acceptAdoption(id, updatePickUpDateRequest));
     }
 
     @PostMapping("/{id}")
-    public ResponseEntity<ApiResponse> cancelAdopt(@PathVariable Integer id, @Valid @RequestBody CancelAdoptRequest cancelAdoptRequest) {
+    public ResponseEntity<ApiResponse> cancelAdopt(@PathVariable Integer id,
+            @Valid @RequestBody CancelAdoptRequest cancelAdoptRequest) {
         return ResponseEntity.ok(adoptService.cancelAdopt(id, cancelAdoptRequest));
     }
-   
+
     @PutMapping("/confirmed/{id}")
     public ResponseEntity<ApiResponse> doneAdoption(@PathVariable Integer id) {
         return ResponseEntity.ok(adoptService.doneAdoption(id));
+    }
+
+    @GetMapping("/report")
+    public ResponseEntity<ApiResponse> report() {
+        return ResponseEntity.ok(adoptService.reprots());
+
     }
 
 }
