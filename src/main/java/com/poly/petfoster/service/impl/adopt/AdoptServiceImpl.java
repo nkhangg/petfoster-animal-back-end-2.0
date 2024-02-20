@@ -87,7 +87,9 @@ public class AdoptServiceImpl implements AdoptService {
                 List<Adopt> adopts = user.getAdopts();
                 if (adopts.isEmpty()) {
                         return ApiResponse.builder().status(HttpStatus.BAD_REQUEST.value())
-                                        .message("No data available!!!").errors(false).data(adopts).build();
+                                        .message("No data available!!!").errors(false)
+                                        .data(PagiantionResponse.builder().data(new ArrayList<>()).pages(0).build())
+                                        .build();
                 }
 
                 Integer pageSize = 10;
