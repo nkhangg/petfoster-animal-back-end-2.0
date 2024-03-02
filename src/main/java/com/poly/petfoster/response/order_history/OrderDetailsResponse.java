@@ -50,4 +50,8 @@ public class OrderDetailsResponse {
 
     private String displayName;
 
+    private Boolean read;
+
+    private Integer print;
+
 }

@@ -24,4 +24,5 @@ public class OrdersController {
         model.addAttribute("list", orderDetailsList);
         return "orders";
     }
+
 }

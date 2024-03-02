@@ -23,6 +23,8 @@ public class OrderFilterResponse {
 
     private Boolean read;
 
+    private Integer print;
+
     private String token;
 
 }

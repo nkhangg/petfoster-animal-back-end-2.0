@@ -28,8 +28,9 @@ public class AdoptController {
     AdoptService adoptService;
 
     @GetMapping("")
-    public ResponseEntity<ApiResponse> getAdopts(@RequestHeader("Authorization") String jwt, Optional<Integer> page) {
-        return ResponseEntity.ok(adoptService.getAdopts(jwt, page));
+    public ResponseEntity<ApiResponse> getAdopts(@RequestHeader("Authorization") String jwt, Optional<Integer> page,
+            Optional<String> status) {
+        return ResponseEntity.ok(adoptService.getAdopts(jwt, page, status));
     }
 
     @PostMapping("")

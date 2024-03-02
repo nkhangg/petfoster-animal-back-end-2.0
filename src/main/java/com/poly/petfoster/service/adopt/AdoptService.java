@@ -10,7 +10,9 @@ import com.poly.petfoster.response.ApiResponse;
 
 public interface AdoptService {
 
-    ApiResponse getAdopts(String jwt, Optional<Integer> page);
+    ApiResponse getAdopts(String jwt, Optional<Integer> page, Optional<String> status);
+
+    ApiResponse getAdoptOtherUser(Integer adoptId);
 
     ApiResponse adopt(String jwt, AdoptsRequest adoptsRequest);
 
