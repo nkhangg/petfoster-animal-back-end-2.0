@@ -41,7 +41,10 @@ public class AppConfig {
                         .anyRequest().permitAll())
                 .addFilterBefore(new JwtValidator(), BasicAuthenticationFilter.class)
                 .csrf(csrf -> csrf.disable())
-                .httpBasic(withDefaults()).formLogin(withDefaults());
+                .httpBasic(withDefaults()).formLogin(withDefaults())
+                .headers(header -> {
+                    header.frameOptions(frameOptions -> frameOptions.disable());
+                });
 
         return http.build();
     }

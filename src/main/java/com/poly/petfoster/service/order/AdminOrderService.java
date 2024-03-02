@@ -9,4 +9,6 @@ public interface AdminOrderService {
 
     public ApiResponse updateReadForOrder(Integer id);
 
+    public ApiResponse updatePrintForOrder(Integer id);
+
 }

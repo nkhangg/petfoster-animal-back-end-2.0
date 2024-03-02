@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.poly.petfoster.entity.Adopt;
+import com.poly.petfoster.entity.User;
 
 public interface AdoptRepository extends JpaRepository<Adopt, Integer> {
 
@@ -19,6 +20,16 @@ public interface AdoptRepository extends JpaRepository<Adopt, Integer> {
 
         @Query(nativeQuery = true, value = "select * from adopt where user_id = :userId and adopt_id = :adoptId")
         Adopt existsByUser(@Param("userId") String userId, @Param("adoptId") Integer adoptId);
+
+        @Query(value = "select a from Adopt a where a.user = :user and a.status like %:status% order by a.registerAt desc")
+        List<Adopt> findByUser(@Param("user") User user, @Param("status") String status);
+
+        @Query(value = "select a from Adopt a where a.user = :user order by a.registerAt desc")
+        List<Adopt> findByUser(@Param("user") User user);
+
+        @Query(value = "select * from adopt " +
+                        "where pet_id = :petId and [status] = 'Waiting' and user_id != :userId", nativeQuery = true)
+        List<Adopt> findByUserIgnoreUserId(@Param("userId") String userId, @Param("petId") String petId);
 
         // The pet status was waiting by the user, the same user cannot registered adopt
         // the pet again

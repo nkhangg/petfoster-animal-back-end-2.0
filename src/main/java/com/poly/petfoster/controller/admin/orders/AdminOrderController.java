@@ -55,8 +55,13 @@ public class AdminOrderController {
     }
 
     @PutMapping("read/{id}")
-    public ResponseEntity<ApiResponse> putMethodName(@PathVariable Integer id) {
+    public ResponseEntity<ApiResponse> updateReadForOrder(@PathVariable Integer id) {
         return ResponseEntity.ok(adminOrderService.updateReadForOrder(id));
+    }
+
+    @PutMapping("print/{id}")
+    public ResponseEntity<ApiResponse> updatePrintForOrder(@PathVariable Integer id) {
+        return ResponseEntity.ok(adminOrderService.updatePrintForOrder(id));
     }
 
 }

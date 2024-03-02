@@ -67,7 +67,7 @@ public class AdoptServiceImpl implements AdoptService {
         FormatUtils formatUtils;
 
         @Override
-        public ApiResponse getAdopts(String jwt, Optional<Integer> page) {
+        public ApiResponse getAdopts(String jwt, Optional<Integer> page, Optional<String> status) {
 
                 // get username
                 String username = jwtProvider.getUsernameFromToken(jwt);
@@ -84,7 +84,14 @@ public class AdoptServiceImpl implements AdoptService {
                 }
 
                 // get adopts
-                List<Adopt> adopts = user.getAdopts();
+
+                String unWraperStatus = status.orElse("all");
+
+                List<Adopt> adopts = adoptRepository.findByUser(user);
+
+                if (!unWraperStatus.equals("all")) {
+                        adopts = adoptRepository.findByUser(user, unWraperStatus);
+                }
                 if (adopts.isEmpty()) {
                         return ApiResponse.builder().status(HttpStatus.BAD_REQUEST.value())
                                         .message("No data available!!!").errors(false)
@@ -354,11 +361,33 @@ public class AdoptServiceImpl implements AdoptService {
                 adopt.setPickUpAt(updatePickUpDateRequest.getPickUpDate());
                 adoptRepository.save(adopt);
 
+                // get all adoption other user
+
+                List<Adopt> adopts = adoptRepository.findByUserIgnoreUserId(adopt.getUser().getId(),
+                                adopt.getPet().getPetId());
+
+                adopts.stream().forEach(item -> {
+                        item.setStatus(AdoptStatus.CANCELLED_BY_ADMIN.getValue());
+                        item.setCancelReason("Thank you for your interest in " + adopt.getPet().getPetName()
+                                        + ". We are very sorry that " + adopt.getPet().getPetName()
+                                        + " has been adopted by someone else.");
+                });
+
+                adoptRepository.saveAll(adopts);
+
+                List<AdoptsResponse> reuslt = new ArrayList<>();
+
+                if (!adopts.isEmpty()) {
+                        reuslt = adopts.stream().map(item -> {
+                                return buildAdoptsResponse(item);
+                        }).toList();
+                }
+
                 return ApiResponse.builder()
                                 .status(200)
                                 .message("Successfully!!!")
                                 .errors(false)
-                                .data(this.buildAdoptsResponse(adopt))
+                                .data(reuslt)
                                 .build();
         }
 
@@ -458,6 +487,11 @@ public class AdoptServiceImpl implements AdoptService {
         @Override
         public ApiResponse doneAdoption(Integer id) {
 
+                if (id == null) {
+                        return ApiResponse.builder().status(HttpStatus.BAD_REQUEST.value())
+                                        .message("Adopt not found!!!").errors(true).build();
+                }
+
                 // get adopt
                 Adopt adopt = adoptRepository.findById(id).orElse(null);
                 if (adopt == null) {
@@ -540,6 +574,46 @@ public class AdoptServiceImpl implements AdoptService {
                                 .data(reportResponses)
                                 .build();
 
+        }
+
+        @Override
+        public ApiResponse getAdoptOtherUser(Integer adoptId) {
+                if (adoptId == null) {
+                        return ApiResponse.builder().status(HttpStatus.BAD_REQUEST.value())
+                                        .message("Adopt not found!!!").errors(true).build();
+                }
+
+                Adopt adopt = adoptRepository.findById(adoptId).orElse(null);
+
+                if (adopt == null) {
+                        return ApiResponse.builder().status(HttpStatus.BAD_REQUEST.value())
+                                        .message("Adopt not found!!!").errors(true).build();
+                }
+
+                System.out.println(adopt.getUser().getId());
+
+                List<Adopt> adopts = adoptRepository.findByUserIgnoreUserId(adopt.getUser().getId(),
+                                adopt.getPet().getPetId());
+
+                if (adopts == null || adopts.isEmpty()) {
+                        return ApiResponse.builder()
+                                        .status(200)
+                                        .message("Successfully!!!")
+                                        .errors(false)
+                                        .data(new ArrayList<>())
+                                        .build();
+                }
+
+                List<AdoptsResponse> reuslt = adopts.stream().map(item -> {
+                        return buildAdoptsResponse(item);
+                }).toList();
+
+                return ApiResponse.builder()
+                                .status(200)
+                                .message("Successfully!!!")
+                                .errors(false)
+                                .data(reuslt)
+                                .build();
         }
 
 }

@@ -50,6 +50,12 @@ public class AdoptAdminController {
         return ResponseEntity.ok(adoptService.acceptAdoption(id, updatePickUpDateRequest));
     }
 
+    @GetMapping("/{adoptId}")
+    public ResponseEntity<ApiResponse> getAdoptionOtherUser(
+            @PathVariable Integer adoptId) {
+        return ResponseEntity.ok(adoptService.getAdoptOtherUser(adoptId));
+    }
+
     @PostMapping("/{id}")
     public ResponseEntity<ApiResponse> cancelAdopt(@PathVariable Integer id,
             @Valid @RequestBody CancelAdoptRequest cancelAdoptRequest) {

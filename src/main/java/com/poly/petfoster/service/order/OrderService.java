@@ -23,4 +23,6 @@ public interface OrderService {
 
     public List<OrderDetailsResponse> orderDetailsTable(String username);
 
+    public OrderDetailsResponse printInvoice(Integer id);
+
 }

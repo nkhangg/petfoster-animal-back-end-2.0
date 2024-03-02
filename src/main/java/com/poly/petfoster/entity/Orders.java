@@ -74,4 +74,7 @@ public class Orders {
     @Column(name = "[read]")
     private Boolean read;
 
+    @Column(name = "[print]")
+    private Integer print;
+
 }

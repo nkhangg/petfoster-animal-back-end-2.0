@@ -96,6 +96,7 @@ public class OrderFilterServiceImpl implements OrderFilterService {
                             .placedDate(formatUtils.dateToString(order.getCreateAt(), "yyyy-MM-dd"))
                             .status(order.getStatus())
                             .read(order.getRead())
+                            .print(order.getPrint())
                             .token(order.getGhnCode())
                             .build());
         });
@@ -150,6 +151,8 @@ public class OrderFilterServiceImpl implements OrderFilterService {
                 .expectedTime(order.getExpectedDeliveryTime())
                 .username(order.getUser().getUsername())
                 .displayName(order.getUser().getDisplayName())
+                .print(order.getPrint())
+                .read(order.getRead())
                 .build();
 
         return ApiResponse.builder()
