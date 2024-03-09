@@ -169,4 +169,12 @@ public interface AdoptRepository extends JpaRepository<Adopt, Integer> {
         public Double reprotYearDeleted(
                         @Param("date") Date date);
 
+        @Query(value = "select COUNT(*) from adopt where user_id = :userId and status = :status ", nativeQuery = true)
+        public Integer countByStatusAndUserID(
+                        @Param("userId") String date, @Param("status") String status);
+
+        @Query(value = "select COUNT(*) from adopt where user_id = :userId", nativeQuery = true)
+        public Integer countByStatusAndUserID(
+                        @Param("userId") String date);
+
 }

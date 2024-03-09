@@ -20,20 +20,23 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.encrypt.Encryptors;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.poly.petfoster.config.JwtProvider;
+import com.poly.petfoster.constant.AdoptStatus;
+import com.poly.petfoster.constant.OrderStatus;
 import com.poly.petfoster.constant.RespMessage;
 import com.poly.petfoster.entity.Addresses;
 import com.poly.petfoster.entity.Authorities;
-import com.poly.petfoster.entity.Product;
 import com.poly.petfoster.entity.Role;
 import com.poly.petfoster.entity.User;
 import com.poly.petfoster.random.RandomPassword;
 import com.poly.petfoster.repository.AddressRepository;
+import com.poly.petfoster.repository.AdoptRepository;
 import com.poly.petfoster.repository.AuthoritiesRepository;
+import com.poly.petfoster.repository.OrdersRepository;
+import com.poly.petfoster.repository.PostsRepository;
 import com.poly.petfoster.repository.RoleRepository;
 import com.poly.petfoster.repository.UserRepository;
 import com.poly.petfoster.request.ResetPasswordRequest;
@@ -41,6 +44,7 @@ import com.poly.petfoster.request.users.CreateaUserManageRequest;
 import com.poly.petfoster.request.users.UpdateUserRequest;
 import com.poly.petfoster.response.ApiResponse;
 import com.poly.petfoster.response.common.PagiantionResponse;
+import com.poly.petfoster.response.users.ChartDataDetailUserResponse;
 import com.poly.petfoster.response.users.UserManageResponse;
 import com.poly.petfoster.response.users.UserProfileMessageResponse;
 import com.poly.petfoster.response.users.UserProfileResponse;
@@ -60,6 +64,15 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     RandomPassword randomPassword;
+
+    @Autowired
+    private OrdersRepository ordersRepository;
+
+    @Autowired
+    private AdoptRepository adoptRepository;
+
+    @Autowired
+    private PostsRepository postsRepository;
 
     @Autowired
     MailUtils mailUtils;
@@ -539,5 +552,65 @@ public class UserServiceImpl implements UserService {
         }
         return admin;
 
+    }
+
+    public List<Integer> getDataAdoption(String userID) {
+        List<Integer> dataAdop = new ArrayList<>();
+
+        Integer totalAdop = adoptRepository.countByStatusAndUserID(userID);
+
+        List.of(AdoptStatus.values()).stream().forEach(item -> {
+            Integer data = adoptRepository.countByStatusAndUserID(userID, item.getValue());
+            dataAdop.add(data);
+        });
+
+        dataAdop.add(totalAdop);
+
+        return dataAdop;
+    }
+
+    public List<Integer> getDataOrder(String userID) {
+        List<Integer> data = new ArrayList<>();
+
+        List.of(OrderStatus.values()).stream().forEach(item -> {
+
+            if (item.equals(OrderStatus.WAITING)) {
+                Integer nun = ordersRepository.countByStatusAndUserID(userID);
+                data.add(nun);
+            } else {
+                Integer nun = ordersRepository.countByStatusAndUserID(userID, item.getValue());
+                data.add(nun);
+            }
+        });
+
+        return data;
+    }
+
+    public List<Integer> getDataPost(String userID) {
+        List<Integer> data = new ArrayList<>();
+
+        data.add(postsRepository.countPostsByUSerID(userID));
+        data.add(postsRepository.countLikesByUSerID(userID));
+        data.add(postsRepository.countLikeCommentsByUSerID(userID));
+        data.add(postsRepository.countCommentsByUSerID(userID));
+
+        return data;
+    }
+
+    @Override
+    public ApiResponse getChart(String userID) {
+
+        List<ChartDataDetailUserResponse> results = new ArrayList<>();
+
+        results.add(ChartDataDetailUserResponse.builder().title("Purchase").data(getDataOrder(userID)).build());
+        results.add(ChartDataDetailUserResponse.builder().title("Adoption").data(getDataAdoption(userID)).build());
+        results.add(ChartDataDetailUserResponse.builder().title("Social").data(getDataPost(userID)).build());
+
+        return ApiResponse.builder()
+                .status(200)
+                .message("Successfully!!!")
+                .errors(false)
+                .data(results)
+                .build();
     }
 }

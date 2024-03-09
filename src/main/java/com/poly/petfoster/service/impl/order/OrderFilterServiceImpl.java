@@ -43,7 +43,8 @@ public class OrderFilterServiceImpl implements OrderFilterService {
 
     @Override
     public ApiResponse filterOrders(Optional<String> username, Optional<Integer> orderId, Optional<String> status,
-            Optional<Date> minDate, Optional<Date> maxDate, Optional<String> sort, Optional<Integer> page) {
+            Optional<Date> minDate, Optional<Date> maxDate, Optional<String> sort, Optional<Integer> page,
+            Optional<Boolean> read) {
 
         Date minDateValue = minDate.orElse(null);
         Date maxDateValue = maxDate.orElse(null);
@@ -68,6 +69,13 @@ public class OrderFilterServiceImpl implements OrderFilterService {
 
         List<Orders> orders = ordersRepository.filterOrders(username.orElse(null), orderId.orElse(null),
                 status.orElse(null), minDateValue, maxDateValue, sort.orElse(null));
+
+        if (read.orElse(false)) {
+            orders = ordersRepository.filterOrders(username.orElse(null), orderId.orElse(null),
+                    status.orElse(null), minDateValue, maxDateValue, sort.orElse(null)).stream().filter(item -> {
+                        return !item.getRead();
+                    }).toList();
+        }
 
         Pageable pageable = PageRequest.of(page.orElse(0), 10);
 
@@ -153,6 +161,7 @@ public class OrderFilterServiceImpl implements OrderFilterService {
                 .displayName(order.getUser().getDisplayName())
                 .print(order.getPrint())
                 .read(order.getRead())
+                .token(order.getGhnCode())
                 .build();
 
         return ApiResponse.builder()

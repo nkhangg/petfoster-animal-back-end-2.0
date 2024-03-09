@@ -4,15 +4,17 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public enum OrderStatus {
-    WAITING("Waiting"),
     PLACED("Placed"),
     SHIPPING("Shipping"),
     DELIVERED("Delivered"),
+    CANCELLED_BY_CUSTOMER("Cancelled By Customer"),
     CANCELLED_BY_ADMIN("Cancelled By Admin"),
-    CANCELLED_BY_CUSTOMER("Cancelled By Customer");
+    WAITING("Waiting");
 
     private final String state;
 
-    public String getValue() { return state; }
+    public String getValue() {
+        return state;
+    }
 
 }

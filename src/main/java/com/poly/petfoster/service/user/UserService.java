@@ -12,6 +12,8 @@ import com.poly.petfoster.response.ApiResponse;
 
 public interface UserService {
 
+    ApiResponse getChart(String userID);
+
     public UserDetails findByUsername(String username);
 
     public ApiResponse getUser(String id);

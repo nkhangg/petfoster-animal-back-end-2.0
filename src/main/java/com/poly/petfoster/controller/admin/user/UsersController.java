@@ -42,6 +42,11 @@ public class UsersController {
         return ResponseEntity.ok(userService.getUser(id));
     }
 
+    @GetMapping("/chart-info/{id}")
+    public ResponseEntity<ApiResponse> getChartInfoUser(@PathVariable("id") String id) {
+        return ResponseEntity.ok(userService.getChart(id));
+    }
+
     @GetMapping("/username/{username}")
     public ResponseEntity<ApiResponse> getUserWithUsername(@PathVariable("username") String username) {
         return ResponseEntity.ok(userService.getUserWithUsername(username));
