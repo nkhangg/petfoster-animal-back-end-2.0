@@ -161,10 +161,6 @@
             <div><b>Phone:</b> <span th:text="${data.phone}">Pham Nhut Khang</span></div>
             <div><b>Address:</b> <span th:text="${data.address}">Pham Nhut Khang</span></div>
         </div>
-
-        <div class="content-status">
-            <div><b>Sales:</b> <span th:text="${data.displayName}">Pham Nhut Khang</span></div>
-        </div>
     </div>
 
     <table id="customers">
@@ -189,19 +185,24 @@
             </td>
             <td th:text="${order.name}" style="text-align: center">Maria Anders</td>
             <td th:text="${order.quantity}" style="text-align: center">Germany</td>
-            <td th:text="|${order.price} VND|" style="text-align: center">Germany</td>
+            <td th:text="|${#numbers.formatDecimal(order.price, 0, 'COMMA', 0, 'POINT')} VND|" style="text-align: center">Germany</td>
         </tr>
     </table>
 
     <div style="margin-top: 20px; display: flex; justify-content: flex-end">
-        <div style="width: 80%">
+        <div style="width: 50%">
             <div style="display: flex; justify-content: space-between; font-size: 14px; margin-top: 10px">
-                <b>Shipping fee:</b> <span th:text="|${data.shippingFee} VND|">1241241 VND</span>
+                <b>Shipping fee:</b> <span th:text="|${#numbers.formatDecimal(data.shippingFee, 0, 'COMMA', 0, 'POINT')} VND|">1241241 VND</span>
+                <!-- <b>Shipping fee:</b> <span th:text="|${data.shippingFee} VND|">1241241 VND</span> -->
             </div>
             <div style="display: flex; justify-content: space-between; font-size: 14px; margin-top: 10px">
-                <b>Sub total:</b> <span th:text="|${data.subTotal} VND|">1241241 VND</span>
+                <!-- <b>Sub total:</b> <span th:text="|${data.subTotal} VND|">1241241 VND</span> -->
+                <b>Sub total:</b> <span th:text="|${#numbers.formatDecimal(data.subTotal, 0, 'COMMA', 0, 'POINT')} VND|">1241241 VND</span>
             </div>
-            <div style="display: flex; justify-content: space-between; font-size: 14px; margin-top: 10px"><b>Total:</b> <span th:text="|${data.total} VND|">1241241 VND</span></div>
+            <div style="display: flex; justify-content: space-between; font-size: 14px; margin-top: 10px">
+                <b>Total:</b> <span th:text="|${#numbers.formatDecimal(data.total, 0, 'COMMA', 0, 'POINT')} VND|">1241241 VND</span>
+            </div>
+            <!-- <div style="display: flex; justify-content: space-between; font-size: 14px; margin-top: 10px"><b>Total:</b> <span th:text="|${data.total} VND|">1241241 VND</span></div> -->
         </div>
     </div>
 

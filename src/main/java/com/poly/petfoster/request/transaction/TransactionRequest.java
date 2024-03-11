@@ -31,4 +31,5 @@ public class TransactionRequest {
     private String corresponsiveAccount;
     private String corresponsiveBankId;
     private String corresponsiveBankName;
+
 }

@@ -98,4 +98,11 @@ public interface OrdersRepository extends JpaRepository<Orders, Integer> {
                         @Param("maxDate") Date maxDate,
                         @Param("sort") String sort);
 
+        @Query(value = "select COUNT(*) from orders where user_id = :userId and status = :status ", nativeQuery = true)
+        public Integer countByStatusAndUserID(
+                        @Param("userId") String date, @Param("status") String status);
+
+        @Query(value = "select COUNT(*) from orders where user_id = :userId", nativeQuery = true)
+        public Integer countByStatusAndUserID(
+                        @Param("userId") String date);
 }

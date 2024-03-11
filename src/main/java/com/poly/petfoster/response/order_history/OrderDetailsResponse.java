@@ -54,4 +54,6 @@ public class OrderDetailsResponse {
 
     private Integer print;
 
+    private String token;
+
 }

@@ -41,13 +41,30 @@ public interface PostsRepository extends JpaRepository<Posts, Integer> {
         List<Posts> postsOfUser(@Param("username") String username);
 
         @Query(value = "select * from posts " +
-                        "join users u on posts.[user_id] = u.[user_id] " +
-                        "where posts.id in (select l.post_id from likes l " +
-                        "join posts p on p.id = l.post_id " +
-                        "group by l.post_id) and u.username = :username " +
+                        "where id in ( " +
+                        "select l.post_id from likes l " +
+                        "join users u on u.[user_id] = l.[user_id] " +
+                        "where u.username = :username " +
+                        ") " +
                         "order by posts.create_at desc ", nativeQuery = true)
         List<Posts> postsLikeOfUser(@Param("username") String username);
 
         Posts findByUuid(String uuid);
+
+        @Query(value = "select COUNT(*) from posts " +
+                        "where user_id = :userId", nativeQuery = true)
+        Integer countPostsByUSerID(@Param("userId") String userId);
+
+        @Query(value = "select COUNT(*) from comments " +
+                        "where user_id = :userId", nativeQuery = true)
+        Integer countCommentsByUSerID(@Param("userId") String userId);
+
+        @Query(value = "select COUNT(*) from likes " +
+                        "where user_id = :userId", nativeQuery = true)
+        Integer countLikesByUSerID(@Param("userId") String userId);
+
+        @Query(value = "select COUNT(*) from liked_comments " +
+                        "where user_id = :userId", nativeQuery = true)
+        Integer countLikeCommentsByUSerID(@Param("userId") String userId);
 
 }

@@ -293,7 +293,7 @@ public class AdoptServiceImpl implements AdoptService {
                 List<Adopt> filterAdopts = adoptRepository.filterAdopts(
                                 name.orElse(null), petName.orElse(null), status.orElse(null),
                                 registerStartValue, registerEndValue, adoptStartValue, adoptEndValue,
-                                sort.orElse(null));
+                                sort.orElse("id-desc"));
 
                 Integer pageSize = 10;
                 Integer pages = page.orElse(0);
