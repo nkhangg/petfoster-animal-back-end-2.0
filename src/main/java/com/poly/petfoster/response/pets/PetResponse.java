@@ -26,5 +26,7 @@ public class PetResponse {
     private String type;
     private Integer fosterDate;
     private Boolean like;
+    @JsonFormat(pattern = "dd/MM/yyyy")
+    private Date adoptAt;
 
 }
