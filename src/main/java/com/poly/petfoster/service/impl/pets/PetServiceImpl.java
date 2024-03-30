@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.poly.petfoster.config.JwtProvider;
 import com.poly.petfoster.constant.PetStatus;
+import com.poly.petfoster.entity.Adopt;
 import com.poly.petfoster.entity.Favorite;
 import com.poly.petfoster.entity.Pet;
 import com.poly.petfoster.entity.PetBreed;
@@ -81,6 +82,17 @@ public class PetServiceImpl implements PetService {
     @Autowired
     private PetImgsRepository petImagesRepository;
 
+    public Date getAdoptAt(Pet pet) {
+
+        try {
+            Adopt adopt = adoptRepository.findByPet(pet);
+
+            return adopt.getAdoptAt();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     @Override
     public List<PetResponse> buildPetResponses(List<Pet> petsRaw, User user) {
 
@@ -100,6 +112,7 @@ public class PetServiceImpl implements PetService {
                     .sex(pet.getSex() ? "male" : "female")
                     .type(pet.getPetBreed().getPetType().getName())
                     .like(liked)
+                    .adoptAt(this.getAdoptAt(pet))
                     .fostered(pet.getFosterAt())
                     .build();
         }).toList();
@@ -122,6 +135,7 @@ public class PetServiceImpl implements PetService {
                     .sex(pet.getSex() ? "male" : "female")
                     .type(pet.getPetBreed().getPetType().getName())
                     .like(false)
+                    .adoptAt(this.getAdoptAt(pet))
                     .fostered(pet.getFosterAt())
                     .build();
         }).toList();
