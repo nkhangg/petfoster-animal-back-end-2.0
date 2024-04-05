@@ -171,7 +171,8 @@ public class AdminReviewServiceImpl implements AdminReviewService {
                     .build();
         }
 
-        List<Review> reviews = product.getReviews();
+        // List<Review> reviews = product.getReviews();
+        List<Review> reviews = reviewRepository.findByProduct(product);
 
         ProductItem productItem = takeActionServiceImpl.createProductTakeAction(product);
         DetailRate detailRate = this.createDetailRate(reviews);

@@ -117,9 +117,9 @@ public class TakeActionServiceImpl implements TakeActionService {
         String image = "";
         int discount = 8;
 
-        List<Review> reviews = product.getReviews();
+        List<Review> reviews = reviewRepository.findByProduct(product);
+        // List<Review> reviews = product.getReviews();
         Double rating = reviews.stream().mapToDouble(Review::getRate).average().orElse(0.0);
-        
 
         if (!product.getImgs().isEmpty()) {
             image = product.getImgs().get(0).getNameImg();
@@ -158,7 +158,7 @@ public class TakeActionServiceImpl implements TakeActionService {
             List<Integer> sizes = new ArrayList<>();
             List<OrderDetail> orderDetails = review.getOrder().getOrderDetails();
             orderDetails.forEach(item -> {
-                if(product.getId().equalsIgnoreCase(item.getProductRepo().getProduct().getId())) {
+                if (product.getId().equalsIgnoreCase(item.getProductRepo().getProduct().getId())) {
                     sizes.add(item.getProductRepo().getSize());
                 }
             });
@@ -167,18 +167,17 @@ public class TakeActionServiceImpl implements TakeActionService {
             List<Review> replyReviews = reviewRepository.getReplyReviews(review.getId());
             replyReviews.forEach(item -> {
                 replyReivewItems.add(
-                    ReviewItem.builder()
-                    .id(item.getId())
-                    .name(item.getUser().getUsername())
-                    .rating(item.getRate())
-                    .sizes(null)
-                    .avatar(item.getUser().getAvatar() == null ? null
-                                : portUltil.getUrlImage(item.getUser().getAvatar()))
-                    .comment(item.getComment())
-                    .createAt(formatUtils.dateToString(item.getCreateAt(), "MMM d, yyyy"))
-                    .replayItems(null)
-                    .build()
-                );
+                        ReviewItem.builder()
+                                .id(item.getId())
+                                .name(item.getUser().getUsername())
+                                .rating(item.getRate())
+                                .sizes(null)
+                                .avatar(item.getUser().getAvatar() == null ? null
+                                        : portUltil.getUrlImage(item.getUser().getAvatar()))
+                                .comment(item.getComment())
+                                .createAt(formatUtils.dateToString(item.getCreateAt(), "MMM d, yyyy"))
+                                .replayItems(null)
+                                .build());
             });
 
             reviewItems.add(ReviewItem.builder()
