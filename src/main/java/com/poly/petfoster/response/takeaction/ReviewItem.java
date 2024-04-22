@@ -14,12 +14,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class ReviewItem {
-    
+
     private Integer id;
 
     private String avatar;
 
     private String name;
+
+    private String displayName;
 
     private Integer rating;
 

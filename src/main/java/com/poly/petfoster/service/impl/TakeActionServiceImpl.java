@@ -177,6 +177,7 @@ public class TakeActionServiceImpl implements TakeActionService {
                                 .comment(item.getComment())
                                 .createAt(formatUtils.dateToString(item.getCreateAt(), "MMM d, yyyy"))
                                 .replayItems(null)
+                                .displayName(item.getUser().getDisplayName())
                                 .build());
             });
 
@@ -185,6 +186,7 @@ public class TakeActionServiceImpl implements TakeActionService {
                     .avatar(review.getUser().getAvatar() == null ? null
                             : portUltil.getUrlImage(review.getUser().getAvatar()))
                     .name(review.getUser().getUsername())
+                    .displayName(review.getUser().getDisplayName())
                     .rating(review.getRate())
                     .sizes(sizes)
                     .comment(review.getComment())
