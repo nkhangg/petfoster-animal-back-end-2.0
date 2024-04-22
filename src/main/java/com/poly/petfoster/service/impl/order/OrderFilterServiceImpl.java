@@ -99,7 +99,9 @@ public class OrderFilterServiceImpl implements OrderFilterService {
             orderFilters.add(
                     OrderFilterResponse.builder()
                             .orderId(order.getId())
-                            .username(order.getUser().getUsername())
+                            // .username(order.getUser().getUsername())
+                            .username(order.getUser().getDisplayName() == null ? order.getUser().getUsername()
+                                    : order.getUser().getDisplayName())
                             .total(order.getTotal().intValue())
                             .placedDate(formatUtils.dateToString(order.getCreateAt(), "yyyy-MM-dd"))
                             .status(order.getStatus())
